@@ -2,4 +2,6 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/e_calc/.vs/forms1/v16
+/e_calc/.vs
+/e_calc/bin
+/e_calc/obj

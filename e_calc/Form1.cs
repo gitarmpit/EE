@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Forms;
 
 namespace forms1
@@ -20,29 +22,33 @@ namespace forms1
 
         private void Form1_Load(object sender, EventArgs e)
         {
-//            AcceptButton = button_bias;
-            this.awgCombo.Items.AddRange(new AWG[] {
-            new AWG("AWG 35", 0.14 ),
-            new AWG("AWG 34", 0.16 ),
-            new AWG("AWG 33", 0.18 ),
-            new AWG("AWG 32", 0.20 ),
-            new AWG("AWG 30", 0.25 ),
-            new AWG("AWG 28", 0.33 ),
-            new AWG("AWG 26", 0.41 ),
-            new AWG("AWG 25", 0.46 ),
-            new AWG("AWG 24", 0.51 ),
-            new AWG("AWG 22", 0.64 ),
-            new AWG("AWG 20", 0.81 ),
-            new AWG("AWG 18", 1.02 ),
-            new AWG("AWG 16", 1.29 ),
-            new AWG("AWG 14", 1.63 ),
-            new AWG("AWG 13", 1.83 ),
-            new AWG("AWG 12", 2.05 ),
-            new AWG("AWG 10", 2.59 )
+            List<AWG> awgValues = new List<AWG>(); 
+            awgValues.AddRange(new AWG[] {
+            new AWG("AWG 35", 35, 0.14224),
+            new AWG("AWG 34", 34, 0.16002 ),
+            new AWG("AWG 33", 33, 0.18034 ),
+            new AWG("AWG 32", 32, 0.2032 ),
+            new AWG("AWG 30", 30, 0.254 ),
+            new AWG("AWG 28", 28, 0.32004 ),
+            new AWG("AWG 26", 26, 0.40386 ), 
+            new AWG("AWG 25", 25, 0.45466 ),
+            new AWG("AWG 24", 24, 0.51054 ),
+            new AWG("AWG 22", 22, 0.64516 ),
+            new AWG("AWG 20", 20, 0.8128 ),
+            new AWG("AWG 18", 18, 1.02362 ),
+            new AWG("AWG 16", 16, 1.29032 ),
+            new AWG("AWG 14", 14, 1.62814 ),
+            new AWG("AWG 13", 13, 1.8288  ),
+            new AWG("AWG 12", 12, 2.05232 ),
+            new AWG("AWG 10", 10, 2.58826 ),
+            new AWG("AWG 8",  8, 3.2639 )
             });
 
-            this.awgCombo.SelectedIndex = 9;
+            this.awgCombo1.Items.AddRange(awgValues.ToArray());
+            this.awgCombo2.Items.AddRange(awgValues.ToArray());
 
+            this.awgCombo1.SelectedIndex = 9;
+            this.awgCombo2.SelectedIndex = 9;
 
             radioButton_V.Select();
 
@@ -104,7 +110,49 @@ namespace forms1
             {
                 calculateBias();
             }
-        
+
+            try
+            {
+                string csv = File.ReadAllText("transcalc.csv");
+                string[] values = csv.Split(',');
+                if (values.Length == 10)
+                {
+                    edit_Bmax.Text = values[0];
+                    edit_bobbinL.Text = values[1];
+                    edit_bobbinW.Text = values[2];
+                    edit_bobbinH.Text = values[3];
+                    edit_coreH.Text = values[4];
+                    edit_coreW.Text = values[5];
+
+                    awgCombo1.SelectedItem = parseAWG(values[6]);
+                    edit_Wfactor1.Text = values[7];
+
+                    awgCombo2.SelectedItem = parseAWG(values[8]);
+                    edit_Wfactor2.Text = values[9];
+                }
+                else
+                {
+                    throw new Exception("Error parsing csv file");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                Environment.Exit(1);
+            }
+
+
+        }
+
+        private AWG parseAWG(string sawg)
+        {
+            var awg = awgCombo1.Items.Cast<AWG>().Where(a => a.name == sawg).FirstOrDefault();
+            if (awg == null)
+            {
+                throw new Exception($"Error parsing AWG: {sawg}");
+            }
+            return awg;
+
         }
 
         private void calcButton_Click(object sender, EventArgs e)
@@ -112,20 +160,47 @@ namespace forms1
             try
             {
                 TransCalc tc = new TransCalc();
-                double d = ((AWG)awgCombo.SelectedItem).value;
-                trans_calc_result res = tc.calculate(edit_Bmax.Text, d, edit_bobbinL.Text, edit_bobbinW.Text,
-                    edit_bobbinH.Text, edit_Wfactor.Text, edit_N.Text, edit_coreW.Text, edit_coreH.Text,
-                    edit_turnsPerLayer.Text);
+                double awg1 = ((AWG)awgCombo1.SelectedItem).value;
+                double awg2 = ((AWG)awgCombo2.SelectedItem).value;
 
-                res_length_m.Text = res.res_length_m;
-                res_length_ft.Text = res.res_length_ft;
-                res_thickness_mms.Text = res.res_thickness_mms;
-                res_resistivity.Text = res.res_resistivity;
-                res_totalLayers.Text = res.res_totalLayers;
-                res_lastLayerTurns.Text = res.res_lastLayerTurns;
+                trans_calc_input input = tc.convertToInput(edit_Bmax.Text,
+                    edit_bobbinL.Text, edit_bobbinW.Text, edit_bobbinH.Text,
+                    edit_coreH.Text, edit_coreW.Text,
+                    awg1, edit_Wfactor1.Text, edit_N1.Text, edit_turnsPerLayer1.Text,
+                    awg2, edit_Wfactor2.Text, edit_N2.Text, edit_turnsPerLayer2.Text);
 
-                edit_turnsPerLayer.Text = res.edit_turnsPerLayer;
-                edit_N.Text = res.edit_N;
+                // Calculate primary
+                trans_calc_result res1 = tc.calculate(input.common, input.primary);
+
+                res_length_m_1.Text = String.Format("{0:0.##}", res1.res_length_m);
+                res_length_ft_1.Text = String.Format("{0:0.##}", res1.res_length_ft);
+                res_thickness_mm_1.Text = String.Format("{0:0.##}", res1.res_thickness_mms);
+                res_resistance_1.Text = String.Format("{0:0.##}", res1.res_resistance);
+                res_turns_1.Text = res1.res_N.ToString();
+                res_turns_per_layer_1.Text = res1.res_N_per_layer.ToString();
+                res_totalLayers_1.Text = res1.res_totalLayers.ToString();
+                res_lastLayerTurns_1.Text = 
+                    (res1.res_lastLayerTurns != 0) ? res1.res_lastLayerTurns.ToString() : "";
+
+                //Calculate secondary if configured 
+                if (!input.processSecondary)
+                {
+                    return;
+                }
+
+                input.common.H += res1.res_thickness_mms/1000;
+                input.common.W += res1.res_thickness_mms/1000;
+                trans_calc_result res2 = tc.calculate(input.common, input.secondary);
+
+                res_length_m_2.Text = String.Format("{0:0.##}", res2.res_length_m);
+                res_length_ft_2.Text = String.Format("{0:0.##}", res2.res_length_ft);
+                res_thickness_mm_2.Text = String.Format("{0:0.##}", res2.res_thickness_mms);
+                res_resistance_2.Text = String.Format("{0:0.##}", res2.res_resistance);
+                res_turns_2.Text = res2.res_N.ToString();
+                res_turns_per_layer_2.Text = res2.res_N_per_layer.ToString();
+                res_totalLayers_2.Text = res2.res_totalLayers.ToString();
+                res_lastLayerTurns_2.Text =
+                    (res2.res_lastLayerTurns != 0) ? res2.res_lastLayerTurns.ToString() : "";
             }
             catch (Exception ex)
             {
@@ -152,17 +227,27 @@ namespace forms1
             edit_bobbinL.Text = "";
             edit_bobbinW.Text = "";
             edit_bobbinH.Text = "";
-            edit_coreH.Text = "";
             edit_coreW.Text = "";
-            edit_N.Text = "";
-            edit_Wfactor.Text = "";
-            edit_turnsPerLayer.Text = "";
-            res_lastLayerTurns.Text = "";
-            res_length_ft.Text = "";
-            res_length_m.Text = "";
-            res_resistivity.Text = "";
-            res_thickness_mms.Text = "";
-            res_totalLayers.Text = "";
+            edit_coreH.Text = "";
+            edit_N1.Text = "";
+            edit_Wfactor1.Text = "";
+            edit_turnsPerLayer1.Text = "";
+            res_lastLayerTurns_1.Text = "";
+            res_length_ft_1.Text = "";
+            res_length_m_1.Text = "";
+            res_resistance_1.Text = "";
+            res_thickness_mm_1.Text = "";
+            res_totalLayers_1.Text = "";
+
+            edit_N2.Text = "";
+            edit_Wfactor2.Text = "";
+            edit_turnsPerLayer2.Text = "";
+            res_lastLayerTurns_2.Text = "";
+            res_length_ft_2.Text = "";
+            res_length_m_2.Text = "";
+            res_resistance_2.Text = "";
+            res_thickness_mm_2.Text = "";
+            res_totalLayers_2.Text = "";
 
         }
 
@@ -320,6 +405,24 @@ namespace forms1
 
         }
 
+        private void transCalcPage_Click(object sender, EventArgs e)
+        {
 
+        }
+
+        private void label20_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void edit_bobbinL_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void save_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
