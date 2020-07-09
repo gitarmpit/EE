@@ -3,53 +3,27 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace forms1
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         Bias bias;
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
-         }
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            List<AWG> awgValues = new List<AWG>(); 
-            awgValues.AddRange(new AWG[] {
-            new AWG("AWG 35", 35, 0.14224),
-            new AWG("AWG 34", 34, 0.16002 ),
-            new AWG("AWG 33", 33, 0.18034 ),
-            new AWG("AWG 32", 32, 0.2032 ),
-            new AWG("AWG 30", 30, 0.254 ),
-            new AWG("AWG 28", 28, 0.32004 ),
-            new AWG("AWG 26", 26, 0.40386 ), 
-            new AWG("AWG 25", 25, 0.45466 ),
-            new AWG("AWG 24", 24, 0.51054 ),
-            new AWG("AWG 22", 22, 0.64516 ),
-            new AWG("AWG 20", 20, 0.8128 ),
-            new AWG("AWG 18", 18, 1.02362 ),
-            new AWG("AWG 16", 16, 1.29032 ),
-            new AWG("AWG 14", 14, 1.62814 ),
-            new AWG("AWG 13", 13, 1.8288  ),
-            new AWG("AWG 12", 12, 2.05232 ),
-            new AWG("AWG 10", 10, 2.58826 ),
-            new AWG("AWG 8",  8, 3.2639 )
-            });
-
-            this.awgCombo1.Items.AddRange(awgValues.ToArray());
-            this.awgCombo2.Items.AddRange(awgValues.ToArray());
-
-            this.awgCombo1.SelectedIndex = 9;
-            this.awgCombo2.SelectedIndex = 9;
-
             radioButton_V.Select();
 
             edit_Bmax.Text = "1.0";
@@ -114,21 +88,71 @@ namespace forms1
             try
             {
                 string csv = File.ReadAllText("transcalc.csv");
+                csv = csv.Trim(new char[] { '\r', '\n', ' ' });
                 string[] values = csv.Split(',');
-                if (values.Length == 10)
+                if (values.Length == 29)
                 {
-                    edit_Bmax.Text = values[0];
-                    edit_bobbinL.Text = values[1];
-                    edit_bobbinW.Text = values[2];
-                    edit_bobbinH.Text = values[3];
-                    edit_coreH.Text = values[4];
-                    edit_coreW.Text = values[5];
+                    string mains = values[0];
+                    if (mains == "120")
+                    {
+                        radiobutton_mains_US.Select();
+                    }
+                    else if (mains == "220")
+                    {
+                        radiobutton_mains_EU.Select();
+                    }
+                    else
+                    {
+                        throw new Exception($"Unexpected mains voltage: {mains}");
+                    }
+                    edit_Bmax.Text = values[1];
+                    edit_permeability.Text = values[2];
+                    edit_Iex.Text = values[3];
+                    edit_amptm.Text = values[4];
+                    edit_bobbinW.Text = values[5];
+                    edit_bobbinH.Text = values[6];
+                    edit_bobbinL.Text = values[7];
+                    edit_coreW.Text = values[8];
+                    edit_coreH.Text = values[9];
+                    edit_mpath_W.Text = values[10];
+                    edit_mpath_H.Text = values[11];
+                    edit_windowSize.Text = values[12];
+                    edit_couplingCoeff.Text = values[13];
+                    edit_stackingFactor.Text = values[14];
+                    edit_insulationThickness.Text = values[15];
+                    edit_Vout.Text = values[16];
+                    edit_Iout_max.Text = values[17];
 
-                    awgCombo1.SelectedItem = parseAWG(values[6]);
-                    edit_Wfactor1.Text = values[7];
+                    edit_awg1.Text = values[18];
+                    edit_Wfactor1.Text = values[19];
+                    edit_N1.Text = values[20];
+                    edit_turnsPerLayer1.Text = values[21];
 
-                    awgCombo2.SelectedItem = parseAWG(values[8]);
-                    edit_Wfactor2.Text = values[9];
+                    edit_awg2.Text = values[22];
+                    edit_Wfactor2.Text = values[23];
+                    edit_N2.Text = values[24];
+                    edit_turnsPerLayer2.Text = values[25];
+                    edit_max_tempC.Text = values[26];
+
+                    var ampacity = values[27];
+                    if (ampacity == "0")
+                    {
+                        radioButton_ampacity_700.Select();
+                    }
+                    else if (ampacity == "1")
+                    {
+                        radioButton_ampacity_500.Select();
+                    }
+                    else if (ampacity == "2")
+                    {
+                        radioButton_ampacity_custom.Select();
+                    }
+                    else
+                    {
+                        throw new Exception($"Error reading ampacity: {ampacity}");
+                    }
+
+                    edit_override_ampacity.Text = values[28];
                 }
                 else
                 {
@@ -144,63 +168,114 @@ namespace forms1
 
         }
 
-        private AWG parseAWG(string sawg)
+        private void OnCalculate(object sender, EventArgs e)
         {
-            var awg = awgCombo1.Items.Cast<AWG>().Where(a => a.name == sawg).FirstOrDefault();
-            if (awg == null)
-            {
-                throw new Exception($"Error parsing AWG: {sawg}");
-            }
-            return awg;
-
+            runTransCalc();
         }
 
-        private void calcButton_Click(object sender, EventArgs e)
+        private void runTransCalc()
         {
             try
             {
                 TransCalc tc = new TransCalc();
-                double awg1 = ((AWG)awgCombo1.SelectedItem).value;
-                double awg2 = ((AWG)awgCombo2.SelectedItem).value;
-
-                trans_calc_input input = tc.convertToInput(edit_Bmax.Text,
-                    edit_bobbinL.Text, edit_bobbinW.Text, edit_bobbinH.Text,
-                    edit_coreH.Text, edit_coreW.Text,
-                    awg1, edit_Wfactor1.Text, edit_N1.Text, edit_turnsPerLayer1.Text,
-                    awg2, edit_Wfactor2.Text, edit_N2.Text, edit_turnsPerLayer2.Text);
-
-                // Calculate primary
-                trans_calc_result res1 = tc.calculate(input.common, input.primary);
-
-                res_length_m_1.Text = String.Format("{0:0.##}", res1.res_length_m);
-                res_length_ft_1.Text = String.Format("{0:0.##}", res1.res_length_ft);
-                res_thickness_mm_1.Text = String.Format("{0:0.##}", res1.res_thickness_mms);
-                res_resistance_1.Text = String.Format("{0:0.##}", res1.res_resistance);
-                res_turns_1.Text = res1.res_N.ToString();
-                res_turns_per_layer_1.Text = res1.res_N_per_layer.ToString();
-                res_totalLayers_1.Text = res1.res_totalLayers.ToString();
-                res_lastLayerTurns_1.Text = 
-                    (res1.res_lastLayerTurns != 0) ? res1.res_lastLayerTurns.ToString() : "";
-
-                //Calculate secondary if configured 
-                if (!input.processSecondary)
+                if (edit_max_tempC.Text == "")
                 {
-                    return;
+                    edit_max_tempC.Text = "20";
                 }
 
-                input.common.H += res1.res_thickness_mms/1000;
-                input.common.W += res1.res_thickness_mms/1000;
-                trans_calc_result res2 = tc.calculate(input.common, input.secondary);
+                trans_calc_input_text strin = new trans_calc_input_text();
+                if (radiobutton_mains_US.Checked)
+                {
+                    strin.Vin = "120";
+                    strin.freq = "60";
+                }
+                else
+                {
+                    strin.Vin = "220";
+                    strin.freq = "50";
+                }
+                strin.Bmax = edit_Bmax.Text;
+                strin.permeability = edit_permeability.Text;
+                strin.Iex = edit_Iex.Text;
+                strin.H_ampt_m = edit_amptm.Text;
+                strin.core_W = edit_bobbinW.Text;
+                strin.core_H = edit_bobbinH.Text;
+                strin.core_L = edit_bobbinL.Text;
+                strin.Ae_W = edit_coreW.Text;
+                strin.Ae_H = edit_coreH.Text;
+                strin.mpath_W = edit_mpath_W.Text;
+                strin.mpath_H = edit_mpath_H.Text;
+                strin.window_mm = edit_windowSize.Text;
+                strin.coupling_coeff = edit_couplingCoeff.Text;
+                strin.stackingFactor = edit_stackingFactor.Text;
+                strin.insulationThickness = edit_insulationThickness.Text;
+                strin.Vout = edit_Vout.Text;
+                strin.Iout_max = edit_Iout_max.Text;
+                strin.awg1 = edit_awg1.Text;
+                strin.wfactor1 = edit_Wfactor1.Text;
+                strin.N1 = edit_N1.Text;
+                strin.N_per_layer1 = edit_turnsPerLayer1.Text;
+                if (radioButton_ampacity_500.Checked)
+                {
+                    strin.ampacity1 = "500";
+                    strin.ampacity2 = "500";
+                }
+                else if (radioButton_ampacity_700.Checked)
+                {
+                    strin.ampacity1 = "700";
+                    strin.ampacity2 = "700";
+                }
+                else
+                {
+                    strin.ampacity1 = edit_override_ampacity.Text;
+                    strin.ampacity2 = edit_override_ampacity.Text;
+                }
 
-                res_length_m_2.Text = String.Format("{0:0.##}", res2.res_length_m);
-                res_length_ft_2.Text = String.Format("{0:0.##}", res2.res_length_ft);
-                res_thickness_mm_2.Text = String.Format("{0:0.##}", res2.res_thickness_mms);
-                res_resistance_2.Text = String.Format("{0:0.##}", res2.res_resistance);
-                res_turns_2.Text = res2.res_N.ToString();
-                res_turns_per_layer_2.Text = res2.res_N_per_layer.ToString();
-                res_totalLayers_2.Text = res2.res_totalLayers.ToString();
-                res_lastLayerTurns_2.Text =
-                    (res2.res_lastLayerTurns != 0) ? res2.res_lastLayerTurns.ToString() : "";
+                strin.awg2 = edit_awg2.Text;
+                strin.wfactor2 = edit_Wfactor2.Text;
+                strin.N2 = edit_N2.Text;
+                strin.N_per_layer2 = edit_turnsPerLayer2.Text;
+                strin.maxTempC = edit_max_tempC.Text;
+                trans_calc_result_text result = tc.Calculate(strin);
+
+                res_length_m_1.Text = result.length_m_1;
+                res_length_ft_1.Text = result.length_ft_1;
+                res_thickness_mm_1.Text = result.thickness_mm_1;
+                res_resistance_1.Text = result.resistance_1;
+                res_turns_1.Text = result.N_1;
+                res_turns_per_layer_1.Text = result.N_per_layer_1;
+                res_totalLayers_1.Text = result.totalLayers_1;
+                res_lastLayerTurns_1.Text = result.lastLayerTurns_1;
+                res_mpath_m.Text = result.mpath_l_m;
+                res_max_current_1.Text = result.awg_max_current_amp_1;
+                res_L1.Text = result.L1;
+                res_Bmax.Text = result.B_max;
+                res_amptm.Text = result.H_amp_t_m;
+                res_Iex.Text = result.I_ex_amp;
+                res_permeability.Text = result.permeability;
+                res_weight_g1.Text = result.weight_g_1;
+                res_length_m_2.Text = result.length_m_2;
+                res_length_ft_2.Text = result.length_ft_2;
+                res_thickness_mm_2.Text = result.thickness_mm_2;
+                res_resistance_2.Text = result.resistance_2;
+                res_turns_2.Text = result.N_2;
+                res_turns_per_layer_2.Text = result.N_per_layer_2;
+                res_totalLayers_2.Text = result.totalLayers_2;
+                res_lastLayerTurns_2.Text = result.lastLayerTurns_2;
+                res_max_current_2.Text = result.awg_max_current_amp_2;
+                res_L2.Text = result.L2;
+                res_Vout_idle.Text = result.Vout_idle;
+                res_Vout_imax.Text = result.Vout_imax;
+                res_Iout.Text = result.Iout_max;
+                res_total_thickness_mm.Text = result.total_thickness_mm;
+                res_weight_g2.Text = result.weight_g_2;
+                res_turns_ratio.Text = result.turns_ratio;
+                res_csa_ratio.Text = result.wire_csa_ratio;
+                res_wire_total_mass.Text = result.wire_total_weight;
+                res_wire_weight_ratio.Text = result.wire_weight_ratio;
+                res_Ip_full_load.Text = result.Ip_full_load;
+                res_powerVA.Text = result.power_VA;
+
             }
             catch (Exception ex)
             {
@@ -212,17 +287,18 @@ namespace forms1
 
         private void transCalcTab_DrawItem(object sender, DrawItemEventArgs e)
         {
+            /*
             TabPage page = calcTab.TabPages[e.Index];
-            //e.Graphics.FillRectangle(new SolidBrush(page.BackColor), e.Bounds);
             e.Graphics.FillRectangle(new SolidBrush(page.BackColor), e.Bounds);
 
             Rectangle paddedBounds = e.Bounds;
             int yOffset = (e.State == DrawItemState.Selected) ? -2 : 1;
             paddedBounds.Offset(1, yOffset);
             TextRenderer.DrawText(e.Graphics, page.Text, Font, paddedBounds, page.ForeColor);
+            */
         }
 
-        private void clearButton_click(object sender, EventArgs e)
+        private void OnClear(object sender, EventArgs e)
         {
             edit_bobbinL.Text = "";
             edit_bobbinW.Text = "";
@@ -278,8 +354,6 @@ namespace forms1
                 label_Ir2.Text = (res.ir2 * 1000000).ToString("F2") + "uA";
                 label_Vce.Text = (res.vce).ToString("F1") + "V";
                 label_Ve.Text = (res.ve).ToString("F1") + "V";
-
-
             }
             catch (Exception ex)
             {
@@ -367,12 +441,10 @@ namespace forms1
 
         }
 
-
         private void edit_Leave(object sender, EventArgs e)
         {
             parseBeta();
         }
-
 
         private void edit_KeyDown(object sender, KeyEventArgs e)
         {
@@ -400,27 +472,40 @@ namespace forms1
             }
         }
 
-        private void label19_Click(object sender, EventArgs e)
+
+        private void OnKeyPress(object sender, KeyPressEventArgs e)
+        {
+            
+            if (e.KeyChar == 13)
+             {
+                runTransCalc();
+                e.Handled = true;
+            }
+
+        }
+
+        private void OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Up)
+            {
+                SendKeys.Send("+{TAB}");
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+            else if (e.KeyCode == Keys.Down)
+            {
+                SendKeys.Send("{TAB}");
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+
+        }
+        private void OnLoad(object sender, EventArgs e)
         {
 
         }
 
-        private void transCalcPage_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label20_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void edit_bobbinL_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void save_Click(object sender, EventArgs e)
+        private void OnSave(object sender, EventArgs e)
         {
 
         }

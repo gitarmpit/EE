@@ -24,8 +24,8 @@ namespace forms1
     }
     class Bias
     {
-        Form1 mainForm;
-        public Bias(Form1 mainForm)
+        MainForm mainForm;
+        public Bias(MainForm mainForm)
         {
             this.mainForm = mainForm;
         }
