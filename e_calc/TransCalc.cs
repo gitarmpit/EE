@@ -25,7 +25,7 @@ namespace forms1
         public string Ae_H;
         public string mpath_W;
         public string mpath_H;
-        public string window_mm;
+        public string window_size;
         public string coupling_coeff;
         public string stackingFactor;
         public string insulationThickness;
@@ -41,7 +41,7 @@ namespace forms1
         public string N2;
         public string N_per_layer2;
         public string ampacity2;
-        public string maxTempC;
+        public string maxTemp;
     }
     struct trans_calc_result_text
     {
@@ -144,7 +144,7 @@ namespace forms1
             }
             else
             {
-                this.turns_ratio = "1:" + String.Format("{0:0.##}", 1/res.turns_ratio);
+                this.turns_ratio = "1:" + String.Format("{0:0.##}", 1 / res.turns_ratio);
             }
             if (res.wire_csa_ratio > 1)
             {
@@ -153,7 +153,7 @@ namespace forms1
             }
             else
             {
-                this.wire_csa_ratio = "1:" + String.Format("{0:0.##}", 1/res.wire_csa_ratio);
+                this.wire_csa_ratio = "1:" + String.Format("{0:0.##}", 1 / res.wire_csa_ratio);
             }
             this.wire_total_weight = String.Format("{0:0.##}", res.wire_total_weight);
 
@@ -163,7 +163,7 @@ namespace forms1
             }
             else
             {
-                this.wire_weight_ratio = "1:" + String.Format("{0:0.##}", 1/res.wire_weight_ratio);
+                this.wire_weight_ratio = "1:" + String.Format("{0:0.##}", 1 / res.wire_weight_ratio);
             }
             this.Ip_full_load = String.Format("{0:0.##}", res.Ip_full_load);
             this.power_VA = String.Format("{0:0.##}", res.power_VA);
@@ -222,8 +222,8 @@ namespace forms1
         public double Ae_W;
         public double Ae_H;
 
-        public double mpath_l_m;
-        public double max_temp_C;
+        public double mpath_l_cm;
+        public double max_temp;
 
         public double WindowSize;
         public double CouplingCoeff;
@@ -261,7 +261,7 @@ namespace forms1
         private const double copper_resistivity = 1.728e-8;
 
         private const double copper_density_kg_m3 = 8950;
-        private const double copper_temperature_coeff = 0.00393; 
+        private const double copper_temperature_coeff = 0.00393;
         public AWG(int number, double value)
         {
             this.gauge = number;
@@ -270,12 +270,12 @@ namespace forms1
 
         public double Gauge
         {
-            get { return gauge;  }
+            get { return gauge; }
         }
 
         public double Diameter_mm
         {
-            get { return diameter_mm;  }
+            get { return diameter_mm; }
         }
 
         public double Diameter_m
@@ -304,7 +304,7 @@ namespace forms1
             return length_m * res / (Math.PI * Math.Pow(Diameter_m / (double)2, 2));
         }
 
-        public double CalculateMass_g (double length_m)
+        public double CalculateMass_g(double length_m)
         {
             double v = Csa_m2 * length_m;
             return v * copper_density_kg_m3 * 1000;
@@ -316,6 +316,11 @@ namespace forms1
     {
         private static double u0 = 4 * Math.PI * 10e-8;
         private List<AWG> awgValues = new List<AWG>();
+
+        private bool sizeUnitsCm = true;
+        private bool tempUnitsC = true;
+        private bool H_units_amp_turns = true;
+        private bool mass_units_g = true;
 
         public TransCalc()
         {
@@ -361,6 +366,173 @@ namespace forms1
             }
 
             return awg_item;
+        }
+
+        public bool IsSizeUnitsCm
+        {
+            get { return sizeUnitsCm; }
+            set { sizeUnitsCm = value; }
+        }
+
+        public bool IsTempUnitsC
+        {
+            get { return tempUnitsC; }
+            set { tempUnitsC = value; }
+        }
+
+        public bool IsH_UnitsAmpturns
+        {
+            get { return H_units_amp_turns; }
+            set { H_units_amp_turns = value; }
+        }
+
+        public bool IsMassUnits_g
+        {
+            get { return mass_units_g; }
+            set { mass_units_g = value; }
+        }
+
+        public static double F_to_C(double f)
+        {
+            return (f - 32) * 5 / 9;
+        }
+
+        public static double C_to_F (double c)
+        {
+            return (c * 9 / 5) + 32;
+        }
+
+        public string UpdateTempText(string stemp)
+        {
+            double dtemp = double.Parse(stemp, NumberStyles.Float);
+            double converted_temp = IsTempUnitsC ?  C_to_F(dtemp) : F_to_C(dtemp);
+            return String.Format("{0:0.#}", converted_temp);
+        }
+
+        public static double AmpTurns_to_Oe (double at)
+        {
+            return at * 1000 / (4 * Math.PI); 
+        }
+
+        public static double Oe_to_Ampturns (double oe)
+        {
+            return 0;
+        }
+
+
+        public string UpdateHText(string H_string)
+        {
+            double dH = double.Parse(H_string, NumberStyles.Float);
+            double converted_H = IsH_UnitsAmpturns ? AmpTurns_to_Oe(dH) : Oe_to_Ampturns(dH);
+            return String.Format("{0:0.#}", converted_H);
+        }
+
+
+        public trans_calc_input_text Load()
+        {
+            trans_calc_input_text input_text = new trans_calc_input_text();
+
+            string csv = File.ReadAllText("transcalc.csv");
+            csv = csv.Trim(new char[] { '\r', '\n', ' ' });
+            string[] values = csv.Split(',');
+            if (values.Length == 33)
+            {
+                string mains = values[0];
+                if (mains != "120" && mains != "220" )
+                {
+                    throw new Exception($"Unexpected mains voltage: {mains}");
+                }
+                input_text.Vin = mains;
+
+                input_text.Bmax = values[1];
+                input_text.permeability = values[2];
+                input_text.Iex = values[3];
+                input_text.H_ampt_m = values[4];
+                input_text.core_W = values[5];
+                input_text.core_H = values[6];
+                input_text.core_L = values[7];
+                input_text.Ae_W = values[8];
+                input_text.Ae_H = values[9];
+                input_text.mpath_W = values[10];
+                input_text.mpath_H = values[11];
+                input_text.window_size = values[12];
+                input_text.coupling_coeff = values[13];
+                input_text.stackingFactor = values[14];
+                input_text.insulationThickness = values[15];
+                input_text.Vout = values[16];
+                input_text.Iout_max = values[17];
+
+                input_text.awg1 = values[18];
+                input_text.wfactor1 = values[19];
+                input_text.N1 = values[20];
+                input_text.N_per_layer1 = values[21];
+                input_text.ampacity1 = values[22];
+
+                input_text.awg2 = values[23];
+                input_text.wfactor2 = values[24];
+                input_text.N2 = values[25];
+                input_text.N_per_layer2 = values[26];
+                input_text.ampacity2 = values[27];
+
+                input_text.maxTemp = values[28];
+                if (values[29] == "0")
+                {
+                    sizeUnitsCm = false;
+                }
+                else if (values[29] == "1")
+                {
+                    sizeUnitsCm = true; 
+                }
+                else
+                {
+                    throw new Exception("Error parsing size units");
+                }
+
+                if (values[30] == "0")
+                {
+                    tempUnitsC = false;
+                }
+                else if (values[30] == "1")
+                {
+                    tempUnitsC = true;
+                }
+                else
+                {
+                    throw new Exception("Error parsing Temp units");
+                }
+
+                if (values[31] == "0")
+                {
+                    H_units_amp_turns = true;
+                }
+                else if (values[31] == "1")
+                {
+                    H_units_amp_turns = false;
+                }
+                else
+                {
+                    throw new Exception("Error parsing H units");
+                }
+
+                if (values[32] == "0")
+                {
+                    mass_units_g = false;
+                }
+                else if (values[32] == "1")
+                {
+                    mass_units_g = true;
+                }
+                else
+                {
+                    throw new Exception("Error parsing H units");
+                }
+            }
+            else
+            {
+                throw new Exception("Error parsing csv file");
+            }
+
+            return input_text;
         }
 
         private trans_calc_input_winding processWinding(string winding, string sawg, string wfactor, 
@@ -416,12 +588,12 @@ namespace forms1
 
         public trans_calc_result_text Calculate(trans_calc_input_text text_input)
         {
-            trans_calc_input input = convertToInput(text_input);
+            trans_calc_input input = convertTextToInput(text_input);
 
             double Epeak = input.common.Vin * Math.Sqrt(2);
             double omega = input.common.Freq * 2 * Math.PI;
             double Ae = input.common.Ae_W * input.common.Ae_H * input.common.StackingFactor;
-            double l_m = input.common.mpath_l_m;
+            double l_m = input.common.mpath_l_cm;
             double V_in = input.common.Vin;
             double I_ex = input.common.I_ex;
             double u = input.common.permeability;
@@ -533,7 +705,7 @@ namespace forms1
 
             return new trans_calc_result_text(result); 
         }
-        private trans_calc_input convertToInput(trans_calc_input_text strin) 
+        private trans_calc_input convertTextToInput(trans_calc_input_text strin) 
         {
             trans_calc_input res =  new trans_calc_input();
             res.common = new trans_calc_input_common();
@@ -643,9 +815,9 @@ namespace forms1
 
             if (strin.mpath_H != "" && strin.mpath_W != "")
             {
-                //to m 
-                double Mpath_H = double.Parse(strin.mpath_H, NumberStyles.Float) / 100;
-                double Mpath_W = double.Parse(strin.mpath_W, NumberStyles.Float) / 100;
+                //cm 
+                double Mpath_H = double.Parse(strin.mpath_H, NumberStyles.Float);
+                double Mpath_W = double.Parse(strin.mpath_W, NumberStyles.Float);
 
                 if (Mpath_H < 0.01 || Mpath_H > 0.5)
                 {
@@ -657,19 +829,19 @@ namespace forms1
                     throw new Exception("Invalid magnetic path value: W");
                 }
 
-                res.common.mpath_l_m = (Mpath_H + Mpath_W) * 2;
+                res.common.mpath_l_cm = (Mpath_H + Mpath_W) * 2;
             }
 
-            if (strin.window_mm == "")
+            if (strin.window_size == "")
             {
                 throw new Exception("Window size not set");
             }
 
-            // in mm
-            res.common.WindowSize = double.Parse(strin.window_mm, NumberStyles.Float);
-            if (res.common.WindowSize < 1 || res.common.WindowSize > 500)
+            // in cm
+            res.common.WindowSize = double.Parse(strin.window_size, NumberStyles.Float);
+            if (res.common.WindowSize < 0.1 || res.common.WindowSize > 50)
             {
-                throw new Exception("Invalid window size in mm");
+                throw new Exception("Invalid window size in cm");
             }
 
             if (strin.coupling_coeff == "")
@@ -723,10 +895,15 @@ namespace forms1
                 }
             }
 
-            res.common.max_temp_C = double.Parse(strin.maxTempC, NumberStyles.Integer);
-            if (res.common.max_temp_C < 20)
+            res.common.max_temp = double.Parse(strin.maxTemp, NumberStyles.Float);
+            if (!IsTempUnitsC)
             {
-                res.common.max_temp_C = 20;
+                res.common.max_temp = F_to_C(res.common.max_temp);
+            }
+
+            if (res.common.max_temp < 20)
+            {
+                res.common.max_temp = 20;
             }
 
             res.primary = processWinding("Primary", strin.awg1, strin.wfactor1, strin.N1, strin.N_per_layer1, strin.ampacity1);
@@ -796,7 +973,7 @@ namespace forms1
 
             double length_f = length_m * 3.28084;
             double thickness = totalLayers * dh;
-            double resistance = w.awg.CalculateResistance(length_m, common.max_temp_C);
+            double resistance = w.awg.CalculateResistance(length_m, common.max_temp);
             double mass = w.awg.CalculateMass_g(length_m);
             res.length_m = length_m;
             res.length_ft = length_f;

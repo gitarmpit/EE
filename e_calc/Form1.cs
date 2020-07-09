@@ -17,6 +17,8 @@ namespace forms1
     public partial class MainForm : Form
     {
         Bias bias;
+        TransCalc tc;
+
         public MainForm()
         {
             InitializeComponent();
@@ -87,60 +89,69 @@ namespace forms1
 
             try
             {
-                string csv = File.ReadAllText("transcalc.csv");
-                csv = csv.Trim(new char[] { '\r', '\n', ' ' });
-                string[] values = csv.Split(',');
-                if (values.Length == 29)
+                tc = new TransCalc();
+
+                trans_calc_input_text input = tc.Load();
+                if (input.Vin == "120")
                 {
-                    string mains = values[0];
-                    if (mains == "120")
-                    {
-                        radiobutton_mains_US.Select();
-                    }
-                    else if (mains == "220")
-                    {
-                        radiobutton_mains_EU.Select();
-                    }
-                    else
-                    {
-                        throw new Exception($"Unexpected mains voltage: {mains}");
-                    }
-                    edit_Bmax.Text = values[1];
-                    edit_permeability.Text = values[2];
-                    edit_Iex.Text = values[3];
-                    edit_amptm.Text = values[4];
-                    edit_bobbinW.Text = values[5];
-                    edit_bobbinH.Text = values[6];
-                    edit_bobbinL.Text = values[7];
-                    edit_coreW.Text = values[8];
-                    edit_coreH.Text = values[9];
-                    edit_mpath_W.Text = values[10];
-                    edit_mpath_H.Text = values[11];
-                    edit_windowSize.Text = values[12];
-                    edit_couplingCoeff.Text = values[13];
-                    edit_stackingFactor.Text = values[14];
-                    edit_insulationThickness.Text = values[15];
-                    edit_Vout.Text = values[16];
-                    edit_Iout_max.Text = values[17];
-
-                    edit_awg1.Text = values[18];
-                    edit_Wfactor1.Text = values[19];
-                    edit_N1.Text = values[20];
-                    edit_turnsPerLayer1.Text = values[21];
-                    edit_ampacity1.Text = values[22];
-
-                    edit_awg2.Text = values[23];
-                    edit_Wfactor2.Text = values[24];
-                    edit_N2.Text = values[25];
-                    edit_turnsPerLayer2.Text = values[26];
-                    edit_ampacity2.Text = values[27];
-
-                    edit_max_temp.Text = values[28];
-
+                    radiobutton_mains_US.Select();
+                }
+                else if (input.Vin == "220")
+                {
+                    radiobutton_mains_EU.Select();
                 }
                 else
                 {
-                    throw new Exception("Error parsing csv file");
+                    throw new Exception($"Unexpected mains voltage: {input.Vin}");
+                }
+
+                edit_Bmax.Text = input.Bmax;
+                edit_permeability.Text = input.permeability;
+                edit_Iex.Text = input.Iex;
+                edit_H.Text = input.H_ampt_m;
+                edit_coreSize_W.Text = input.core_W;
+                edit_coreSize_H.Text = input.core_H;
+                edit_coreSize_L.Text = input.core_L;
+                edit_Ae_W.Text = input.Ae_W;
+                edit_Ae_H.Text = input.Ae_H;
+                edit_mpath_W.Text = input.mpath_W;
+                edit_mpath_H.Text = input.mpath_H;
+                edit_windowSize.Text = input.window_size;
+                edit_couplingCoeff.Text = input.coupling_coeff;
+                edit_stackingFactor.Text = input.stackingFactor;
+                edit_insulationThickness.Text = input.insulationThickness;
+                edit_Vout.Text = input.Vout;
+                edit_Iout_max.Text = input.Iout_max;
+
+                edit_awg1.Text = input.awg1;
+                edit_Wfactor1.Text = input.wfactor1;
+                edit_N1.Text = input.N1;
+                edit_N_PerLayer1.Text = input.N_per_layer1;
+                edit_ampacity1.Text = input.ampacity1;
+
+                edit_awg2.Text = input.awg2;
+                edit_Wfactor2.Text = input.wfactor2;
+                edit_N2.Text = input.N2;
+                edit_N_PerLayer2.Text = input.N_per_layer2;
+                edit_ampacity2.Text = input.ampacity2;
+
+                edit_max_temp.Text = input.maxTemp;
+
+                if (tc.IsTempUnitsC)
+                {
+                    radioButton_tempC.Select();
+                }
+                else
+                {
+                    radioButton_tempF.Select();
+                }
+                if (tc.IsH_UnitsAmpturns)
+                {
+                    radioButton_H_amp_t.Select();
+                }
+                else
+                {
+                    radioButton_H_oe.Select();
                 }
             }
             catch (Exception ex)
@@ -148,8 +159,6 @@ namespace forms1
                 MessageBox.Show(ex.Message);
                 Environment.Exit(1);
             }
-
-
         }
 
         private void OnCalculate(object sender, EventArgs e)
@@ -161,7 +170,6 @@ namespace forms1
         {
             try
             {
-                TransCalc tc = new TransCalc();
                 if (edit_max_temp.Text == "")
                 {
                     edit_max_temp.Text = "20";
@@ -181,15 +189,15 @@ namespace forms1
                 strin.Bmax = edit_Bmax.Text;
                 strin.permeability = edit_permeability.Text;
                 strin.Iex = edit_Iex.Text;
-                strin.H_ampt_m = edit_amptm.Text;
-                strin.core_W = edit_bobbinW.Text;
-                strin.core_H = edit_bobbinH.Text;
-                strin.core_L = edit_bobbinL.Text;
-                strin.Ae_W = edit_coreW.Text;
-                strin.Ae_H = edit_coreH.Text;
+                strin.H_ampt_m = edit_H.Text;
+                strin.core_W = edit_coreSize_W.Text;
+                strin.core_H = edit_coreSize_H.Text;
+                strin.core_L = edit_coreSize_L.Text;
+                strin.Ae_W = edit_Ae_W.Text;
+                strin.Ae_H = edit_Ae_H.Text;
                 strin.mpath_W = edit_mpath_W.Text;
                 strin.mpath_H = edit_mpath_H.Text;
-                strin.window_mm = edit_windowSize.Text;
+                strin.window_size = edit_windowSize.Text;
                 strin.coupling_coeff = edit_couplingCoeff.Text;
                 strin.stackingFactor = edit_stackingFactor.Text;
                 strin.insulationThickness = edit_insulationThickness.Text;
@@ -198,15 +206,16 @@ namespace forms1
                 strin.awg1 = edit_awg1.Text;
                 strin.wfactor1 = edit_Wfactor1.Text;
                 strin.N1 = edit_N1.Text;
-                strin.N_per_layer1 = edit_turnsPerLayer1.Text;
+                strin.N_per_layer1 = edit_N_PerLayer1.Text;
                 strin.ampacity1 = edit_ampacity1.Text;
                 strin.ampacity2 = edit_ampacity2.Text;
 
                 strin.awg2 = edit_awg2.Text;
                 strin.wfactor2 = edit_Wfactor2.Text;
                 strin.N2 = edit_N2.Text;
-                strin.N_per_layer2 = edit_turnsPerLayer2.Text;
-                strin.maxTempC = edit_max_temp.Text;
+                strin.N_per_layer2 = edit_N_PerLayer2.Text;
+                strin.maxTemp = edit_max_temp.Text;
+
                 trans_calc_result_text result = tc.Calculate(strin);
 
                 res_length_m_1.Text = result.length_m_1;
@@ -271,14 +280,14 @@ namespace forms1
 
         private void OnClear(object sender, EventArgs e)
         {
-            edit_bobbinL.Text = "";
-            edit_bobbinW.Text = "";
-            edit_bobbinH.Text = "";
-            edit_coreW.Text = "";
-            edit_coreH.Text = "";
+            edit_coreSize_L.Text = "";
+            edit_coreSize_W.Text = "";
+            edit_coreSize_H.Text = "";
+            edit_Ae_W.Text = "";
+            edit_Ae_H.Text = "";
             edit_N1.Text = "";
             edit_Wfactor1.Text = "";
-            edit_turnsPerLayer1.Text = "";
+            edit_N_PerLayer1.Text = "";
             res_lastLayerTurns_1.Text = "";
             res_length_ft_1.Text = "";
             res_length_m_1.Text = "";
@@ -288,7 +297,7 @@ namespace forms1
 
             edit_N2.Text = "";
             edit_Wfactor2.Text = "";
-            edit_turnsPerLayer2.Text = "";
+            edit_N_PerLayer2.Text = "";
             res_lastLayerTurns_2.Text = "";
             res_length_ft_2.Text = "";
             res_length_m_2.Text = "";
@@ -479,6 +488,19 @@ namespace forms1
         private void OnSave(object sender, EventArgs e)
         {
 
+        }
+
+        private void Temp_OnCheckedChanged(object sender, EventArgs e)
+        {
+            edit_max_temp.Text = tc.UpdateTempText(edit_max_temp.Text);
+            tc.IsTempUnitsC = radioButton_tempC.Checked;
+        }
+
+        private void H_OnCheckedChanged(object sender, EventArgs e)
+        {
+            edit_H.Text = tc.UpdateHText(edit_H.Text);
+            tc.IsH_UnitsAmpturns = radioButton_H_amp_t.Checked;
+            label_units_H.Text = tc.IsH_UnitsAmpturns ? "Amp-t/m" : "Oe";
         }
     }
 }

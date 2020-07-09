@@ -31,7 +31,11 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.calcTab = new System.Windows.Forms.TabControl();
             this.transCalcPage = new System.Windows.Forms.TabPage();
+            this.richTextBox_warnings = new System.Windows.Forms.RichTextBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.label53 = new System.Windows.Forms.Label();
+            this.label41 = new System.Windows.Forms.Label();
+            this.label_units_total_weight = new System.Windows.Forms.Label();
             this.label_units_weight2 = new System.Windows.Forms.Label();
             this.res_powerVA = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
@@ -76,12 +80,15 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label20 = new System.Windows.Forms.Label();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.radioButton7 = new System.Windows.Forms.RadioButton();
-            this.radioButton8 = new System.Windows.Forms.RadioButton();
+            this.radioButton_weight_lbs = new System.Windows.Forms.RadioButton();
+            this.radioButton_weight_g = new System.Windows.Forms.RadioButton();
             this.clearButton = new System.Windows.Forms.Button();
             this.Save = new System.Windows.Forms.Button();
             this.calcButton = new System.Windows.Forms.Button();
             this.groupBox_primaryResults = new System.Windows.Forms.GroupBox();
+            this.label62 = new System.Windows.Forms.Label();
+            this.label_units_buildup1 = new System.Windows.Forms.Label();
+            this.label42 = new System.Windows.Forms.Label();
             this.label_units_weight1 = new System.Windows.Forms.Label();
             this.res_Ip_full_load = new System.Windows.Forms.Label();
             this.label72 = new System.Windows.Forms.Label();
@@ -99,6 +106,7 @@
             this.label55 = new System.Windows.Forms.Label();
             this.res_mpath_m = new System.Windows.Forms.Label();
             this.label54 = new System.Windows.Forms.Label();
+            this.res_L1 = new System.Windows.Forms.Label();
             this.label44 = new System.Windows.Forms.Label();
             this.res_turns_per_layer_1 = new System.Windows.Forms.Label();
             this.label38 = new System.Windows.Forms.Label();
@@ -117,24 +125,28 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.radioButton5 = new System.Windows.Forms.RadioButton();
-            this.radioButton6 = new System.Windows.Forms.RadioButton();
+            this.radioButton_tempF = new System.Windows.Forms.RadioButton();
+            this.radioButton_tempC = new System.Windows.Forms.RadioButton();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
-            this.radioButton4 = new System.Windows.Forms.RadioButton();
+            this.radioButton_size_in = new System.Windows.Forms.RadioButton();
+            this.radioButton_size_cm = new System.Windows.Forms.RadioButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.radioButton_H_oe = new System.Windows.Forms.RadioButton();
+            this.radioButton_H_amp_t = new System.Windows.Forms.RadioButton();
             this.groupBox_w2 = new System.Windows.Forms.GroupBox();
+            this.edit_ampacity2 = new System.Windows.Forms.TextBox();
             this.edit_Wfactor2 = new System.Windows.Forms.TextBox();
+            this.label65 = new System.Windows.Forms.Label();
             this.edit_awg2 = new System.Windows.Forms.TextBox();
-            this.edit_turnsPerLayer2 = new System.Windows.Forms.TextBox();
+            this.edit_N_PerLayer2 = new System.Windows.Forms.TextBox();
             this.label23 = new System.Windows.Forms.Label();
             this.edit_N2 = new System.Windows.Forms.TextBox();
             this.label24 = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label_units_maxtemp = new System.Windows.Forms.Label();
+            this.label_units_H = new System.Windows.Forms.Label();
             this.checkBox_fullLoad = new System.Windows.Forms.CheckBox();
             this.label78 = new System.Windows.Forms.Label();
             this.label77 = new System.Windows.Forms.Label();
@@ -150,7 +162,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.edit_stackingFactor = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.edit_amptm = new System.Windows.Forms.TextBox();
+            this.edit_H = new System.Windows.Forms.TextBox();
             this.label50 = new System.Windows.Forms.Label();
             this.edit_Iout_max = new System.Windows.Forms.TextBox();
             this.label48 = new System.Windows.Forms.Label();
@@ -165,14 +177,16 @@
             this.label36 = new System.Windows.Forms.Label();
             this.edit_Bmax = new System.Windows.Forms.TextBox();
             this.label19 = new System.Windows.Forms.Label();
-            this.edit_coreW = new System.Windows.Forms.TextBox();
+            this.edit_Ae_W = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.edit_coreH = new System.Windows.Forms.TextBox();
-            this.edit_bobbinH = new System.Windows.Forms.TextBox();
-            this.edit_bobbinW = new System.Windows.Forms.TextBox();
-            this.edit_bobbinL = new System.Windows.Forms.TextBox();
+            this.edit_Ae_H = new System.Windows.Forms.TextBox();
+            this.edit_coreSize_H = new System.Windows.Forms.TextBox();
+            this.edit_coreSize_W = new System.Windows.Forms.TextBox();
+            this.edit_coreSize_L = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox_w1 = new System.Windows.Forms.GroupBox();
+            this.edit_ampacity1 = new System.Windows.Forms.TextBox();
+            this.label64 = new System.Windows.Forms.Label();
             this.label69 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -180,7 +194,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.edit_N1 = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.edit_turnsPerLayer1 = new System.Windows.Forms.TextBox();
+            this.edit_N_PerLayer1 = new System.Windows.Forms.TextBox();
             this.edit_awg1 = new System.Windows.Forms.TextBox();
             this.edit_power_factor_1 = new System.Windows.Forms.TextBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
@@ -227,20 +241,15 @@
             this.label_R2 = new System.Windows.Forms.Label();
             this.label_R1 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
-            this.label42 = new System.Windows.Forms.Label();
-            this.label49 = new System.Windows.Forms.Label();
-            this.label_units_buildup1 = new System.Windows.Forms.Label();
-            this.label_units_total_weight = new System.Windows.Forms.Label();
-            this.label41 = new System.Windows.Forms.Label();
-            this.label53 = new System.Windows.Forms.Label();
-            this.label62 = new System.Windows.Forms.Label();
-            this.res_L1 = new System.Windows.Forms.Label();
-            this.label64 = new System.Windows.Forms.Label();
-            this.edit_ampacity1 = new System.Windows.Forms.TextBox();
-            this.edit_ampacity2 = new System.Windows.Forms.TextBox();
-            this.label65 = new System.Windows.Forms.Label();
-            this.richTextBox_warnings = new System.Windows.Forms.RichTextBox();
-            this.label79 = new System.Windows.Forms.Label();
+            this.label_units_coreH = new System.Windows.Forms.Label();
+            this.label_units_coreL = new System.Windows.Forms.Label();
+            this.label_units_coreW = new System.Windows.Forms.Label();
+            this.label_units_Ae_W = new System.Windows.Forms.Label();
+            this.label_units_Ae_H = new System.Windows.Forms.Label();
+            this.label_units_mpath_W = new System.Windows.Forms.Label();
+            this.label_units_mpath_H = new System.Windows.Forms.Label();
+            this.label87 = new System.Windows.Forms.Label();
+            this.label_units_insulation = new System.Windows.Forms.Label();
             this.calcTab.SuspendLayout();
             this.transCalcPage.SuspendLayout();
             this.groupBox8.SuspendLayout();
@@ -270,7 +279,7 @@
             this.calcTab.Controls.Add(this.transCalcPage);
             this.calcTab.Controls.Add(this.biasPage);
             this.calcTab.Location = new System.Drawing.Point(16, 14);
-            this.calcTab.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.calcTab.Margin = new System.Windows.Forms.Padding(4);
             this.calcTab.Name = "calcTab";
             this.calcTab.SelectedIndex = 0;
             this.calcTab.Size = new System.Drawing.Size(1164, 729);
@@ -301,12 +310,23 @@
             this.transCalcPage.Controls.Add(this.groupBox_mains);
             this.transCalcPage.ForeColor = System.Drawing.Color.Black;
             this.transCalcPage.Location = new System.Drawing.Point(4, 25);
-            this.transCalcPage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.transCalcPage.Margin = new System.Windows.Forms.Padding(4);
             this.transCalcPage.Name = "transCalcPage";
-            this.transCalcPage.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.transCalcPage.Padding = new System.Windows.Forms.Padding(4);
             this.transCalcPage.Size = new System.Drawing.Size(1156, 700);
             this.transCalcPage.TabIndex = 0;
             this.transCalcPage.Text = "Trans Calc";
+            // 
+            // richTextBox_warnings
+            // 
+            this.richTextBox_warnings.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.richTextBox_warnings.Location = new System.Drawing.Point(524, 560);
+            this.richTextBox_warnings.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.richTextBox_warnings.Name = "richTextBox_warnings";
+            this.richTextBox_warnings.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.richTextBox_warnings.Size = new System.Drawing.Size(617, 132);
+            this.richTextBox_warnings.TabIndex = 576;
+            this.richTextBox_warnings.Text = "";
             // 
             // groupBox8
             // 
@@ -362,6 +382,36 @@
             this.groupBox8.TabIndex = 530;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Secondary results:";
+            // 
+            // label53
+            // 
+            this.label53.AutoSize = true;
+            this.label53.Location = new System.Drawing.Point(82, 170);
+            this.label53.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label53.Name = "label53";
+            this.label53.Size = new System.Drawing.Size(30, 17);
+            this.label53.TabIndex = 575;
+            this.label53.Text = "cm:";
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(122, 218);
+            this.label41.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(30, 17);
+            this.label41.TabIndex = 574;
+            this.label41.Text = "cm:";
+            // 
+            // label_units_total_weight
+            // 
+            this.label_units_total_weight.AutoSize = true;
+            this.label_units_total_weight.Location = new System.Drawing.Point(109, 433);
+            this.label_units_total_weight.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_units_total_weight.Name = "label_units_total_weight";
+            this.label_units_total_weight.Size = new System.Drawing.Size(20, 17);
+            this.label_units_total_weight.TabIndex = 573;
+            this.label_units_total_weight.Text = "g:";
             // 
             // label_units_weight2
             // 
@@ -776,7 +826,7 @@
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(12, 594);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(246, 28);
             this.button1.TabIndex = 529;
@@ -796,8 +846,8 @@
             // 
             // groupBox9
             // 
-            this.groupBox9.Controls.Add(this.radioButton7);
-            this.groupBox9.Controls.Add(this.radioButton8);
+            this.groupBox9.Controls.Add(this.radioButton_weight_lbs);
+            this.groupBox9.Controls.Add(this.radioButton_weight_g);
             this.groupBox9.Location = new System.Drawing.Point(291, 649);
             this.groupBox9.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox9.Name = "groupBox9";
@@ -807,36 +857,36 @@
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Weight units";
             // 
-            // radioButton7
+            // radioButton_weight_lbs
             // 
-            this.radioButton7.AutoSize = true;
-            this.radioButton7.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.radioButton7.Location = new System.Drawing.Point(124, 18);
-            this.radioButton7.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.radioButton7.Name = "radioButton7";
-            this.radioButton7.Size = new System.Drawing.Size(50, 21);
-            this.radioButton7.TabIndex = 308;
-            this.radioButton7.TabStop = true;
-            this.radioButton7.Text = " lbs";
-            this.radioButton7.UseVisualStyleBackColor = true;
+            this.radioButton_weight_lbs.AutoSize = true;
+            this.radioButton_weight_lbs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radioButton_weight_lbs.Location = new System.Drawing.Point(124, 18);
+            this.radioButton_weight_lbs.Margin = new System.Windows.Forms.Padding(4);
+            this.radioButton_weight_lbs.Name = "radioButton_weight_lbs";
+            this.radioButton_weight_lbs.Size = new System.Drawing.Size(50, 21);
+            this.radioButton_weight_lbs.TabIndex = 308;
+            this.radioButton_weight_lbs.TabStop = true;
+            this.radioButton_weight_lbs.Text = " lbs";
+            this.radioButton_weight_lbs.UseVisualStyleBackColor = true;
             // 
-            // radioButton8
+            // radioButton_weight_g
             // 
-            this.radioButton8.AutoSize = true;
-            this.radioButton8.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.radioButton8.Location = new System.Drawing.Point(19, 18);
-            this.radioButton8.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.radioButton8.Name = "radioButton8";
-            this.radioButton8.Size = new System.Drawing.Size(36, 21);
-            this.radioButton8.TabIndex = 307;
-            this.radioButton8.TabStop = true;
-            this.radioButton8.Text = "g";
-            this.radioButton8.UseVisualStyleBackColor = true;
+            this.radioButton_weight_g.AutoSize = true;
+            this.radioButton_weight_g.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radioButton_weight_g.Location = new System.Drawing.Point(19, 18);
+            this.radioButton_weight_g.Margin = new System.Windows.Forms.Padding(4);
+            this.radioButton_weight_g.Name = "radioButton_weight_g";
+            this.radioButton_weight_g.Size = new System.Drawing.Size(36, 21);
+            this.radioButton_weight_g.TabIndex = 307;
+            this.radioButton_weight_g.TabStop = true;
+            this.radioButton_weight_g.Text = "g";
+            this.radioButton_weight_g.UseVisualStyleBackColor = true;
             // 
             // clearButton
             // 
             this.clearButton.Location = new System.Drawing.Point(12, 665);
-            this.clearButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.clearButton.Margin = new System.Windows.Forms.Padding(4);
             this.clearButton.Name = "clearButton";
             this.clearButton.Size = new System.Drawing.Size(246, 28);
             this.clearButton.TabIndex = 470;
@@ -847,7 +897,7 @@
             // Save
             // 
             this.Save.Location = new System.Drawing.Point(12, 630);
-            this.Save.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Save.Margin = new System.Windows.Forms.Padding(4);
             this.Save.Name = "Save";
             this.Save.Size = new System.Drawing.Size(247, 28);
             this.Save.TabIndex = 471;
@@ -858,7 +908,7 @@
             // calcButton
             // 
             this.calcButton.Location = new System.Drawing.Point(12, 558);
-            this.calcButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.calcButton.Margin = new System.Windows.Forms.Padding(4);
             this.calcButton.Name = "calcButton";
             this.calcButton.Size = new System.Drawing.Size(246, 28);
             this.calcButton.TabIndex = 469;
@@ -914,6 +964,35 @@
             this.groupBox_primaryResults.TabIndex = 467;
             this.groupBox_primaryResults.TabStop = false;
             this.groupBox_primaryResults.Text = "Primary results:";
+            // 
+            // label62
+            // 
+            this.label62.AutoSize = true;
+            this.label62.Location = new System.Drawing.Point(101, 219);
+            this.label62.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label62.Name = "label62";
+            this.label62.Size = new System.Drawing.Size(30, 17);
+            this.label62.TabIndex = 533;
+            this.label62.Text = "cm:";
+            // 
+            // label_units_buildup1
+            // 
+            this.label_units_buildup1.AutoSize = true;
+            this.label_units_buildup1.Location = new System.Drawing.Point(68, 171);
+            this.label_units_buildup1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_units_buildup1.Name = "label_units_buildup1";
+            this.label_units_buildup1.Size = new System.Drawing.Size(30, 17);
+            this.label_units_buildup1.TabIndex = 532;
+            this.label_units_buildup1.Text = "cm:";
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(30, 316);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(72, 17);
+            this.label42.TabIndex = 531;
+            this.label42.Text = "Amp • t/m:";
             // 
             // label_units_weight1
             // 
@@ -1088,6 +1167,16 @@
             this.label54.TabIndex = 492;
             this.label54.Text = "Magnetic path, ";
             // 
+            // res_L1
+            // 
+            this.res_L1.AutoSize = true;
+            this.res_L1.Location = new System.Drawing.Point(149, 243);
+            this.res_L1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.res_L1.Name = "res_L1";
+            this.res_L1.Size = new System.Drawing.Size(22, 17);
+            this.res_L1.TabIndex = 489;
+            this.res_L1.Text = "- -";
+            // 
             // label44
             // 
             this.label44.AutoSize = true;
@@ -1260,8 +1349,8 @@
             // 
             // groupBox6
             // 
-            this.groupBox6.Controls.Add(this.radioButton5);
-            this.groupBox6.Controls.Add(this.radioButton6);
+            this.groupBox6.Controls.Add(this.radioButton_tempF);
+            this.groupBox6.Controls.Add(this.radioButton_tempC);
             this.groupBox6.Location = new System.Drawing.Point(293, 553);
             this.groupBox6.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox6.Name = "groupBox6";
@@ -1271,36 +1360,37 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Temperature units";
             // 
-            // radioButton5
+            // radioButton_tempF
             // 
-            this.radioButton5.AutoSize = true;
-            this.radioButton5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.radioButton5.Location = new System.Drawing.Point(124, 18);
-            this.radioButton5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.radioButton5.Name = "radioButton5";
-            this.radioButton5.Size = new System.Drawing.Size(40, 21);
-            this.radioButton5.TabIndex = 308;
-            this.radioButton5.TabStop = true;
-            this.radioButton5.Text = " F";
-            this.radioButton5.UseVisualStyleBackColor = true;
+            this.radioButton_tempF.AutoSize = true;
+            this.radioButton_tempF.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radioButton_tempF.Location = new System.Drawing.Point(124, 18);
+            this.radioButton_tempF.Margin = new System.Windows.Forms.Padding(4);
+            this.radioButton_tempF.Name = "radioButton_tempF";
+            this.radioButton_tempF.Size = new System.Drawing.Size(40, 21);
+            this.radioButton_tempF.TabIndex = 308;
+            this.radioButton_tempF.TabStop = true;
+            this.radioButton_tempF.Text = " F";
+            this.radioButton_tempF.UseVisualStyleBackColor = true;
             // 
-            // radioButton6
+            // radioButton_tempC
             // 
-            this.radioButton6.AutoSize = true;
-            this.radioButton6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.radioButton6.Location = new System.Drawing.Point(16, 18);
-            this.radioButton6.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.radioButton6.Name = "radioButton6";
-            this.radioButton6.Size = new System.Drawing.Size(37, 21);
-            this.radioButton6.TabIndex = 307;
-            this.radioButton6.TabStop = true;
-            this.radioButton6.Text = "C";
-            this.radioButton6.UseVisualStyleBackColor = true;
+            this.radioButton_tempC.AutoSize = true;
+            this.radioButton_tempC.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radioButton_tempC.Location = new System.Drawing.Point(16, 18);
+            this.radioButton_tempC.Margin = new System.Windows.Forms.Padding(4);
+            this.radioButton_tempC.Name = "radioButton_tempC";
+            this.radioButton_tempC.Size = new System.Drawing.Size(37, 21);
+            this.radioButton_tempC.TabIndex = 307;
+            this.radioButton_tempC.TabStop = true;
+            this.radioButton_tempC.Text = "C";
+            this.radioButton_tempC.UseVisualStyleBackColor = true;
+            this.radioButton_tempC.CheckedChanged += new System.EventHandler(this.Temp_OnCheckedChanged);
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.radioButton3);
-            this.groupBox5.Controls.Add(this.radioButton4);
+            this.groupBox5.Controls.Add(this.radioButton_size_in);
+            this.groupBox5.Controls.Add(this.radioButton_size_cm);
             this.groupBox5.Location = new System.Drawing.Point(291, 601);
             this.groupBox5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox5.Name = "groupBox5";
@@ -1310,36 +1400,36 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Size/Length units";
             // 
-            // radioButton3
+            // radioButton_size_in
             // 
-            this.radioButton3.AutoSize = true;
-            this.radioButton3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.radioButton3.Location = new System.Drawing.Point(126, 18);
-            this.radioButton3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(43, 21);
-            this.radioButton3.TabIndex = 308;
-            this.radioButton3.TabStop = true;
-            this.radioButton3.Text = " in";
-            this.radioButton3.UseVisualStyleBackColor = true;
+            this.radioButton_size_in.AutoSize = true;
+            this.radioButton_size_in.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radioButton_size_in.Location = new System.Drawing.Point(126, 18);
+            this.radioButton_size_in.Margin = new System.Windows.Forms.Padding(4);
+            this.radioButton_size_in.Name = "radioButton_size_in";
+            this.radioButton_size_in.Size = new System.Drawing.Size(43, 21);
+            this.radioButton_size_in.TabIndex = 308;
+            this.radioButton_size_in.TabStop = true;
+            this.radioButton_size_in.Text = " in";
+            this.radioButton_size_in.UseVisualStyleBackColor = true;
             // 
-            // radioButton4
+            // radioButton_size_cm
             // 
-            this.radioButton4.AutoSize = true;
-            this.radioButton4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.radioButton4.Location = new System.Drawing.Point(19, 18);
-            this.radioButton4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.radioButton4.Name = "radioButton4";
-            this.radioButton4.Size = new System.Drawing.Size(46, 21);
-            this.radioButton4.TabIndex = 307;
-            this.radioButton4.TabStop = true;
-            this.radioButton4.Text = "cm";
-            this.radioButton4.UseVisualStyleBackColor = true;
+            this.radioButton_size_cm.AutoSize = true;
+            this.radioButton_size_cm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radioButton_size_cm.Location = new System.Drawing.Point(19, 18);
+            this.radioButton_size_cm.Margin = new System.Windows.Forms.Padding(4);
+            this.radioButton_size_cm.Name = "radioButton_size_cm";
+            this.radioButton_size_cm.Size = new System.Drawing.Size(46, 21);
+            this.radioButton_size_cm.TabIndex = 307;
+            this.radioButton_size_cm.TabStop = true;
+            this.radioButton_size_cm.Text = "cm";
+            this.radioButton_size_cm.UseVisualStyleBackColor = true;
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.radioButton2);
-            this.groupBox2.Controls.Add(this.radioButton1);
+            this.groupBox2.Controls.Add(this.radioButton_H_oe);
+            this.groupBox2.Controls.Add(this.radioButton_H_amp_t);
             this.groupBox2.Location = new System.Drawing.Point(293, 501);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox2.Name = "groupBox2";
@@ -1349,31 +1439,32 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "H units";
             // 
-            // radioButton2
+            // radioButton_H_oe
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.radioButton2.Location = new System.Drawing.Point(124, 14);
-            this.radioButton2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(51, 21);
-            this.radioButton2.TabIndex = 308;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = " Oe";
-            this.radioButton2.UseVisualStyleBackColor = true;
+            this.radioButton_H_oe.AutoSize = true;
+            this.radioButton_H_oe.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radioButton_H_oe.Location = new System.Drawing.Point(124, 14);
+            this.radioButton_H_oe.Margin = new System.Windows.Forms.Padding(4);
+            this.radioButton_H_oe.Name = "radioButton_H_oe";
+            this.radioButton_H_oe.Size = new System.Drawing.Size(51, 21);
+            this.radioButton_H_oe.TabIndex = 308;
+            this.radioButton_H_oe.TabStop = true;
+            this.radioButton_H_oe.Text = " Oe";
+            this.radioButton_H_oe.UseVisualStyleBackColor = true;
             // 
-            // radioButton1
+            // radioButton_H_amp_t
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.radioButton1.Location = new System.Drawing.Point(17, 18);
-            this.radioButton1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(93, 21);
-            this.radioButton1.TabIndex = 307;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "Amp-turns";
-            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton_H_amp_t.AutoSize = true;
+            this.radioButton_H_amp_t.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radioButton_H_amp_t.Location = new System.Drawing.Point(17, 18);
+            this.radioButton_H_amp_t.Margin = new System.Windows.Forms.Padding(4);
+            this.radioButton_H_amp_t.Name = "radioButton_H_amp_t";
+            this.radioButton_H_amp_t.Size = new System.Drawing.Size(93, 21);
+            this.radioButton_H_amp_t.TabIndex = 307;
+            this.radioButton_H_amp_t.TabStop = true;
+            this.radioButton_H_amp_t.Text = "Amp-turns";
+            this.radioButton_H_amp_t.UseVisualStyleBackColor = true;
+            this.radioButton_H_amp_t.CheckedChanged += new System.EventHandler(this.H_OnCheckedChanged);
             // 
             // groupBox_w2
             // 
@@ -1381,7 +1472,7 @@
             this.groupBox_w2.Controls.Add(this.edit_Wfactor2);
             this.groupBox_w2.Controls.Add(this.label65);
             this.groupBox_w2.Controls.Add(this.edit_awg2);
-            this.groupBox_w2.Controls.Add(this.edit_turnsPerLayer2);
+            this.groupBox_w2.Controls.Add(this.edit_N_PerLayer2);
             this.groupBox_w2.Controls.Add(this.label23);
             this.groupBox_w2.Controls.Add(this.edit_N2);
             this.groupBox_w2.Controls.Add(this.label24);
@@ -1396,29 +1487,48 @@
             this.groupBox_w2.TabStop = false;
             this.groupBox_w2.Text = "Secondary winding:";
             // 
+            // edit_ampacity2
+            // 
+            this.edit_ampacity2.Location = new System.Drawing.Point(124, 134);
+            this.edit_ampacity2.Margin = new System.Windows.Forms.Padding(4);
+            this.edit_ampacity2.Name = "edit_ampacity2";
+            this.edit_ampacity2.Size = new System.Drawing.Size(71, 22);
+            this.edit_ampacity2.TabIndex = 445;
+            // 
             // edit_Wfactor2
             // 
             this.edit_Wfactor2.Location = new System.Drawing.Point(124, 47);
-            this.edit_Wfactor2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_Wfactor2.Margin = new System.Windows.Forms.Padding(4);
             this.edit_Wfactor2.Name = "edit_Wfactor2";
             this.edit_Wfactor2.Size = new System.Drawing.Size(71, 22);
             this.edit_Wfactor2.TabIndex = 302;
             // 
+            // label65
+            // 
+            this.label65.AutoSize = true;
+            this.label65.Location = new System.Drawing.Point(15, 136);
+            this.label65.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label65.Name = "label65";
+            this.label65.Size = new System.Drawing.Size(96, 17);
+            this.label65.TabIndex = 444;
+            this.label65.Text = "C.M. per amp:";
+            this.label65.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // edit_awg2
             // 
             this.edit_awg2.Location = new System.Drawing.Point(124, 18);
-            this.edit_awg2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_awg2.Margin = new System.Windows.Forms.Padding(4);
             this.edit_awg2.Name = "edit_awg2";
             this.edit_awg2.Size = new System.Drawing.Size(71, 22);
             this.edit_awg2.TabIndex = 301;
             // 
-            // edit_turnsPerLayer2
+            // edit_N_PerLayer2
             // 
-            this.edit_turnsPerLayer2.Location = new System.Drawing.Point(124, 105);
-            this.edit_turnsPerLayer2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.edit_turnsPerLayer2.Name = "edit_turnsPerLayer2";
-            this.edit_turnsPerLayer2.Size = new System.Drawing.Size(71, 22);
-            this.edit_turnsPerLayer2.TabIndex = 304;
+            this.edit_N_PerLayer2.Location = new System.Drawing.Point(124, 105);
+            this.edit_N_PerLayer2.Margin = new System.Windows.Forms.Padding(4);
+            this.edit_N_PerLayer2.Name = "edit_N_PerLayer2";
+            this.edit_N_PerLayer2.Size = new System.Drawing.Size(71, 22);
+            this.edit_N_PerLayer2.TabIndex = 304;
             // 
             // label23
             // 
@@ -1434,7 +1544,7 @@
             // edit_N2
             // 
             this.edit_N2.Location = new System.Drawing.Point(124, 76);
-            this.edit_N2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_N2.Margin = new System.Windows.Forms.Padding(4);
             this.edit_N2.Name = "edit_N2";
             this.edit_N2.Size = new System.Drawing.Size(71, 22);
             this.edit_N2.TabIndex = 303;
@@ -1474,8 +1584,17 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.label79);
-            this.groupBox4.Controls.Add(this.label49);
+            this.groupBox4.Controls.Add(this.label_units_insulation);
+            this.groupBox4.Controls.Add(this.label87);
+            this.groupBox4.Controls.Add(this.label_units_mpath_H);
+            this.groupBox4.Controls.Add(this.label_units_mpath_W);
+            this.groupBox4.Controls.Add(this.label_units_Ae_H);
+            this.groupBox4.Controls.Add(this.label_units_Ae_W);
+            this.groupBox4.Controls.Add(this.label_units_coreW);
+            this.groupBox4.Controls.Add(this.label_units_coreL);
+            this.groupBox4.Controls.Add(this.label_units_coreH);
+            this.groupBox4.Controls.Add(this.label_units_maxtemp);
+            this.groupBox4.Controls.Add(this.label_units_H);
             this.groupBox4.Controls.Add(this.checkBox_fullLoad);
             this.groupBox4.Controls.Add(this.label78);
             this.groupBox4.Controls.Add(this.label77);
@@ -1491,7 +1610,7 @@
             this.groupBox4.Controls.Add(this.label4);
             this.groupBox4.Controls.Add(this.edit_stackingFactor);
             this.groupBox4.Controls.Add(this.label3);
-            this.groupBox4.Controls.Add(this.edit_amptm);
+            this.groupBox4.Controls.Add(this.edit_H);
             this.groupBox4.Controls.Add(this.label50);
             this.groupBox4.Controls.Add(this.edit_Iout_max);
             this.groupBox4.Controls.Add(this.label48);
@@ -1506,12 +1625,12 @@
             this.groupBox4.Controls.Add(this.label36);
             this.groupBox4.Controls.Add(this.edit_Bmax);
             this.groupBox4.Controls.Add(this.label19);
-            this.groupBox4.Controls.Add(this.edit_coreW);
+            this.groupBox4.Controls.Add(this.edit_Ae_W);
             this.groupBox4.Controls.Add(this.label7);
-            this.groupBox4.Controls.Add(this.edit_coreH);
-            this.groupBox4.Controls.Add(this.edit_bobbinH);
-            this.groupBox4.Controls.Add(this.edit_bobbinW);
-            this.groupBox4.Controls.Add(this.edit_bobbinL);
+            this.groupBox4.Controls.Add(this.edit_Ae_H);
+            this.groupBox4.Controls.Add(this.edit_coreSize_H);
+            this.groupBox4.Controls.Add(this.edit_coreSize_W);
+            this.groupBox4.Controls.Add(this.edit_coreSize_L);
             this.groupBox4.Controls.Add(this.label2);
             this.groupBox4.Location = new System.Drawing.Point(12, 14);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -1521,6 +1640,27 @@
             this.groupBox4.TabIndex = 462;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Common settings:";
+            // 
+            // label_units_maxtemp
+            // 
+            this.label_units_maxtemp.AutoSize = true;
+            this.label_units_maxtemp.Location = new System.Drawing.Point(76, 514);
+            this.label_units_maxtemp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_units_maxtemp.Name = "label_units_maxtemp";
+            this.label_units_maxtemp.Size = new System.Drawing.Size(21, 17);
+            this.label_units_maxtemp.TabIndex = 534;
+            this.label_units_maxtemp.Text = "C:";
+            // 
+            // label_units_H
+            // 
+            this.label_units_H.AutoSize = true;
+            this.label_units_H.Location = new System.Drawing.Point(80, 56);
+            this.label_units_H.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_units_H.Name = "label_units_H";
+            this.label_units_H.Size = new System.Drawing.Size(72, 17);
+            this.label_units_H.TabIndex = 442;
+            this.label_units_H.Text = ", Amp-t/m:";
+            this.label_units_H.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // checkBox_fullLoad
             // 
@@ -1540,9 +1680,9 @@
             this.label78.Location = new System.Drawing.Point(10, 169);
             this.label78.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label78.Name = "label78";
-            this.label78.Size = new System.Drawing.Size(89, 17);
+            this.label78.Size = new System.Drawing.Size(85, 17);
             this.label78.TabIndex = 495;
-            this.label78.Text = "Core size, H:";
+            this.label78.Text = "Core size, H";
             this.label78.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label77
@@ -1551,9 +1691,9 @@
             this.label77.Location = new System.Drawing.Point(10, 198);
             this.label77.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label77.Name = "label77";
-            this.label77.Size = new System.Drawing.Size(87, 17);
+            this.label77.Size = new System.Drawing.Size(83, 17);
             this.label77.TabIndex = 494;
-            this.label77.Text = "Core size, L:";
+            this.label77.Text = "Core size, L";
             this.label77.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label46
@@ -1562,9 +1702,9 @@
             this.label46.Location = new System.Drawing.Point(10, 255);
             this.label46.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label46.Name = "label46";
-            this.label46.Size = new System.Drawing.Size(44, 17);
+            this.label46.Size = new System.Drawing.Size(40, 17);
             this.label46.TabIndex = 493;
-            this.label46.Text = "Aₑ, H:";
+            this.label46.Text = "Aₑ, H";
             this.label46.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label33
@@ -1573,15 +1713,15 @@
             this.label33.Location = new System.Drawing.Point(10, 313);
             this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(119, 17);
+            this.label33.Size = new System.Drawing.Size(115, 17);
             this.label33.TabIndex = 492;
-            this.label33.Text = "Magnetic path, H:";
+            this.label33.Text = "Magnetic path, H";
             this.label33.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // edit_max_temp
             // 
             this.edit_max_temp.Location = new System.Drawing.Point(164, 512);
-            this.edit_max_temp.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_max_temp.Margin = new System.Windows.Forms.Padding(4);
             this.edit_max_temp.Name = "edit_max_temp";
             this.edit_max_temp.Size = new System.Drawing.Size(71, 22);
             this.edit_max_temp.TabIndex = 118;
@@ -1600,7 +1740,7 @@
             // edit_couplingCoeff
             // 
             this.edit_couplingCoeff.Location = new System.Drawing.Point(164, 368);
-            this.edit_couplingCoeff.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_couplingCoeff.Margin = new System.Windows.Forms.Padding(4);
             this.edit_couplingCoeff.Name = "edit_couplingCoeff";
             this.edit_couplingCoeff.Size = new System.Drawing.Size(71, 22);
             this.edit_couplingCoeff.TabIndex = 113;
@@ -1619,7 +1759,7 @@
             // edit_insulationThickness
             // 
             this.edit_insulationThickness.Location = new System.Drawing.Point(164, 426);
-            this.edit_insulationThickness.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_insulationThickness.Margin = new System.Windows.Forms.Padding(4);
             this.edit_insulationThickness.Name = "edit_insulationThickness";
             this.edit_insulationThickness.Size = new System.Drawing.Size(71, 22);
             this.edit_insulationThickness.TabIndex = 115;
@@ -1630,15 +1770,15 @@
             this.label6.Location = new System.Drawing.Point(10, 428);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(131, 17);
+            this.label6.Size = new System.Drawing.Size(76, 17);
             this.label6.TabIndex = 488;
-            this.label6.Text = "Insulation thickness";
+            this.label6.Text = "Insulation, ";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // edit_windowSize
             // 
             this.edit_windowSize.Location = new System.Drawing.Point(164, 339);
-            this.edit_windowSize.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_windowSize.Margin = new System.Windows.Forms.Padding(4);
             this.edit_windowSize.Name = "edit_windowSize";
             this.edit_windowSize.Size = new System.Drawing.Size(71, 22);
             this.edit_windowSize.TabIndex = 112;
@@ -1649,15 +1789,15 @@
             this.label4.Location = new System.Drawing.Point(10, 342);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(90, 17);
+            this.label4.Size = new System.Drawing.Size(86, 17);
             this.label4.TabIndex = 487;
-            this.label4.Text = "Window size:";
+            this.label4.Text = "Window size";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // edit_stackingFactor
             // 
             this.edit_stackingFactor.Location = new System.Drawing.Point(164, 397);
-            this.edit_stackingFactor.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_stackingFactor.Margin = new System.Windows.Forms.Padding(4);
             this.edit_stackingFactor.Name = "edit_stackingFactor";
             this.edit_stackingFactor.Size = new System.Drawing.Size(71, 22);
             this.edit_stackingFactor.TabIndex = 114;
@@ -1673,13 +1813,13 @@
             this.label3.Text = "Stacking factor:";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // edit_amptm
+            // edit_H
             // 
-            this.edit_amptm.Location = new System.Drawing.Point(164, 51);
-            this.edit_amptm.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.edit_amptm.Name = "edit_amptm";
-            this.edit_amptm.Size = new System.Drawing.Size(71, 22);
-            this.edit_amptm.TabIndex = 102;
+            this.edit_H.Location = new System.Drawing.Point(164, 51);
+            this.edit_H.Margin = new System.Windows.Forms.Padding(4);
+            this.edit_H.Name = "edit_H";
+            this.edit_H.Size = new System.Drawing.Size(71, 22);
+            this.edit_H.TabIndex = 102;
             // 
             // label50
             // 
@@ -1695,7 +1835,7 @@
             // edit_Iout_max
             // 
             this.edit_Iout_max.Location = new System.Drawing.Point(164, 483);
-            this.edit_Iout_max.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_Iout_max.Margin = new System.Windows.Forms.Padding(4);
             this.edit_Iout_max.Name = "edit_Iout_max";
             this.edit_Iout_max.Size = new System.Drawing.Size(71, 22);
             this.edit_Iout_max.TabIndex = 117;
@@ -1714,7 +1854,7 @@
             // edit_Iex
             // 
             this.edit_Iex.Location = new System.Drawing.Point(164, 109);
-            this.edit_Iex.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_Iex.Margin = new System.Windows.Forms.Padding(4);
             this.edit_Iex.Name = "edit_Iex";
             this.edit_Iex.Size = new System.Drawing.Size(71, 22);
             this.edit_Iex.TabIndex = 104;
@@ -1733,7 +1873,7 @@
             // edit_permeability
             // 
             this.edit_permeability.Location = new System.Drawing.Point(164, 80);
-            this.edit_permeability.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_permeability.Margin = new System.Windows.Forms.Padding(4);
             this.edit_permeability.Name = "edit_permeability";
             this.edit_permeability.Size = new System.Drawing.Size(71, 22);
             this.edit_permeability.TabIndex = 103;
@@ -1752,7 +1892,7 @@
             // edit_mpath_H
             // 
             this.edit_mpath_H.Location = new System.Drawing.Point(164, 310);
-            this.edit_mpath_H.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_mpath_H.Margin = new System.Windows.Forms.Padding(4);
             this.edit_mpath_H.Name = "edit_mpath_H";
             this.edit_mpath_H.Size = new System.Drawing.Size(71, 22);
             this.edit_mpath_H.TabIndex = 111;
@@ -1760,7 +1900,7 @@
             // edit_mpath_W
             // 
             this.edit_mpath_W.Location = new System.Drawing.Point(164, 282);
-            this.edit_mpath_W.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_mpath_W.Margin = new System.Windows.Forms.Padding(4);
             this.edit_mpath_W.Name = "edit_mpath_W";
             this.edit_mpath_W.Size = new System.Drawing.Size(71, 22);
             this.edit_mpath_W.TabIndex = 110;
@@ -1771,15 +1911,15 @@
             this.label43.Location = new System.Drawing.Point(10, 284);
             this.label43.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(122, 17);
+            this.label43.Size = new System.Drawing.Size(118, 17);
             this.label43.TabIndex = 481;
-            this.label43.Text = "Magnetic path, W:";
+            this.label43.Text = "Magnetic path, W";
             this.label43.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // edit_Vout
             // 
             this.edit_Vout.Location = new System.Drawing.Point(164, 454);
-            this.edit_Vout.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_Vout.Margin = new System.Windows.Forms.Padding(4);
             this.edit_Vout.Name = "edit_Vout";
             this.edit_Vout.Size = new System.Drawing.Size(71, 22);
             this.edit_Vout.TabIndex = 116;
@@ -1798,7 +1938,7 @@
             // edit_Bmax
             // 
             this.edit_Bmax.Location = new System.Drawing.Point(164, 22);
-            this.edit_Bmax.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_Bmax.Margin = new System.Windows.Forms.Padding(4);
             this.edit_Bmax.Name = "edit_Bmax";
             this.edit_Bmax.Size = new System.Drawing.Size(71, 22);
             this.edit_Bmax.TabIndex = 101;
@@ -1814,13 +1954,13 @@
             this.label19.Text = "Bmax, T:";
             this.label19.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // edit_coreW
+            // edit_Ae_W
             // 
-            this.edit_coreW.Location = new System.Drawing.Point(164, 224);
-            this.edit_coreW.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.edit_coreW.Name = "edit_coreW";
-            this.edit_coreW.Size = new System.Drawing.Size(71, 22);
-            this.edit_coreW.TabIndex = 108;
+            this.edit_Ae_W.Location = new System.Drawing.Point(164, 224);
+            this.edit_Ae_W.Margin = new System.Windows.Forms.Padding(4);
+            this.edit_Ae_W.Name = "edit_Ae_W";
+            this.edit_Ae_W.Size = new System.Drawing.Size(71, 22);
+            this.edit_Ae_W.TabIndex = 108;
             // 
             // label7
             // 
@@ -1828,42 +1968,42 @@
             this.label7.Location = new System.Drawing.Point(10, 226);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(47, 17);
+            this.label7.Size = new System.Drawing.Size(43, 17);
             this.label7.TabIndex = 461;
-            this.label7.Text = "Aₑ, W:";
+            this.label7.Text = "Aₑ, W";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // edit_coreH
+            // edit_Ae_H
             // 
-            this.edit_coreH.Location = new System.Drawing.Point(164, 253);
-            this.edit_coreH.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.edit_coreH.Name = "edit_coreH";
-            this.edit_coreH.Size = new System.Drawing.Size(71, 22);
-            this.edit_coreH.TabIndex = 109;
+            this.edit_Ae_H.Location = new System.Drawing.Point(164, 253);
+            this.edit_Ae_H.Margin = new System.Windows.Forms.Padding(4);
+            this.edit_Ae_H.Name = "edit_Ae_H";
+            this.edit_Ae_H.Size = new System.Drawing.Size(71, 22);
+            this.edit_Ae_H.TabIndex = 109;
             // 
-            // edit_bobbinH
+            // edit_coreSize_H
             // 
-            this.edit_bobbinH.Location = new System.Drawing.Point(164, 166);
-            this.edit_bobbinH.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.edit_bobbinH.Name = "edit_bobbinH";
-            this.edit_bobbinH.Size = new System.Drawing.Size(71, 22);
-            this.edit_bobbinH.TabIndex = 106;
+            this.edit_coreSize_H.Location = new System.Drawing.Point(164, 166);
+            this.edit_coreSize_H.Margin = new System.Windows.Forms.Padding(4);
+            this.edit_coreSize_H.Name = "edit_coreSize_H";
+            this.edit_coreSize_H.Size = new System.Drawing.Size(71, 22);
+            this.edit_coreSize_H.TabIndex = 106;
             // 
-            // edit_bobbinW
+            // edit_coreSize_W
             // 
-            this.edit_bobbinW.Location = new System.Drawing.Point(164, 138);
-            this.edit_bobbinW.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.edit_bobbinW.Name = "edit_bobbinW";
-            this.edit_bobbinW.Size = new System.Drawing.Size(71, 22);
-            this.edit_bobbinW.TabIndex = 105;
+            this.edit_coreSize_W.Location = new System.Drawing.Point(164, 138);
+            this.edit_coreSize_W.Margin = new System.Windows.Forms.Padding(4);
+            this.edit_coreSize_W.Name = "edit_coreSize_W";
+            this.edit_coreSize_W.Size = new System.Drawing.Size(71, 22);
+            this.edit_coreSize_W.TabIndex = 105;
             // 
-            // edit_bobbinL
+            // edit_coreSize_L
             // 
-            this.edit_bobbinL.Location = new System.Drawing.Point(164, 195);
-            this.edit_bobbinL.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.edit_bobbinL.Name = "edit_bobbinL";
-            this.edit_bobbinL.Size = new System.Drawing.Size(71, 22);
-            this.edit_bobbinL.TabIndex = 107;
+            this.edit_coreSize_L.Location = new System.Drawing.Point(164, 195);
+            this.edit_coreSize_L.Margin = new System.Windows.Forms.Padding(4);
+            this.edit_coreSize_L.Name = "edit_coreSize_L";
+            this.edit_coreSize_L.Size = new System.Drawing.Size(71, 22);
+            this.edit_coreSize_L.TabIndex = 107;
             // 
             // label2
             // 
@@ -1871,9 +2011,9 @@
             this.label2.Location = new System.Drawing.Point(10, 140);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(92, 17);
+            this.label2.Size = new System.Drawing.Size(88, 17);
             this.label2.TabIndex = 460;
-            this.label2.Text = "Core size, W:";
+            this.label2.Text = "Core size, W";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // groupBox_w1
@@ -1887,7 +2027,7 @@
             this.groupBox_w1.Controls.Add(this.label8);
             this.groupBox_w1.Controls.Add(this.edit_N1);
             this.groupBox_w1.Controls.Add(this.label9);
-            this.groupBox_w1.Controls.Add(this.edit_turnsPerLayer1);
+            this.groupBox_w1.Controls.Add(this.edit_N_PerLayer1);
             this.groupBox_w1.Controls.Add(this.edit_awg1);
             this.groupBox_w1.Controls.Add(this.edit_power_factor_1);
             this.groupBox_w1.Location = new System.Drawing.Point(292, 14);
@@ -1898,6 +2038,25 @@
             this.groupBox_w1.TabIndex = 461;
             this.groupBox_w1.TabStop = false;
             this.groupBox_w1.Text = "Primary winding:";
+            // 
+            // edit_ampacity1
+            // 
+            this.edit_ampacity1.Location = new System.Drawing.Point(125, 166);
+            this.edit_ampacity1.Margin = new System.Windows.Forms.Padding(4);
+            this.edit_ampacity1.Name = "edit_ampacity1";
+            this.edit_ampacity1.Size = new System.Drawing.Size(71, 22);
+            this.edit_ampacity1.TabIndex = 443;
+            // 
+            // label64
+            // 
+            this.label64.AutoSize = true;
+            this.label64.Location = new System.Drawing.Point(15, 169);
+            this.label64.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label64.Name = "label64";
+            this.label64.Size = new System.Drawing.Size(96, 17);
+            this.label64.TabIndex = 442;
+            this.label64.Text = "C.M. per amp:";
+            this.label64.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label69
             // 
@@ -1935,7 +2094,7 @@
             // edit_Wfactor1
             // 
             this.edit_Wfactor1.Location = new System.Drawing.Point(124, 51);
-            this.edit_Wfactor1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_Wfactor1.Margin = new System.Windows.Forms.Padding(4);
             this.edit_Wfactor1.Name = "edit_Wfactor1";
             this.edit_Wfactor1.Size = new System.Drawing.Size(71, 22);
             this.edit_Wfactor1.TabIndex = 202;
@@ -1954,7 +2113,7 @@
             // edit_N1
             // 
             this.edit_N1.Location = new System.Drawing.Point(124, 80);
-            this.edit_N1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_N1.Margin = new System.Windows.Forms.Padding(4);
             this.edit_N1.Name = "edit_N1";
             this.edit_N1.Size = new System.Drawing.Size(71, 22);
             this.edit_N1.TabIndex = 203;
@@ -1970,18 +2129,18 @@
             this.label9.Text = "Turns per layer:";
             this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // edit_turnsPerLayer1
+            // edit_N_PerLayer1
             // 
-            this.edit_turnsPerLayer1.Location = new System.Drawing.Point(124, 109);
-            this.edit_turnsPerLayer1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.edit_turnsPerLayer1.Name = "edit_turnsPerLayer1";
-            this.edit_turnsPerLayer1.Size = new System.Drawing.Size(71, 22);
-            this.edit_turnsPerLayer1.TabIndex = 204;
+            this.edit_N_PerLayer1.Location = new System.Drawing.Point(124, 109);
+            this.edit_N_PerLayer1.Margin = new System.Windows.Forms.Padding(4);
+            this.edit_N_PerLayer1.Name = "edit_N_PerLayer1";
+            this.edit_N_PerLayer1.Size = new System.Drawing.Size(71, 22);
+            this.edit_N_PerLayer1.TabIndex = 204;
             // 
             // edit_awg1
             // 
             this.edit_awg1.Location = new System.Drawing.Point(123, 22);
-            this.edit_awg1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_awg1.Margin = new System.Windows.Forms.Padding(4);
             this.edit_awg1.Name = "edit_awg1";
             this.edit_awg1.Size = new System.Drawing.Size(71, 22);
             this.edit_awg1.TabIndex = 201;
@@ -1989,7 +2148,7 @@
             // edit_power_factor_1
             // 
             this.edit_power_factor_1.Location = new System.Drawing.Point(124, 137);
-            this.edit_power_factor_1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_power_factor_1.Margin = new System.Windows.Forms.Padding(4);
             this.edit_power_factor_1.Name = "edit_power_factor_1";
             this.edit_power_factor_1.Size = new System.Drawing.Size(71, 22);
             this.edit_power_factor_1.TabIndex = 205;
@@ -2008,9 +2167,9 @@
             this.groupBox_mains.Controls.Add(this.radiobutton_mains_EU);
             this.groupBox_mains.Controls.Add(this.radiobutton_mains_US);
             this.groupBox_mains.Location = new System.Drawing.Point(291, 427);
-            this.groupBox_mains.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox_mains.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox_mains.Name = "groupBox_mains";
-            this.groupBox_mains.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox_mains.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox_mains.Size = new System.Drawing.Size(214, 64);
             this.groupBox_mains.TabIndex = 305;
             this.groupBox_mains.TabStop = false;
@@ -2021,7 +2180,7 @@
             this.radiobutton_mains_EU.AutoSize = true;
             this.radiobutton_mains_EU.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.radiobutton_mains_EU.Location = new System.Drawing.Point(20, 37);
-            this.radiobutton_mains_EU.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radiobutton_mains_EU.Margin = new System.Windows.Forms.Padding(4);
             this.radiobutton_mains_EU.Name = "radiobutton_mains_EU";
             this.radiobutton_mains_EU.Size = new System.Drawing.Size(118, 21);
             this.radiobutton_mains_EU.TabIndex = 37;
@@ -2034,7 +2193,7 @@
             this.radiobutton_mains_US.AutoSize = true;
             this.radiobutton_mains_US.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.radiobutton_mains_US.Location = new System.Drawing.Point(20, 16);
-            this.radiobutton_mains_US.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radiobutton_mains_US.Margin = new System.Windows.Forms.Padding(4);
             this.radiobutton_mains_US.Name = "radiobutton_mains_US";
             this.radiobutton_mains_US.Size = new System.Drawing.Size(118, 21);
             this.radiobutton_mains_US.TabIndex = 36;
@@ -2083,9 +2242,9 @@
             this.biasPage.Controls.Add(this.label_R1);
             this.biasPage.Controls.Add(this.label17);
             this.biasPage.Location = new System.Drawing.Point(4, 25);
-            this.biasPage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.biasPage.Margin = new System.Windows.Forms.Padding(4);
             this.biasPage.Name = "biasPage";
-            this.biasPage.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.biasPage.Padding = new System.Windows.Forms.Padding(4);
             this.biasPage.Size = new System.Drawing.Size(1156, 700);
             this.biasPage.TabIndex = 1;
             this.biasPage.Text = "Bias";
@@ -2095,9 +2254,9 @@
             this.groupBox1.Controls.Add(this.radioButton_R);
             this.groupBox1.Controls.Add(this.radioButton_V);
             this.groupBox1.Location = new System.Drawing.Point(611, 14);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox1.Size = new System.Drawing.Size(110, 39);
             this.groupBox1.TabIndex = 38;
             this.groupBox1.TabStop = false;
@@ -2107,7 +2266,7 @@
             // 
             this.radioButton_R.AutoSize = true;
             this.radioButton_R.Location = new System.Drawing.Point(62, 18);
-            this.radioButton_R.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radioButton_R.Margin = new System.Windows.Forms.Padding(4);
             this.radioButton_R.Name = "radioButton_R";
             this.radioButton_R.Size = new System.Drawing.Size(39, 21);
             this.radioButton_R.TabIndex = 37;
@@ -2120,7 +2279,7 @@
             // 
             this.radioButton_V.AutoSize = true;
             this.radioButton_V.Location = new System.Drawing.Point(12, 18);
-            this.radioButton_V.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radioButton_V.Margin = new System.Windows.Forms.Padding(4);
             this.radioButton_V.Name = "radioButton_V";
             this.radioButton_V.Size = new System.Drawing.Size(38, 21);
             this.radioButton_V.TabIndex = 36;
@@ -2141,7 +2300,7 @@
             // trackBar_R2
             // 
             this.trackBar_R2.Location = new System.Drawing.Point(814, 110);
-            this.trackBar_R2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar_R2.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar_R2.Name = "trackBar_R2";
             this.trackBar_R2.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.trackBar_R2.Size = new System.Drawing.Size(56, 302);
@@ -2151,7 +2310,7 @@
             // trackBar_R1
             // 
             this.trackBar_R1.Location = new System.Drawing.Point(747, 110);
-            this.trackBar_R1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar_R1.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar_R1.Name = "trackBar_R1";
             this.trackBar_R1.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.trackBar_R1.Size = new System.Drawing.Size(56, 302);
@@ -2161,7 +2320,7 @@
             // trackBar_Ve_Re
             // 
             this.trackBar_Ve_Re.Location = new System.Drawing.Point(681, 110);
-            this.trackBar_Ve_Re.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar_Ve_Re.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar_Ve_Re.Name = "trackBar_Ve_Re";
             this.trackBar_Ve_Re.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.trackBar_Ve_Re.Size = new System.Drawing.Size(56, 302);
@@ -2171,7 +2330,7 @@
             // trackBar_Vce_Rc
             // 
             this.trackBar_Vce_Rc.Location = new System.Drawing.Point(615, 110);
-            this.trackBar_Vce_Rc.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar_Vce_Rc.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar_Vce_Rc.Name = "trackBar_Vce_Rc";
             this.trackBar_Vce_Rc.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.trackBar_Vce_Rc.Size = new System.Drawing.Size(56, 302);
@@ -2181,7 +2340,7 @@
             // trackBar_Ic
             // 
             this.trackBar_Ic.Location = new System.Drawing.Point(548, 110);
-            this.trackBar_Ic.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar_Ic.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar_Ic.Name = "trackBar_Ic";
             this.trackBar_Ic.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.trackBar_Ic.Size = new System.Drawing.Size(56, 302);
@@ -2191,7 +2350,7 @@
             // trackBar_Vcc
             // 
             this.trackBar_Vcc.Location = new System.Drawing.Point(482, 110);
-            this.trackBar_Vcc.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar_Vcc.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar_Vcc.Name = "trackBar_Vcc";
             this.trackBar_Vcc.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.trackBar_Vcc.Size = new System.Drawing.Size(56, 302);
@@ -2201,7 +2360,7 @@
             // trackBar_Vbe
             // 
             this.trackBar_Vbe.Location = new System.Drawing.Point(414, 110);
-            this.trackBar_Vbe.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar_Vbe.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar_Vbe.Name = "trackBar_Vbe";
             this.trackBar_Vbe.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.trackBar_Vbe.Size = new System.Drawing.Size(56, 302);
@@ -2211,7 +2370,7 @@
             // trackBar_Beta
             // 
             this.trackBar_Beta.Location = new System.Drawing.Point(348, 110);
-            this.trackBar_Beta.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar_Beta.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar_Beta.Name = "trackBar_Beta";
             this.trackBar_Beta.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.trackBar_Beta.Size = new System.Drawing.Size(56, 302);
@@ -2271,7 +2430,7 @@
             // button_bias
             // 
             this.button_bias.Location = new System.Drawing.Point(348, 418);
-            this.button_bias.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button_bias.Margin = new System.Windows.Forms.Padding(4);
             this.button_bias.Name = "button_bias";
             this.button_bias.Size = new System.Drawing.Size(133, 28);
             this.button_bias.TabIndex = 21;
@@ -2282,7 +2441,7 @@
             // edit_R2
             // 
             this.edit_R2.Location = new System.Drawing.Point(814, 78);
-            this.edit_R2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_R2.Margin = new System.Windows.Forms.Padding(4);
             this.edit_R2.Name = "edit_R2";
             this.edit_R2.Size = new System.Drawing.Size(39, 22);
             this.edit_R2.TabIndex = 8;
@@ -2302,7 +2461,7 @@
             // edit_R1
             // 
             this.edit_R1.Location = new System.Drawing.Point(748, 78);
-            this.edit_R1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_R1.Margin = new System.Windows.Forms.Padding(4);
             this.edit_R1.Name = "edit_R1";
             this.edit_R1.Size = new System.Drawing.Size(39, 22);
             this.edit_R1.TabIndex = 7;
@@ -2322,7 +2481,7 @@
             // edit_Vce_Rc
             // 
             this.edit_Vce_Rc.Location = new System.Drawing.Point(615, 78);
-            this.edit_Vce_Rc.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_Vce_Rc.Margin = new System.Windows.Forms.Padding(4);
             this.edit_Vce_Rc.Name = "edit_Vce_Rc";
             this.edit_Vce_Rc.Size = new System.Drawing.Size(39, 22);
             this.edit_Vce_Rc.TabIndex = 5;
@@ -2342,7 +2501,7 @@
             // edit_VeRe
             // 
             this.edit_VeRe.Location = new System.Drawing.Point(681, 78);
-            this.edit_VeRe.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_VeRe.Margin = new System.Windows.Forms.Padding(4);
             this.edit_VeRe.Name = "edit_VeRe";
             this.edit_VeRe.Size = new System.Drawing.Size(39, 22);
             this.edit_VeRe.TabIndex = 6;
@@ -2362,7 +2521,7 @@
             // edit_Vbe
             // 
             this.edit_Vbe.Location = new System.Drawing.Point(414, 78);
-            this.edit_Vbe.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_Vbe.Margin = new System.Windows.Forms.Padding(4);
             this.edit_Vbe.Name = "edit_Vbe";
             this.edit_Vbe.Size = new System.Drawing.Size(39, 22);
             this.edit_Vbe.TabIndex = 2;
@@ -2382,7 +2541,7 @@
             // edit_beta
             // 
             this.edit_beta.Location = new System.Drawing.Point(348, 76);
-            this.edit_beta.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_beta.Margin = new System.Windows.Forms.Padding(4);
             this.edit_beta.Name = "edit_beta";
             this.edit_beta.Size = new System.Drawing.Size(39, 22);
             this.edit_beta.TabIndex = 1;
@@ -2402,7 +2561,7 @@
             // edit_Ic
             // 
             this.edit_Ic.Location = new System.Drawing.Point(548, 78);
-            this.edit_Ic.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_Ic.Margin = new System.Windows.Forms.Padding(4);
             this.edit_Ic.Name = "edit_Ic";
             this.edit_Ic.Size = new System.Drawing.Size(39, 22);
             this.edit_Ic.TabIndex = 4;
@@ -2422,7 +2581,7 @@
             // edit_Vcc
             // 
             this.edit_Vcc.Location = new System.Drawing.Point(482, 78);
-            this.edit_Vcc.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_Vcc.Margin = new System.Windows.Forms.Padding(4);
             this.edit_Vcc.Name = "edit_Vcc";
             this.edit_Vcc.Size = new System.Drawing.Size(39, 22);
             this.edit_Vcc.TabIndex = 3;
@@ -2488,144 +2647,95 @@
             this.label17.Size = new System.Drawing.Size(304, 378);
             this.label17.TabIndex = 0;
             // 
-            // label42
+            // label_units_coreH
             // 
-            this.label42.AutoSize = true;
-            this.label42.Location = new System.Drawing.Point(30, 316);
-            this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(72, 17);
-            this.label42.TabIndex = 531;
-            this.label42.Text = "Amp • t/m:";
+            this.label_units_coreH.AutoSize = true;
+            this.label_units_coreH.Location = new System.Drawing.Point(102, 169);
+            this.label_units_coreH.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_units_coreH.Name = "label_units_coreH";
+            this.label_units_coreH.Size = new System.Drawing.Size(30, 17);
+            this.label_units_coreH.TabIndex = 534;
+            this.label_units_coreH.Text = "cm:";
             // 
-            // label49
+            // label_units_coreL
             // 
-            this.label49.AutoSize = true;
-            this.label49.Location = new System.Drawing.Point(80, 56);
-            this.label49.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label49.Name = "label49";
-            this.label49.Size = new System.Drawing.Size(72, 17);
-            this.label49.TabIndex = 442;
-            this.label49.Text = ", Amp-t/m:";
-            this.label49.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.label_units_coreL.AutoSize = true;
+            this.label_units_coreL.Location = new System.Drawing.Point(102, 198);
+            this.label_units_coreL.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_units_coreL.Name = "label_units_coreL";
+            this.label_units_coreL.Size = new System.Drawing.Size(30, 17);
+            this.label_units_coreL.TabIndex = 535;
+            this.label_units_coreL.Text = "cm:";
             // 
-            // label_units_buildup1
+            // label_units_coreW
             // 
-            this.label_units_buildup1.AutoSize = true;
-            this.label_units_buildup1.Location = new System.Drawing.Point(68, 171);
-            this.label_units_buildup1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label_units_buildup1.Name = "label_units_buildup1";
-            this.label_units_buildup1.Size = new System.Drawing.Size(30, 17);
-            this.label_units_buildup1.TabIndex = 532;
-            this.label_units_buildup1.Text = "cm:";
+            this.label_units_coreW.AutoSize = true;
+            this.label_units_coreW.Location = new System.Drawing.Point(102, 140);
+            this.label_units_coreW.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_units_coreW.Name = "label_units_coreW";
+            this.label_units_coreW.Size = new System.Drawing.Size(30, 17);
+            this.label_units_coreW.TabIndex = 536;
+            this.label_units_coreW.Text = "cm:";
             // 
-            // label_units_total_weight
+            // label_units_Ae_W
             // 
-            this.label_units_total_weight.AutoSize = true;
-            this.label_units_total_weight.Location = new System.Drawing.Point(109, 433);
-            this.label_units_total_weight.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label_units_total_weight.Name = "label_units_total_weight";
-            this.label_units_total_weight.Size = new System.Drawing.Size(20, 17);
-            this.label_units_total_weight.TabIndex = 573;
-            this.label_units_total_weight.Text = "g:";
+            this.label_units_Ae_W.AutoSize = true;
+            this.label_units_Ae_W.Location = new System.Drawing.Point(102, 226);
+            this.label_units_Ae_W.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_units_Ae_W.Name = "label_units_Ae_W";
+            this.label_units_Ae_W.Size = new System.Drawing.Size(30, 17);
+            this.label_units_Ae_W.TabIndex = 537;
+            this.label_units_Ae_W.Text = "cm:";
             // 
-            // label41
+            // label_units_Ae_H
             // 
-            this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(122, 218);
-            this.label41.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(30, 17);
-            this.label41.TabIndex = 574;
-            this.label41.Text = "cm:";
+            this.label_units_Ae_H.AutoSize = true;
+            this.label_units_Ae_H.Location = new System.Drawing.Point(102, 253);
+            this.label_units_Ae_H.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_units_Ae_H.Name = "label_units_Ae_H";
+            this.label_units_Ae_H.Size = new System.Drawing.Size(30, 17);
+            this.label_units_Ae_H.TabIndex = 538;
+            this.label_units_Ae_H.Text = "cm:";
             // 
-            // label53
+            // label_units_mpath_W
             // 
-            this.label53.AutoSize = true;
-            this.label53.Location = new System.Drawing.Point(82, 170);
-            this.label53.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label53.Name = "label53";
-            this.label53.Size = new System.Drawing.Size(30, 17);
-            this.label53.TabIndex = 575;
-            this.label53.Text = "cm:";
+            this.label_units_mpath_W.AutoSize = true;
+            this.label_units_mpath_W.Location = new System.Drawing.Point(127, 284);
+            this.label_units_mpath_W.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_units_mpath_W.Name = "label_units_mpath_W";
+            this.label_units_mpath_W.Size = new System.Drawing.Size(30, 17);
+            this.label_units_mpath_W.TabIndex = 539;
+            this.label_units_mpath_W.Text = "cm:";
             // 
-            // label62
+            // label_units_mpath_H
             // 
-            this.label62.AutoSize = true;
-            this.label62.Location = new System.Drawing.Point(101, 219);
-            this.label62.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label62.Name = "label62";
-            this.label62.Size = new System.Drawing.Size(30, 17);
-            this.label62.TabIndex = 533;
-            this.label62.Text = "cm:";
+            this.label_units_mpath_H.AutoSize = true;
+            this.label_units_mpath_H.Location = new System.Drawing.Point(126, 313);
+            this.label_units_mpath_H.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_units_mpath_H.Name = "label_units_mpath_H";
+            this.label_units_mpath_H.Size = new System.Drawing.Size(30, 17);
+            this.label_units_mpath_H.TabIndex = 540;
+            this.label_units_mpath_H.Text = "cm:";
             // 
-            // res_L1
+            // label87
             // 
-            this.res_L1.AutoSize = true;
-            this.res_L1.Location = new System.Drawing.Point(149, 243);
-            this.res_L1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.res_L1.Name = "res_L1";
-            this.res_L1.Size = new System.Drawing.Size(22, 17);
-            this.res_L1.TabIndex = 489;
-            this.res_L1.Text = "- -";
+            this.label87.AutoSize = true;
+            this.label87.Location = new System.Drawing.Point(127, 342);
+            this.label87.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label87.Name = "label87";
+            this.label87.Size = new System.Drawing.Size(30, 17);
+            this.label87.TabIndex = 541;
+            this.label87.Text = "cm:";
             // 
-            // label64
+            // label_units_insulation
             // 
-            this.label64.AutoSize = true;
-            this.label64.Location = new System.Drawing.Point(15, 169);
-            this.label64.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label64.Name = "label64";
-            this.label64.Size = new System.Drawing.Size(96, 17);
-            this.label64.TabIndex = 442;
-            this.label64.Text = "C.M. per amp:";
-            this.label64.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // edit_ampacity1
-            // 
-            this.edit_ampacity1.Location = new System.Drawing.Point(125, 166);
-            this.edit_ampacity1.Margin = new System.Windows.Forms.Padding(4);
-            this.edit_ampacity1.Name = "edit_ampacity1";
-            this.edit_ampacity1.Size = new System.Drawing.Size(71, 22);
-            this.edit_ampacity1.TabIndex = 443;
-            // 
-            // edit_ampacity2
-            // 
-            this.edit_ampacity2.Location = new System.Drawing.Point(124, 134);
-            this.edit_ampacity2.Margin = new System.Windows.Forms.Padding(4);
-            this.edit_ampacity2.Name = "edit_ampacity2";
-            this.edit_ampacity2.Size = new System.Drawing.Size(71, 22);
-            this.edit_ampacity2.TabIndex = 445;
-            // 
-            // label65
-            // 
-            this.label65.AutoSize = true;
-            this.label65.Location = new System.Drawing.Point(15, 136);
-            this.label65.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label65.Name = "label65";
-            this.label65.Size = new System.Drawing.Size(96, 17);
-            this.label65.TabIndex = 444;
-            this.label65.Text = "C.M. per amp:";
-            this.label65.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // richTextBox_warnings
-            // 
-            this.richTextBox_warnings.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.richTextBox_warnings.Location = new System.Drawing.Point(524, 560);
-            this.richTextBox_warnings.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.richTextBox_warnings.Name = "richTextBox_warnings";
-            this.richTextBox_warnings.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.richTextBox_warnings.Size = new System.Drawing.Size(617, 132);
-            this.richTextBox_warnings.TabIndex = 576;
-            this.richTextBox_warnings.Text = "";
-            // 
-            // label79
-            // 
-            this.label79.AutoSize = true;
-            this.label79.Location = new System.Drawing.Point(76, 514);
-            this.label79.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label79.Name = "label79";
-            this.label79.Size = new System.Drawing.Size(21, 17);
-            this.label79.TabIndex = 534;
-            this.label79.Text = "C:";
+            this.label_units_insulation.AutoSize = true;
+            this.label_units_insulation.Location = new System.Drawing.Point(80, 429);
+            this.label_units_insulation.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label_units_insulation.Name = "label_units_insulation";
+            this.label_units_insulation.Size = new System.Drawing.Size(30, 17);
+            this.label_units_insulation.TabIndex = 542;
+            this.label_units_insulation.Text = "cm:";
             // 
             // MainForm
             // 
@@ -2637,7 +2747,7 @@
             this.Controls.Add(this.calcTab);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "MainForm";
@@ -2727,18 +2837,18 @@
         private System.Windows.Forms.RadioButton radioButton_V;
         private System.Windows.Forms.TabPage transCalcPage;
         private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.RadioButton radioButton5;
-        private System.Windows.Forms.RadioButton radioButton6;
+        private System.Windows.Forms.RadioButton radioButton_tempF;
+        private System.Windows.Forms.RadioButton radioButton_tempC;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.RadioButton radioButton3;
-        private System.Windows.Forms.RadioButton radioButton4;
+        private System.Windows.Forms.RadioButton radioButton_size_in;
+        private System.Windows.Forms.RadioButton radioButton_size_cm;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.RadioButton radioButton_H_oe;
+        private System.Windows.Forms.RadioButton radioButton_H_amp_t;
         private System.Windows.Forms.GroupBox groupBox_w2;
         private System.Windows.Forms.TextBox edit_Wfactor2;
         private System.Windows.Forms.TextBox edit_awg2;
-        private System.Windows.Forms.TextBox edit_turnsPerLayer2;
+        private System.Windows.Forms.TextBox edit_N_PerLayer2;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.TextBox edit_N2;
         private System.Windows.Forms.Label label24;
@@ -2760,7 +2870,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox edit_stackingFactor;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox edit_amptm;
+        private System.Windows.Forms.TextBox edit_H;
         private System.Windows.Forms.Label label50;
         private System.Windows.Forms.TextBox edit_Iout_max;
         private System.Windows.Forms.Label label48;
@@ -2775,12 +2885,12 @@
         private System.Windows.Forms.Label label36;
         private System.Windows.Forms.TextBox edit_Bmax;
         private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.TextBox edit_coreW;
+        private System.Windows.Forms.TextBox edit_Ae_W;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox edit_coreH;
-        private System.Windows.Forms.TextBox edit_bobbinH;
-        private System.Windows.Forms.TextBox edit_bobbinW;
-        private System.Windows.Forms.TextBox edit_bobbinL;
+        private System.Windows.Forms.TextBox edit_Ae_H;
+        private System.Windows.Forms.TextBox edit_coreSize_H;
+        private System.Windows.Forms.TextBox edit_coreSize_W;
+        private System.Windows.Forms.TextBox edit_coreSize_L;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.GroupBox groupBox_w1;
         private System.Windows.Forms.Label label69;
@@ -2790,7 +2900,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox edit_N1;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox edit_turnsPerLayer1;
+        private System.Windows.Forms.TextBox edit_N_PerLayer1;
         private System.Windows.Forms.TextBox edit_awg1;
         private System.Windows.Forms.TextBox edit_power_factor_1;
         private System.Windows.Forms.GroupBox groupBox_mains;
@@ -2833,8 +2943,8 @@
         private System.Windows.Forms.Button Save;
         private System.Windows.Forms.Button calcButton;
         private System.Windows.Forms.GroupBox groupBox9;
-        private System.Windows.Forms.RadioButton radioButton7;
-        private System.Windows.Forms.RadioButton radioButton8;
+        private System.Windows.Forms.RadioButton radioButton_weight_lbs;
+        private System.Windows.Forms.RadioButton radioButton_weight_g;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label_units_weight1;
@@ -2883,7 +2993,7 @@
         private System.Windows.Forms.Label label58;
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Label label42;
-        private System.Windows.Forms.Label label49;
+        private System.Windows.Forms.Label label_units_H;
         private System.Windows.Forms.Label label_units_buildup1;
         private System.Windows.Forms.Label label_units_total_weight;
         private System.Windows.Forms.Label label41;
@@ -2895,7 +3005,16 @@
         private System.Windows.Forms.TextBox edit_ampacity2;
         private System.Windows.Forms.Label label65;
         private System.Windows.Forms.RichTextBox richTextBox_warnings;
-        private System.Windows.Forms.Label label79;
+        private System.Windows.Forms.Label label_units_maxtemp;
+        private System.Windows.Forms.Label label87;
+        private System.Windows.Forms.Label label_units_mpath_H;
+        private System.Windows.Forms.Label label_units_mpath_W;
+        private System.Windows.Forms.Label label_units_Ae_H;
+        private System.Windows.Forms.Label label_units_Ae_W;
+        private System.Windows.Forms.Label label_units_coreW;
+        private System.Windows.Forms.Label label_units_coreL;
+        private System.Windows.Forms.Label label_units_coreH;
+        private System.Windows.Forms.Label label_units_insulation;
     }
 }
 
