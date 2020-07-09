@@ -127,32 +127,16 @@ namespace forms1
                     edit_Wfactor1.Text = values[19];
                     edit_N1.Text = values[20];
                     edit_turnsPerLayer1.Text = values[21];
+                    edit_ampacity1.Text = values[22];
 
-                    edit_awg2.Text = values[22];
-                    edit_Wfactor2.Text = values[23];
-                    edit_N2.Text = values[24];
-                    edit_turnsPerLayer2.Text = values[25];
-                    edit_max_tempC.Text = values[26];
+                    edit_awg2.Text = values[23];
+                    edit_Wfactor2.Text = values[24];
+                    edit_N2.Text = values[25];
+                    edit_turnsPerLayer2.Text = values[26];
+                    edit_ampacity2.Text = values[27];
 
-                    var ampacity = values[27];
-                    if (ampacity == "0")
-                    {
-                        radioButton_ampacity_700.Select();
-                    }
-                    else if (ampacity == "1")
-                    {
-                        radioButton_ampacity_500.Select();
-                    }
-                    else if (ampacity == "2")
-                    {
-                        radioButton_ampacity_custom.Select();
-                    }
-                    else
-                    {
-                        throw new Exception($"Error reading ampacity: {ampacity}");
-                    }
+                    edit_max_temp.Text = values[28];
 
-                    edit_override_ampacity.Text = values[28];
                 }
                 else
                 {
@@ -178,9 +162,9 @@ namespace forms1
             try
             {
                 TransCalc tc = new TransCalc();
-                if (edit_max_tempC.Text == "")
+                if (edit_max_temp.Text == "")
                 {
-                    edit_max_tempC.Text = "20";
+                    edit_max_temp.Text = "20";
                 }
 
                 trans_calc_input_text strin = new trans_calc_input_text();
@@ -215,27 +199,14 @@ namespace forms1
                 strin.wfactor1 = edit_Wfactor1.Text;
                 strin.N1 = edit_N1.Text;
                 strin.N_per_layer1 = edit_turnsPerLayer1.Text;
-                if (radioButton_ampacity_500.Checked)
-                {
-                    strin.ampacity1 = "500";
-                    strin.ampacity2 = "500";
-                }
-                else if (radioButton_ampacity_700.Checked)
-                {
-                    strin.ampacity1 = "700";
-                    strin.ampacity2 = "700";
-                }
-                else
-                {
-                    strin.ampacity1 = edit_override_ampacity.Text;
-                    strin.ampacity2 = edit_override_ampacity.Text;
-                }
+                strin.ampacity1 = edit_ampacity1.Text;
+                strin.ampacity2 = edit_ampacity2.Text;
 
                 strin.awg2 = edit_awg2.Text;
                 strin.wfactor2 = edit_Wfactor2.Text;
                 strin.N2 = edit_N2.Text;
                 strin.N_per_layer2 = edit_turnsPerLayer2.Text;
-                strin.maxTempC = edit_max_tempC.Text;
+                strin.maxTempC = edit_max_temp.Text;
                 trans_calc_result_text result = tc.Calculate(strin);
 
                 res_length_m_1.Text = result.length_m_1;

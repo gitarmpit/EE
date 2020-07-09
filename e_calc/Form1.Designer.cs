@@ -75,7 +75,6 @@
             this.res_L2 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.label20 = new System.Windows.Forms.Label();
-            this.richTextBox_warnings = new System.Windows.Forms.RichTextBox();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.radioButton7 = new System.Windows.Forms.RadioButton();
             this.radioButton8 = new System.Windows.Forms.RadioButton();
@@ -141,7 +140,7 @@
             this.label77 = new System.Windows.Forms.Label();
             this.label46 = new System.Windows.Forms.Label();
             this.label33 = new System.Windows.Forms.Label();
-            this.edit_max_tempC = new System.Windows.Forms.TextBox();
+            this.edit_max_temp = new System.Windows.Forms.TextBox();
             this.label71 = new System.Windows.Forms.Label();
             this.edit_couplingCoeff = new System.Windows.Forms.TextBox();
             this.label52 = new System.Windows.Forms.Label();
@@ -185,11 +184,6 @@
             this.edit_awg1 = new System.Windows.Forms.TextBox();
             this.edit_power_factor_1 = new System.Windows.Forms.TextBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.edit_override_ampacity = new System.Windows.Forms.TextBox();
-            this.radioButton_ampacity_custom = new System.Windows.Forms.RadioButton();
-            this.radioButton_ampacity_500 = new System.Windows.Forms.RadioButton();
-            this.radioButton_ampacity_700 = new System.Windows.Forms.RadioButton();
             this.groupBox_mains = new System.Windows.Forms.GroupBox();
             this.radiobutton_mains_EU = new System.Windows.Forms.RadioButton();
             this.radiobutton_mains_US = new System.Windows.Forms.RadioButton();
@@ -241,6 +235,12 @@
             this.label53 = new System.Windows.Forms.Label();
             this.label62 = new System.Windows.Forms.Label();
             this.res_L1 = new System.Windows.Forms.Label();
+            this.label64 = new System.Windows.Forms.Label();
+            this.edit_ampacity1 = new System.Windows.Forms.TextBox();
+            this.edit_ampacity2 = new System.Windows.Forms.TextBox();
+            this.label65 = new System.Windows.Forms.Label();
+            this.richTextBox_warnings = new System.Windows.Forms.RichTextBox();
+            this.label79 = new System.Windows.Forms.Label();
             this.calcTab.SuspendLayout();
             this.transCalcPage.SuspendLayout();
             this.groupBox8.SuspendLayout();
@@ -252,7 +252,6 @@
             this.groupBox_w2.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox_w1.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             this.groupBox_mains.SuspendLayout();
             this.biasPage.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -283,10 +282,10 @@
             // transCalcPage
             // 
             this.transCalcPage.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.transCalcPage.Controls.Add(this.richTextBox_warnings);
             this.transCalcPage.Controls.Add(this.groupBox8);
             this.transCalcPage.Controls.Add(this.button1);
             this.transCalcPage.Controls.Add(this.label20);
-            this.transCalcPage.Controls.Add(this.richTextBox_warnings);
             this.transCalcPage.Controls.Add(this.groupBox9);
             this.transCalcPage.Controls.Add(this.clearButton);
             this.transCalcPage.Controls.Add(this.Save);
@@ -299,7 +298,6 @@
             this.transCalcPage.Controls.Add(this.groupBox4);
             this.transCalcPage.Controls.Add(this.groupBox_w1);
             this.transCalcPage.Controls.Add(this.splitter1);
-            this.transCalcPage.Controls.Add(this.groupBox3);
             this.transCalcPage.Controls.Add(this.groupBox_mains);
             this.transCalcPage.ForeColor = System.Drawing.Color.Black;
             this.transCalcPage.Location = new System.Drawing.Point(4, 25);
@@ -796,17 +794,6 @@
             this.label20.TabIndex = 528;
             this.label20.Text = "Warnings:";
             // 
-            // richTextBox_warnings
-            // 
-            this.richTextBox_warnings.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.richTextBox_warnings.Location = new System.Drawing.Point(524, 558);
-            this.richTextBox_warnings.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.richTextBox_warnings.Name = "richTextBox_warnings";
-            this.richTextBox_warnings.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.richTextBox_warnings.Size = new System.Drawing.Size(617, 132);
-            this.richTextBox_warnings.TabIndex = 470;
-            this.richTextBox_warnings.Text = "";
-            // 
             // groupBox9
             // 
             this.groupBox9.Controls.Add(this.radioButton7);
@@ -827,10 +814,10 @@
             this.radioButton7.Location = new System.Drawing.Point(124, 18);
             this.radioButton7.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.radioButton7.Name = "radioButton7";
-            this.radioButton7.Size = new System.Drawing.Size(46, 21);
+            this.radioButton7.Size = new System.Drawing.Size(50, 21);
             this.radioButton7.TabIndex = 308;
             this.radioButton7.TabStop = true;
-            this.radioButton7.Text = "lbs";
+            this.radioButton7.Text = " lbs";
             this.radioButton7.UseVisualStyleBackColor = true;
             // 
             // radioButton8
@@ -1291,10 +1278,10 @@
             this.radioButton5.Location = new System.Drawing.Point(124, 18);
             this.radioButton5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.radioButton5.Name = "radioButton5";
-            this.radioButton5.Size = new System.Drawing.Size(36, 21);
+            this.radioButton5.Size = new System.Drawing.Size(40, 21);
             this.radioButton5.TabIndex = 308;
             this.radioButton5.TabStop = true;
-            this.radioButton5.Text = "F";
+            this.radioButton5.Text = " F";
             this.radioButton5.UseVisualStyleBackColor = true;
             // 
             // radioButton6
@@ -1390,7 +1377,9 @@
             // 
             // groupBox_w2
             // 
+            this.groupBox_w2.Controls.Add(this.edit_ampacity2);
             this.groupBox_w2.Controls.Add(this.edit_Wfactor2);
+            this.groupBox_w2.Controls.Add(this.label65);
             this.groupBox_w2.Controls.Add(this.edit_awg2);
             this.groupBox_w2.Controls.Add(this.edit_turnsPerLayer2);
             this.groupBox_w2.Controls.Add(this.label23);
@@ -1398,11 +1387,11 @@
             this.groupBox_w2.Controls.Add(this.label24);
             this.groupBox_w2.Controls.Add(this.label29);
             this.groupBox_w2.Controls.Add(this.label28);
-            this.groupBox_w2.Location = new System.Drawing.Point(292, 190);
+            this.groupBox_w2.Location = new System.Drawing.Point(291, 250);
             this.groupBox_w2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox_w2.Name = "groupBox_w2";
             this.groupBox_w2.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox_w2.Size = new System.Drawing.Size(206, 141);
+            this.groupBox_w2.Size = new System.Drawing.Size(214, 167);
             this.groupBox_w2.TabIndex = 463;
             this.groupBox_w2.TabStop = false;
             this.groupBox_w2.Text = "Secondary winding:";
@@ -1485,13 +1474,14 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.label79);
             this.groupBox4.Controls.Add(this.label49);
             this.groupBox4.Controls.Add(this.checkBox_fullLoad);
             this.groupBox4.Controls.Add(this.label78);
             this.groupBox4.Controls.Add(this.label77);
             this.groupBox4.Controls.Add(this.label46);
             this.groupBox4.Controls.Add(this.label33);
-            this.groupBox4.Controls.Add(this.edit_max_tempC);
+            this.groupBox4.Controls.Add(this.edit_max_temp);
             this.groupBox4.Controls.Add(this.label71);
             this.groupBox4.Controls.Add(this.edit_couplingCoeff);
             this.groupBox4.Controls.Add(this.label52);
@@ -1588,13 +1578,13 @@
             this.label33.Text = "Magnetic path, H:";
             this.label33.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // edit_max_tempC
+            // edit_max_temp
             // 
-            this.edit_max_tempC.Location = new System.Drawing.Point(164, 512);
-            this.edit_max_tempC.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.edit_max_tempC.Name = "edit_max_tempC";
-            this.edit_max_tempC.Size = new System.Drawing.Size(71, 22);
-            this.edit_max_tempC.TabIndex = 118;
+            this.edit_max_temp.Location = new System.Drawing.Point(164, 512);
+            this.edit_max_temp.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.edit_max_temp.Name = "edit_max_temp";
+            this.edit_max_temp.Size = new System.Drawing.Size(71, 22);
+            this.edit_max_temp.TabIndex = 118;
             // 
             // label71
             // 
@@ -1602,9 +1592,9 @@
             this.label71.Location = new System.Drawing.Point(10, 514);
             this.label71.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label71.Name = "label71";
-            this.label71.Size = new System.Drawing.Size(89, 17);
+            this.label71.Size = new System.Drawing.Size(76, 17);
             this.label71.TabIndex = 490;
-            this.label71.Text = "Max temp, C:";
+            this.label71.Text = "Max temp, ";
             this.label71.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // edit_couplingCoeff
@@ -1888,6 +1878,8 @@
             // 
             // groupBox_w1
             // 
+            this.groupBox_w1.Controls.Add(this.edit_ampacity1);
+            this.groupBox_w1.Controls.Add(this.label64);
             this.groupBox_w1.Controls.Add(this.label69);
             this.groupBox_w1.Controls.Add(this.label1);
             this.groupBox_w1.Controls.Add(this.label5);
@@ -1902,7 +1894,7 @@
             this.groupBox_w1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox_w1.Name = "groupBox_w1";
             this.groupBox_w1.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox_w1.Size = new System.Drawing.Size(206, 171);
+            this.groupBox_w1.Size = new System.Drawing.Size(213, 211);
             this.groupBox_w1.TabIndex = 461;
             this.groupBox_w1.TabStop = false;
             this.groupBox_w1.Text = "Primary winding:";
@@ -1988,7 +1980,7 @@
             // 
             // edit_awg1
             // 
-            this.edit_awg1.Location = new System.Drawing.Point(124, 22);
+            this.edit_awg1.Location = new System.Drawing.Point(123, 22);
             this.edit_awg1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.edit_awg1.Name = "edit_awg1";
             this.edit_awg1.Size = new System.Drawing.Size(71, 22);
@@ -1996,7 +1988,7 @@
             // 
             // edit_power_factor_1
             // 
-            this.edit_power_factor_1.Location = new System.Drawing.Point(124, 138);
+            this.edit_power_factor_1.Location = new System.Drawing.Point(124, 137);
             this.edit_power_factor_1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.edit_power_factor_1.Name = "edit_power_factor_1";
             this.edit_power_factor_1.Size = new System.Drawing.Size(71, 22);
@@ -2011,77 +2003,15 @@
             this.splitter1.TabIndex = 460;
             this.splitter1.TabStop = false;
             // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.edit_override_ampacity);
-            this.groupBox3.Controls.Add(this.radioButton_ampacity_custom);
-            this.groupBox3.Controls.Add(this.radioButton_ampacity_500);
-            this.groupBox3.Controls.Add(this.radioButton_ampacity_700);
-            this.groupBox3.Location = new System.Drawing.Point(291, 410);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.groupBox3.Size = new System.Drawing.Size(206, 85);
-            this.groupBox3.TabIndex = 306;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Ampacity (C.M. per ampere)";
-            // 
-            // edit_override_ampacity
-            // 
-            this.edit_override_ampacity.Location = new System.Drawing.Point(124, 58);
-            this.edit_override_ampacity.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.edit_override_ampacity.Name = "edit_override_ampacity";
-            this.edit_override_ampacity.Size = new System.Drawing.Size(71, 22);
-            this.edit_override_ampacity.TabIndex = 306;
-            // 
-            // radioButton_ampacity_custom
-            // 
-            this.radioButton_ampacity_custom.AutoSize = true;
-            this.radioButton_ampacity_custom.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.radioButton_ampacity_custom.Location = new System.Drawing.Point(19, 58);
-            this.radioButton_ampacity_custom.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.radioButton_ampacity_custom.Name = "radioButton_ampacity_custom";
-            this.radioButton_ampacity_custom.Size = new System.Drawing.Size(87, 21);
-            this.radioButton_ampacity_custom.TabIndex = 41;
-            this.radioButton_ampacity_custom.TabStop = true;
-            this.radioButton_ampacity_custom.Text = "  Custom:";
-            this.radioButton_ampacity_custom.UseVisualStyleBackColor = true;
-            // 
-            // radioButton_ampacity_500
-            // 
-            this.radioButton_ampacity_500.AutoSize = true;
-            this.radioButton_ampacity_500.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.radioButton_ampacity_500.Location = new System.Drawing.Point(19, 35);
-            this.radioButton_ampacity_500.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.radioButton_ampacity_500.Name = "radioButton_ampacity_500";
-            this.radioButton_ampacity_500.Size = new System.Drawing.Size(64, 21);
-            this.radioButton_ampacity_500.TabIndex = 38;
-            this.radioButton_ampacity_500.TabStop = true;
-            this.radioButton_ampacity_500.Text = "  500 ";
-            this.radioButton_ampacity_500.UseVisualStyleBackColor = true;
-            // 
-            // radioButton_ampacity_700
-            // 
-            this.radioButton_ampacity_700.AutoSize = true;
-            this.radioButton_ampacity_700.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.radioButton_ampacity_700.Location = new System.Drawing.Point(19, 14);
-            this.radioButton_ampacity_700.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.radioButton_ampacity_700.Name = "radioButton_ampacity_700";
-            this.radioButton_ampacity_700.Size = new System.Drawing.Size(60, 21);
-            this.radioButton_ampacity_700.TabIndex = 37;
-            this.radioButton_ampacity_700.TabStop = true;
-            this.radioButton_ampacity_700.Text = "  700";
-            this.radioButton_ampacity_700.UseVisualStyleBackColor = true;
-            // 
             // groupBox_mains
             // 
             this.groupBox_mains.Controls.Add(this.radiobutton_mains_EU);
             this.groupBox_mains.Controls.Add(this.radiobutton_mains_US);
-            this.groupBox_mains.Location = new System.Drawing.Point(291, 338);
+            this.groupBox_mains.Location = new System.Drawing.Point(291, 427);
             this.groupBox_mains.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.groupBox_mains.Name = "groupBox_mains";
             this.groupBox_mains.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.groupBox_mains.Size = new System.Drawing.Size(206, 64);
+            this.groupBox_mains.Size = new System.Drawing.Size(214, 64);
             this.groupBox_mains.TabIndex = 305;
             this.groupBox_mains.TabStop = false;
             this.groupBox_mains.Text = "Mains";
@@ -2638,6 +2568,65 @@
             this.res_L1.TabIndex = 489;
             this.res_L1.Text = "- -";
             // 
+            // label64
+            // 
+            this.label64.AutoSize = true;
+            this.label64.Location = new System.Drawing.Point(15, 169);
+            this.label64.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label64.Name = "label64";
+            this.label64.Size = new System.Drawing.Size(96, 17);
+            this.label64.TabIndex = 442;
+            this.label64.Text = "C.M. per amp:";
+            this.label64.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // edit_ampacity1
+            // 
+            this.edit_ampacity1.Location = new System.Drawing.Point(125, 166);
+            this.edit_ampacity1.Margin = new System.Windows.Forms.Padding(4);
+            this.edit_ampacity1.Name = "edit_ampacity1";
+            this.edit_ampacity1.Size = new System.Drawing.Size(71, 22);
+            this.edit_ampacity1.TabIndex = 443;
+            // 
+            // edit_ampacity2
+            // 
+            this.edit_ampacity2.Location = new System.Drawing.Point(124, 134);
+            this.edit_ampacity2.Margin = new System.Windows.Forms.Padding(4);
+            this.edit_ampacity2.Name = "edit_ampacity2";
+            this.edit_ampacity2.Size = new System.Drawing.Size(71, 22);
+            this.edit_ampacity2.TabIndex = 445;
+            // 
+            // label65
+            // 
+            this.label65.AutoSize = true;
+            this.label65.Location = new System.Drawing.Point(15, 136);
+            this.label65.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label65.Name = "label65";
+            this.label65.Size = new System.Drawing.Size(96, 17);
+            this.label65.TabIndex = 444;
+            this.label65.Text = "C.M. per amp:";
+            this.label65.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // richTextBox_warnings
+            // 
+            this.richTextBox_warnings.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.richTextBox_warnings.Location = new System.Drawing.Point(524, 560);
+            this.richTextBox_warnings.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.richTextBox_warnings.Name = "richTextBox_warnings";
+            this.richTextBox_warnings.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.richTextBox_warnings.Size = new System.Drawing.Size(617, 132);
+            this.richTextBox_warnings.TabIndex = 576;
+            this.richTextBox_warnings.Text = "";
+            // 
+            // label79
+            // 
+            this.label79.AutoSize = true;
+            this.label79.Location = new System.Drawing.Point(76, 514);
+            this.label79.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label79.Name = "label79";
+            this.label79.Size = new System.Drawing.Size(21, 17);
+            this.label79.TabIndex = 534;
+            this.label79.Text = "C:";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -2675,8 +2664,6 @@
             this.groupBox4.PerformLayout();
             this.groupBox_w1.ResumeLayout(false);
             this.groupBox_w1.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
             this.groupBox_mains.ResumeLayout(false);
             this.groupBox_mains.PerformLayout();
             this.biasPage.ResumeLayout(false);
@@ -2763,7 +2750,7 @@
         private System.Windows.Forms.Label label77;
         private System.Windows.Forms.Label label46;
         private System.Windows.Forms.Label label33;
-        private System.Windows.Forms.TextBox edit_max_tempC;
+        private System.Windows.Forms.TextBox edit_max_temp;
         private System.Windows.Forms.Label label71;
         private System.Windows.Forms.TextBox edit_couplingCoeff;
         private System.Windows.Forms.Label label52;
@@ -2806,11 +2793,6 @@
         private System.Windows.Forms.TextBox edit_turnsPerLayer1;
         private System.Windows.Forms.TextBox edit_awg1;
         private System.Windows.Forms.TextBox edit_power_factor_1;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.TextBox edit_override_ampacity;
-        private System.Windows.Forms.RadioButton radioButton_ampacity_custom;
-        private System.Windows.Forms.RadioButton radioButton_ampacity_500;
-        private System.Windows.Forms.RadioButton radioButton_ampacity_700;
         private System.Windows.Forms.GroupBox groupBox_mains;
         private System.Windows.Forms.RadioButton radiobutton_mains_EU;
         private System.Windows.Forms.RadioButton radiobutton_mains_US;
@@ -2853,7 +2835,6 @@
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.RadioButton radioButton7;
         private System.Windows.Forms.RadioButton radioButton8;
-        private System.Windows.Forms.RichTextBox richTextBox_warnings;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label_units_weight1;
@@ -2909,6 +2890,12 @@
         private System.Windows.Forms.Label label53;
         private System.Windows.Forms.Label label62;
         private System.Windows.Forms.Label res_L1;
+        private System.Windows.Forms.TextBox edit_ampacity1;
+        private System.Windows.Forms.Label label64;
+        private System.Windows.Forms.TextBox edit_ampacity2;
+        private System.Windows.Forms.Label label65;
+        private System.Windows.Forms.RichTextBox richTextBox_warnings;
+        private System.Windows.Forms.Label label79;
     }
 }
 
