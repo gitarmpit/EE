@@ -7,6 +7,7 @@ using System.IO;
 using System.Globalization;
 using System.Windows.Forms.VisualStyles;
 using System.CodeDom.Compiler;
+using System.Windows.Forms;
 
 namespace forms1
 {
@@ -17,7 +18,7 @@ namespace forms1
         public string Bmax;
         public string permeability;
         public string Iex;
-        public string H_ampt_m;
+        public string H;
         public string core_W;
         public string core_H;
         public string core_L;
@@ -42,6 +43,7 @@ namespace forms1
         public string N_per_layer2;
         public string ampacity2;
         public string maxTemp;
+        public string pf;
     }
     struct trans_calc_result_text
     {
@@ -82,41 +84,82 @@ namespace forms1
         public string wire_weight_ratio;
         public string Ip_full_load;
         public string power_VA;
+        public List<string> warnings;
+        public bool IsWindowExceeded;
+        public bool IsAmpacity1Exceeded;
+        public bool IsAmpacity2Exceeded;
 
         public trans_calc_result_text(trans_calc_result res)
         {
-            this.length_m_1 = String.Format("{0:0.###}", res.primary.length_m);
-            this.length_ft_1 = String.Format("{0:0.###}", res.primary.length_ft);
-            this.thickness_mm_1 = String.Format("{0:0.###}", res.primary.thickness_mm);
-            this.resistance_1 = String.Format("{0:0.###}", res.primary.resistance);
+            this.warnings = new List<string>();
+
+            if (res.Ip_full_load > res.primary.awg_max_current_amp)
+            {
+                var Ip = String.Format("{0:0.##}", res.Ip_full_load);
+                var maxAmpacity = String.Format("{0:0.##}", res.primary.awg_max_current_amp);
+                warnings.Add($"Ip={Ip}A exceeds the maximum ampacity of the primary={maxAmpacity}A");
+                IsAmpacity1Exceeded = true;
+            }
+            else
+            {
+                IsAmpacity1Exceeded = false;
+            }
+
+            if (1 - res.secondary.awg_max_current_amp / res.I_out_max  > 0.05)
+            {
+                var Iout = String.Format("{0:0.##}", res.I_out_max);
+                var maxAmpacity = String.Format("{0:0.##}", res.secondary.awg_max_current_amp);
+                warnings.Add($"Iout={Iout}A exceeds the maximum ampacity of the secondary={maxAmpacity}A");
+                IsAmpacity2Exceeded = true;
+            }
+            else
+            {
+                IsAmpacity2Exceeded = false;
+            }
+
+            if (1 - res.WindowSize / res.total_thickness_mm > 0.05)
+            {
+                var totalBuildup = String.Format("{0:0.#}", res.total_thickness_mm);
+                warnings.Add($"Total build-up: {totalBuildup}mm exceeds the maximum window size: {res.WindowSize}mm");
+                IsWindowExceeded = true;
+            }
+            else
+            {
+                IsWindowExceeded = false;
+            }
+
+            this.length_m_1 = String.Format("{0:0.##}", res.primary.length_m);
+            this.length_ft_1 = String.Format("{0:0.##}", res.primary.length_ft);
+            this.thickness_mm_1 = String.Format("{0:0.##}", res.primary.thickness_mm);
+            this.resistance_1 = String.Format("{0:0.##}", res.primary.resistance);
             this.N_1 = res.primary.N.ToString();
             this.N_per_layer_1 = res.primary.N_per_layer.ToString();
             this.totalLayers_1 = res.primary.totalLayers.ToString();
             this.lastLayerTurns_1 =
                 (res.primary.lastLayerTurns != 0) ? res.primary.lastLayerTurns.ToString() : "";
-            this.mpath_l_m = String.Format("{0:0.###}", res.mpath_l_m);
+            this.mpath_l_m = String.Format("{0:0.##}", res.mpath_l_m);
             this.awg_max_current_amp_1 =
                 (res.primary.awg_max_current_amp > 0.0000001) ? String.Format("{0:0.##}", res.primary.awg_max_current_amp) : "";
             this.L1 =
-                (res.primary.L > 0.0000001) ? String.Format("{0:0.###}", res.primary.L) : "";
+                (res.primary.L > 0.0000001) ? String.Format("{0:0.##}", res.primary.L) : "";
 
-            this.B_max = String.Format("{0:0.###}", res.B_max);
+            this.B_max = String.Format("{0:0.##}", res.B_max);
             this.H_amp_t_m =
-                (res.H_amp_t_m > 0.0000001) ? String.Format("{0:0.###}", res.H_amp_t_m) : "";
+                (res.H_amp_t_m > 0.0000001) ? String.Format("{0:0.##}", res.H_amp_t_m) : "";
 
             this.I_ex_amp =
-                (res.I_ex_amp > 0.0000001) ? String.Format("{0:0.###}", res.I_ex_amp) : "";
+                (res.I_ex_amp > 0.0000001) ? String.Format("{0:0.##}", res.I_ex_amp) : "";
 
             this.permeability =
-                (res.permeability > 0.0000001) ? String.Format("{0:0.###}", res.permeability) : "";
+                (res.permeability > 0.0000001) ? String.Format("{0:0.##}", res.permeability) : "";
 
             this.weight_g_1 =
                 (res.primary.mass > 0.0000001) ? String.Format("{0:0.##}", res.primary.mass) : "";
 
-            this.length_m_2 = String.Format("{0:0.###}", res.secondary.length_m);
-            this.length_ft_2 = String.Format("{0:0.###}", res.secondary.length_ft);
-            this.thickness_mm_2 = String.Format("{0:0.###}", res.secondary.thickness_mm);
-            this.resistance_2 = String.Format("{0:0.###}", res.secondary.resistance);
+            this.length_m_2 = String.Format("{0:0.##}", res.secondary.length_m);
+            this.length_ft_2 = String.Format("{0:0.##}", res.secondary.length_ft);
+            this.thickness_mm_2 = String.Format("{0:0.##}", res.secondary.thickness_mm);
+            this.resistance_2 = String.Format("{0:0.##}", res.secondary.resistance);
             this.N_2 = res.secondary.N.ToString();
             this.N_per_layer_2 = res.secondary.N_per_layer.ToString();
             this.totalLayers_2 = res.secondary.totalLayers.ToString();
@@ -127,7 +170,7 @@ namespace forms1
                 (res.secondary.awg_max_current_amp > 0.0000001) ? String.Format("{0:0.##}", res.secondary.awg_max_current_amp) : "";
 
             this.L2 =
-                (res.secondary.L > 0.0000001) ? String.Format("{0:0.###}", res.secondary.L) : "";
+                (res.secondary.L > 0.0000001) ? String.Format("{0:0.##}", res.secondary.L) : "";
 
             this.weight_g_2 =
                 (res.secondary.mass > 0.0000001) ? String.Format("{0:0.##}", res.secondary.mass) : "";
@@ -135,9 +178,9 @@ namespace forms1
             this.total_thickness_mm =
                 (res.total_thickness_mm > 0.0000001) ? String.Format("{0:0.##}", res.total_thickness_mm) : "";
 
-            this.Vout_idle = String.Format("{0:0.###}", res.Vout_idle);
-            this.Vout_imax = String.Format("{0:0.###}", res.Vout_imax);
-            this.Iout_max = String.Format("{0:0.###}", res.I_out_max);
+            this.Vout_idle = String.Format("{0:0.##}", res.Vout_idle);
+            this.Vout_imax = String.Format("{0:0.##}", res.Vout_imax);
+            this.Iout_max = String.Format("{0:0.##}", res.I_out_max);
             if (res.turns_ratio > 1)
             {
                 this.turns_ratio = String.Format("{0:0.##}", res.turns_ratio) + ":1";
@@ -205,6 +248,7 @@ namespace forms1
         public double wire_weight_ratio;
         public double Ip_full_load;
         public double power_VA;
+        public double WindowSize;
     }
 
     struct trans_calc_input_common
@@ -221,6 +265,7 @@ namespace forms1
         public double Core_H;
         public double Ae_W;
         public double Ae_H;
+        public double pf1;
 
         public double mpath_l_cm;
         public double max_temp;
@@ -262,6 +307,7 @@ namespace forms1
 
         private const double copper_density_kg_m3 = 8950;
         private const double copper_temperature_coeff = 0.00393;
+
         public AWG(int number, double value)
         {
             this.gauge = number;
@@ -317,9 +363,15 @@ namespace forms1
         private static double u0 = 4 * Math.PI * 10e-8;
         private List<AWG> awgValues = new List<AWG>();
 
-        private bool sizeUnitsCm = true;
+        public enum H_UNITS
+        {
+            AMP_TURNS_M,
+            AMP_TURNS_IN,
+            OERSTEDS
+        }
+
         private bool tempUnitsC = true;
-        private bool H_units_amp_turns = true;
+        private H_UNITS H_units;
         private bool mass_units_g = true;
 
         public TransCalc()
@@ -368,22 +420,16 @@ namespace forms1
             return awg_item;
         }
 
-        public bool IsSizeUnitsCm
+        public H_UNITS H_Units
         {
-            get { return sizeUnitsCm; }
-            set { sizeUnitsCm = value; }
+            get { return H_units; }
+            set { H_units = value; }
         }
 
         public bool IsTempUnitsC
         {
             get { return tempUnitsC; }
             set { tempUnitsC = value; }
-        }
-
-        public bool IsH_UnitsAmpturns
-        {
-            get { return H_units_amp_turns; }
-            set { H_units_amp_turns = value; }
         }
 
         public bool IsMassUnits_g
@@ -411,20 +457,34 @@ namespace forms1
 
         public static double AmpTurns_to_Oe (double at)
         {
-            return at * 1000 / (4 * Math.PI); 
+            return at * 4 * Math.PI / 1000;
         }
 
         public static double Oe_to_Ampturns (double oe)
         {
-            return 0;
+            return oe * 1000 / (4 * Math.PI);
         }
 
-
-        public string UpdateHText(string H_string)
+        public double Convert_H(double dH, H_UNITS to_units)
         {
-            double dH = double.Parse(H_string, NumberStyles.Float);
-            double converted_H = IsH_UnitsAmpturns ? AmpTurns_to_Oe(dH) : Oe_to_Ampturns(dH);
-            return String.Format("{0:0.#}", converted_H);
+            if (H_Units == H_UNITS.AMP_TURNS_IN)
+            {
+                dH = dH / 0.0254;
+            }
+            if (to_units == H_UNITS.OERSTEDS)
+            {
+                dH = AmpTurns_to_Oe(dH);
+            }
+            else if (H_Units == H_UNITS.OERSTEDS)
+            {
+                dH = Oe_to_Ampturns(dH);
+            }
+            if (to_units == H_UNITS.AMP_TURNS_IN)
+            {
+                dH = dH * 0.0254;
+            }
+            H_Units = to_units;
+            return dH;
         }
 
 
@@ -447,7 +507,7 @@ namespace forms1
                 input_text.Bmax = values[1];
                 input_text.permeability = values[2];
                 input_text.Iex = values[3];
-                input_text.H_ampt_m = values[4];
+                input_text.H = values[4];
                 input_text.core_W = values[5];
                 input_text.core_H = values[6];
                 input_text.core_L = values[7];
@@ -467,34 +527,23 @@ namespace forms1
                 input_text.N1 = values[20];
                 input_text.N_per_layer1 = values[21];
                 input_text.ampacity1 = values[22];
+                input_text.pf = values[23];
 
-                input_text.awg2 = values[23];
-                input_text.wfactor2 = values[24];
-                input_text.N2 = values[25];
-                input_text.N_per_layer2 = values[26];
-                input_text.ampacity2 = values[27];
+                input_text.awg2 = values[24];
+                input_text.wfactor2 = values[25];
+                input_text.N2 = values[26];
+                input_text.N_per_layer2 = values[27];
+                input_text.ampacity2 = values[28];
 
-                input_text.maxTemp = values[28];
-                if (values[29] == "0")
-                {
-                    sizeUnitsCm = false;
-                }
-                else if (values[29] == "1")
-                {
-                    sizeUnitsCm = true; 
-                }
-                else
-                {
-                    throw new Exception("Error parsing size units");
-                }
+                input_text.maxTemp = values[29];
 
                 if (values[30] == "0")
                 {
-                    tempUnitsC = false;
+                    tempUnitsC = true;
                 }
                 else if (values[30] == "1")
                 {
-                    tempUnitsC = true;
+                    tempUnitsC = false;
                 }
                 else
                 {
@@ -503,11 +552,15 @@ namespace forms1
 
                 if (values[31] == "0")
                 {
-                    H_units_amp_turns = true;
+                    H_Units = H_UNITS.AMP_TURNS_M;
                 }
                 else if (values[31] == "1")
                 {
-                    H_units_amp_turns = false;
+                    H_Units = H_UNITS.AMP_TURNS_IN;
+                }
+                else if (values[31] == "2")
+                {
+                    H_Units = H_UNITS.OERSTEDS;
                 }
                 else
                 {
@@ -516,15 +569,15 @@ namespace forms1
 
                 if (values[32] == "0")
                 {
-                    mass_units_g = false;
+                    mass_units_g = true;
                 }
                 else if (values[32] == "1")
                 {
-                    mass_units_g = true;
+                    mass_units_g = false;
                 }
                 else
                 {
-                    throw new Exception("Error parsing H units");
+                    throw new Exception("Error parsing mass units");
                 }
             }
             else
@@ -588,6 +641,7 @@ namespace forms1
 
         public trans_calc_result_text Calculate(trans_calc_input_text text_input)
         {
+
             trans_calc_input input = convertTextToInput(text_input);
 
             double Epeak = input.common.Vin * Math.Sqrt(2);
@@ -615,6 +669,7 @@ namespace forms1
             }
 
             trans_calc_result result = new trans_calc_result();
+
             result.mpath_l_m = l_m;
 
             //Priority: Iex, permeability, H
@@ -658,6 +713,8 @@ namespace forms1
             result.primary.L = L1;
             result.total_thickness_mm = result.primary.thickness_mm + input.common.InsulationThickness;
 
+
+ 
             //Calculate secondary if configured 
             if (input.processSecondary)
             {
@@ -701,7 +758,10 @@ namespace forms1
                     Math.Sqrt (Math.Pow (result.I_out_max / result.turns_ratio, 2) + 
                     Math.Pow(result.I_ex_amp, 2));
                 result.power_VA = result.I_out_max * result.Vout_imax;
+
             }
+
+            result.WindowSize = input.common.WindowSize;
 
             return new trans_calc_result_text(result); 
         }
@@ -755,9 +815,17 @@ namespace forms1
                 }
             }
 
-            if (strin.H_ampt_m != "")
+            if (strin.H != "")
             {
-                res.common.H_ampt_m = double.Parse(strin.H_ampt_m, NumberStyles.Float);
+                res.common.H_ampt_m = double.Parse(strin.H, NumberStyles.Float);
+                if (H_Units == H_UNITS.OERSTEDS)
+                {
+                    res.common.H_ampt_m = Oe_to_Ampturns(res.common.H_ampt_m);
+                }
+                else if (H_Units == H_UNITS.AMP_TURNS_IN)
+                {
+                    res.common.H_ampt_m /= 0.0254;
+                }
                 if (res.common.H_ampt_m < 1 || res.common.H_ampt_m > 2000)
                 {
                     throw new Exception("Amp t / m has to be in the range of 1 to 2000 Amp-t-m");
@@ -767,6 +835,15 @@ namespace forms1
             if (strin.core_L == "" || strin.core_W == "" || strin.core_H == "")
             {
                 throw new Exception("Core W/H/L not set");
+            }
+
+            if (strin.pf != "")
+            {
+                res.common.pf1 = double.Parse(strin.pf, NumberStyles.Float);
+                if (res.common.pf1 < 0 && res.common.pf1 > 1.0)
+                {
+                    throw new Exception("pf has to be between 0 and 1");
+                }
             }
 
             //to m
@@ -816,8 +893,8 @@ namespace forms1
             if (strin.mpath_H != "" && strin.mpath_W != "")
             {
                 //cm 
-                double Mpath_H = double.Parse(strin.mpath_H, NumberStyles.Float);
-                double Mpath_W = double.Parse(strin.mpath_W, NumberStyles.Float);
+                double Mpath_H = double.Parse(strin.mpath_H, NumberStyles.Float)/100;
+                double Mpath_W = double.Parse(strin.mpath_W, NumberStyles.Float)/100;
 
                 if (Mpath_H < 0.01 || Mpath_H > 0.5)
                 {

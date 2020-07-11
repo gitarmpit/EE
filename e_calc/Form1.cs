@@ -11,13 +11,18 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using GroupBox = System.Windows.Forms.GroupBox;
+using TextBox = System.Windows.Forms.TextBox;
 
 namespace forms1
 {
     public partial class MainForm : Form
     {
-        Bias bias;
-        TransCalc tc;
+        private Bias bias;
+        private TransCalc tc;
+        private string[] H_labels = new string[] { "Amp-t/m", "Amp-t/in", "Oe" };
+        // Units that require conversion:
+        private double transCalc_H;
 
         public MainForm()
         {
@@ -104,11 +109,11 @@ namespace forms1
                 {
                     throw new Exception($"Unexpected mains voltage: {input.Vin}");
                 }
-
+                transCalc_H = double.Parse(input.H, NumberStyles.Float);
                 edit_Bmax.Text = input.Bmax;
                 edit_permeability.Text = input.permeability;
                 edit_Iex.Text = input.Iex;
-                edit_H.Text = input.H_ampt_m;
+                edit_H.Text = input.H;
                 edit_coreSize_W.Text = input.core_W;
                 edit_coreSize_H.Text = input.core_H;
                 edit_coreSize_L.Text = input.core_L;
@@ -128,6 +133,7 @@ namespace forms1
                 edit_N1.Text = input.N1;
                 edit_N_PerLayer1.Text = input.N_per_layer1;
                 edit_ampacity1.Text = input.ampacity1;
+                edit_power_factor_1.Text = input.pf;
 
                 edit_awg2.Text = input.awg2;
                 edit_Wfactor2.Text = input.wfactor2;
@@ -140,18 +146,32 @@ namespace forms1
                 if (tc.IsTempUnitsC)
                 {
                     radioButton_tempC.Select();
+                    label_units_maxtemp.Text = "C:";
                 }
                 else
                 {
                     radioButton_tempF.Select();
+                    label_units_maxtemp.Text = "F:";
                 }
-                if (tc.IsH_UnitsAmpturns)
+
+                if (tc.H_Units == TransCalc.H_UNITS.AMP_TURNS_M)
                 {
-                    radioButton_H_amp_t.Select();
+                    radioButton_H_amp_t_m.Select();
+                    label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_M];
+                    res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_M];
+
+                }
+                else if (tc.H_Units == TransCalc.H_UNITS.AMP_TURNS_IN)
+                {
+                    radioButton_H_amp_t_m.Select();
+                    label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
+                    res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
                 }
                 else
                 {
                     radioButton_H_oe.Select();
+                    label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
+                    res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
                 }
             }
             catch (Exception ex)
@@ -159,6 +179,7 @@ namespace forms1
                 MessageBox.Show(ex.Message);
                 Environment.Exit(1);
             }
+
         }
 
         private void OnCalculate(object sender, EventArgs e)
@@ -170,6 +191,7 @@ namespace forms1
         {
             try
             {
+                res_warnings.Text = "";
                 if (edit_max_temp.Text == "")
                 {
                     edit_max_temp.Text = "20";
@@ -189,7 +211,7 @@ namespace forms1
                 strin.Bmax = edit_Bmax.Text;
                 strin.permeability = edit_permeability.Text;
                 strin.Iex = edit_Iex.Text;
-                strin.H_ampt_m = edit_H.Text;
+                strin.H = transCalc_H.ToString();
                 strin.core_W = edit_coreSize_W.Text;
                 strin.core_H = edit_coreSize_H.Text;
                 strin.core_L = edit_coreSize_L.Text;
@@ -209,6 +231,7 @@ namespace forms1
                 strin.N_per_layer1 = edit_N_PerLayer1.Text;
                 strin.ampacity1 = edit_ampacity1.Text;
                 strin.ampacity2 = edit_ampacity2.Text;
+                strin.pf = edit_power_factor_1.Text;
 
                 strin.awg2 = edit_awg2.Text;
                 strin.wfactor2 = edit_Wfactor2.Text;
@@ -256,6 +279,23 @@ namespace forms1
                 res_Ip_full_load.Text = result.Ip_full_load;
                 res_powerVA.Text = result.power_VA;
 
+                foreach (string msg in result.warnings)
+                {
+                    res_warnings.Text += msg + "\n";    
+                }
+
+                res_total_thickness_mm.ForeColor =
+                    result.IsWindowExceeded ? Color.Red : Color.FromArgb (0, 180, 0);
+
+                res_Ip_full_load.ForeColor =
+                    result.IsAmpacity1Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
+                res_max_current_1.ForeColor =
+                    result.IsAmpacity1Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
+
+                res_Iout.ForeColor =
+                    result.IsAmpacity2Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
+                res_max_current_2.ForeColor =
+                    result.IsAmpacity2Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
             }
             catch (Exception ex)
             {
@@ -455,9 +495,9 @@ namespace forms1
 
         private void OnKeyPress(object sender, KeyPressEventArgs e)
         {
-            
             if (e.KeyChar == 13)
-             {
+            {
+                SetTranscalc_H(edit_H.Text);
                 runTransCalc();
                 e.Handled = true;
             }
@@ -492,15 +532,101 @@ namespace forms1
 
         private void Temp_OnCheckedChanged(object sender, EventArgs e)
         {
-            edit_max_temp.Text = tc.UpdateTempText(edit_max_temp.Text);
-            tc.IsTempUnitsC = radioButton_tempC.Checked;
+            if (radioButton_tempC.Checked != tc.IsTempUnitsC)
+            {
+                edit_max_temp.Text = tc.UpdateTempText(edit_max_temp.Text);
+                tc.IsTempUnitsC = radioButton_tempC.Checked;
+                label_units_maxtemp.Text = tc.IsTempUnitsC ? "C:" : "F:";
+            }
         }
 
         private void H_OnCheckedChanged(object sender, EventArgs e)
         {
-            edit_H.Text = tc.UpdateHText(edit_H.Text);
-            tc.IsH_UnitsAmpturns = radioButton_H_amp_t.Checked;
-            label_units_H.Text = tc.IsH_UnitsAmpturns ? "Amp-t/m" : "Oe";
+            System.Windows.Forms.RadioButton rb = sender as System.Windows.Forms.RadioButton;
+            if (rb != null)
+            {
+                if (rb.Checked)
+                {
+                    if (radioButton_H_amp_t_m.Checked)
+                    {
+                        transCalc_H = tc.Convert_H(transCalc_H, TransCalc.H_UNITS.AMP_TURNS_M);
+                        label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_M];
+                        res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_M];
+                    }
+                    else if (radioButton_H_amp_t_in.Checked)
+                    {
+                        transCalc_H = tc.Convert_H(transCalc_H, TransCalc.H_UNITS.AMP_TURNS_IN);
+                        label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
+                        res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
+                    }
+                    else if (radioButton_H_oe.Checked)
+                    {
+                        transCalc_H = tc.Convert_H(transCalc_H, TransCalc.H_UNITS.OERSTEDS);
+                        label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
+                        res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
+                    }
+                    edit_H.Text = String.Format("{0:0.##}", transCalc_H);
+                }
+            }
+        }
+
+        private void SetTranscalc_H(string sval)
+        {
+            try
+            {
+                transCalc_H = double.Parse(edit_H.Text, NumberStyles.Float);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("H: " + ex.Message);
+            }
+
+        }
+
+        private void H_OnLeave(object sender, EventArgs e)
+        {
+            if (((TextBox)sender).Modified)
+            {
+                SetTranscalc_H(edit_H.Text);
+            }
+        }
+
+        private void groupBox_Paint(object sender, PaintEventArgs e)
+        {
+            GroupBox box = sender as GroupBox;
+            DrawGroupBox(box, e.Graphics, Color.Black, Color.DarkGray);
+        }
+        private void DrawGroupBox(GroupBox box, Graphics g, Color textColor, Color borderColor)
+        {
+            if (box != null)
+            {
+                Brush textBrush = new SolidBrush(textColor);
+                Brush borderBrush = new SolidBrush(borderColor);
+                Pen borderPen = new Pen(borderBrush);
+                SizeF strSize = g.MeasureString(box.Text, box.Font);
+                Rectangle rect = new Rectangle(box.ClientRectangle.X,
+                                               box.ClientRectangle.Y + (int)(strSize.Height / 2),
+                                               box.ClientRectangle.Width - 1,
+                                               box.ClientRectangle.Height - (int)(strSize.Height / 2) - 1);
+
+                // Clear text and border
+                g.Clear(Color.FromArgb (245, 245, 245));
+
+                // Draw text
+                g.DrawString(box.Text, box.Font, textBrush, box.Padding.Left + 5, 0);
+
+                // Drawing Border
+                //Left
+                g.DrawLine(borderPen, rect.Location, new Point(rect.X, rect.Y + rect.Height));
+                //Right
+                g.DrawLine(borderPen, new Point(rect.X + rect.Width, rect.Y), new Point(rect.X + rect.Width, rect.Y + rect.Height));
+                //Bottom
+                g.DrawLine(borderPen, new Point(rect.X, rect.Y + rect.Height), new Point(rect.X + rect.Width, rect.Y + rect.Height));
+                //Top1
+                g.DrawLine(borderPen, new Point(rect.X, rect.Y), new Point(rect.X + box.Padding.Left + 5, rect.Y));
+                //Top2
+                g.DrawLine(borderPen, new Point(rect.X + box.Padding.Left + 5 + (int)(strSize.Width), rect.Y), new Point(rect.X + rect.Width, rect.Y));
+            }
         }
     }
 }
