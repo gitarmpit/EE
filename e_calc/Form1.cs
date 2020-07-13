@@ -189,12 +189,23 @@ namespace forms1
 
         private void runTransCalc()
         {
+            ClearResults();
             try
             {
                 res_warnings.Text = "";
                 if (edit_max_temp.Text == "")
                 {
                     edit_max_temp.Text = "20";
+                }
+
+                if (edit_couplingCoeff.Text == "")
+                {
+                    edit_couplingCoeff.Text = "1";
+                }
+
+                if (edit_stackingFactor.Text == "")
+                {
+                    edit_stackingFactor.Text = "1";
                 }
 
                 trans_calc_input_text strin = new trans_calc_input_text();
@@ -211,7 +222,14 @@ namespace forms1
                 strin.Bmax = edit_Bmax.Text;
                 strin.permeability = edit_permeability.Text;
                 strin.Iex = edit_Iex.Text;
-                strin.H = transCalc_H.ToString();
+                if (transCalc_H > 0.00000001)
+                {
+                    strin.H = transCalc_H.ToString();
+                }
+                else
+                {
+                    strin.H = "";
+                }
                 strin.core_W = edit_coreSize_W.Text;
                 strin.core_H = edit_coreSize_H.Text;
                 strin.core_L = edit_coreSize_L.Text;
@@ -268,7 +286,7 @@ namespace forms1
                 res_max_current_2.Text = result.awg_max_current_amp_2;
                 res_L2.Text = result.L2;
                 res_Vout_idle.Text = result.Vout_idle;
-                res_Vout_imax.Text = result.Vout_imax;
+                res_Vout_imax.Text = result.Vout_load;
                 res_Iout.Text = result.Iout_max;
                 res_total_thickness_mm.Text = result.total_thickness_mm;
                 res_weight_g2.Text = result.weight_g_2;
@@ -284,18 +302,27 @@ namespace forms1
                     res_warnings.Text += msg + "\n";    
                 }
 
-                res_total_thickness_mm.ForeColor =
-                    result.IsWindowExceeded ? Color.Red : Color.FromArgb (0, 180, 0);
+                if (res_total_thickness_mm.Text != "- -")
+                {
+                    res_total_thickness_mm.ForeColor =
+                        result.IsWindowExceeded ? Color.Red : Color.FromArgb(0, 180, 0);
+                }
 
-                res_Ip_full_load.ForeColor =
-                    result.IsAmpacity1Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
-                res_max_current_1.ForeColor =
-                    result.IsAmpacity1Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
+                if (res_Ip_full_load.Text != "- -")
+                {
+                    res_Ip_full_load.ForeColor =
+                        result.IsAmpacity1Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
+                    res_max_current_1.ForeColor =
+                        result.IsAmpacity1Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
+                }
 
-                res_Iout.ForeColor =
-                    result.IsAmpacity2Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
-                res_max_current_2.ForeColor =
-                    result.IsAmpacity2Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
+                if (res_Iout.Text != "- -")
+                {
+                    res_Iout.ForeColor =
+                        result.IsAmpacity2Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
+                    res_max_current_2.ForeColor =
+                        result.IsAmpacity2Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
+                }
             }
             catch (Exception ex)
             {
@@ -320,31 +347,88 @@ namespace forms1
 
         private void OnClear(object sender, EventArgs e)
         {
+            edit_Bmax.Text = "";
+            edit_H.Text = "";
+            edit_permeability.Text = "";
+            edit_Iex.Text = "";
             edit_coreSize_L.Text = "";
             edit_coreSize_W.Text = "";
             edit_coreSize_H.Text = "";
             edit_Ae_W.Text = "";
             edit_Ae_H.Text = "";
-            edit_N1.Text = "";
+            edit_mpath_H.Text = "";
+            edit_mpath_W.Text = "";
+            edit_windowSize.Text = "";
+            edit_couplingCoeff.Text = "";
+            edit_stackingFactor.Text = "";
+            edit_insulationThickness.Text = "";
+            edit_Vout.Text = "";
+            edit_Iout_max.Text = "";
+            edit_max_temp.Text = "";
+
+            edit_awg1.Text = "";
             edit_Wfactor1.Text = "";
+            edit_N1.Text = "";
             edit_N_PerLayer1.Text = "";
-            res_lastLayerTurns_1.Text = "";
-            res_length_ft_1.Text = "";
-            res_length_m_1.Text = "";
-            res_resistance_1.Text = "";
-            res_thickness_mm_1.Text = "";
-            res_totalLayers_1.Text = "";
+            edit_power_factor_1.Text = "";
+            edit_ampacity1.Text = "";
 
-            edit_N2.Text = "";
+            edit_awg2.Text = "";
             edit_Wfactor2.Text = "";
+            edit_N2.Text = "";
             edit_N_PerLayer2.Text = "";
-            res_lastLayerTurns_2.Text = "";
-            res_length_ft_2.Text = "";
-            res_length_m_2.Text = "";
-            res_resistance_2.Text = "";
-            res_thickness_mm_2.Text = "";
-            res_totalLayers_2.Text = "";
+            edit_ampacity2.Text = "";
+            transCalc_H = 0;
 
+            ClearResults();
+        }
+
+        private void ClearResults()
+        {
+
+            res_turns_1.Text = "- -";
+            res_turns_per_layer_1.Text = "- -";
+            res_totalLayers_1.Text = "- -";
+            res_lastLayerTurns_1.Text = "- -";
+            res_length_m_1.Text = "- -";
+            res_length_ft_1.Text = "- -";
+            res_thickness_mm_1.Text = "- -";
+            res_resistance_1.Text = "- -";
+            res_mpath_m.Text = "- -";
+            res_L1.Text = "- -";
+            res_Bmax.Text = "- -";
+            res_permeability.Text = "- -";
+            res_amptm.Text = "- -";
+            res_Iex.Text = "- -";
+            res_Ip_full_load.Text = "- -";
+            res_Ip_full_load.ForeColor = Color.Black;
+            res_max_current_1.Text = "- -";
+            res_max_current_1.ForeColor = Color.Black;
+            res_weight_g1.Text = "- -";
+
+            res_turns_2.Text = "- -";
+            res_turns_per_layer_2.Text = "- -";
+            res_totalLayers_2.Text = "- -";
+            res_lastLayerTurns_2.Text = "- -";
+            res_length_m_2.Text = "- -";
+            res_length_ft_2.Text = "- -";
+            res_thickness_mm_2.Text = "- -";
+            res_resistance_2.Text = "- -";
+            res_total_thickness_mm.Text = "- -";
+            res_total_thickness_mm.ForeColor = Color.Black;
+            res_L2.Text = "- -";
+            res_Vout_idle.Text = "- -";
+            res_Vout_imax.Text = "- -";
+            res_Iout.Text = "- -";
+            res_max_current_2.Text = "- -";
+            res_max_current_2.ForeColor = Color.Black;
+            res_weight_g2.Text = "- -";
+            res_turns_ratio.Text = "- -";
+            res_wire_weight_ratio.Text = "- -";
+            res_wire_total_mass.Text = "- -";
+            res_powerVA.Text = "- -";
+            res_csa_ratio.Text = "- -";
+            res_warnings.Text = "";
         }
 
         private string RtoText (double r)
@@ -534,7 +618,10 @@ namespace forms1
         {
             if (radioButton_tempC.Checked != tc.IsTempUnitsC)
             {
-                edit_max_temp.Text = tc.UpdateTempText(edit_max_temp.Text);
+                if (edit_max_temp.Text != "")
+                {
+                    edit_max_temp.Text = tc.UpdateTempText(edit_max_temp.Text);
+                }
                 tc.IsTempUnitsC = radioButton_tempC.Checked;
                 label_units_maxtemp.Text = tc.IsTempUnitsC ? "C:" : "F:";
             }
@@ -565,7 +652,10 @@ namespace forms1
                         label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
                         res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
                     }
-                    edit_H.Text = String.Format("{0:0.##}", transCalc_H);
+                    if (transCalc_H > 0.000000001)
+                    {
+                        edit_H.Text = String.Format("{0:0.##}", transCalc_H);
+                    }
                 }
             }
         }
@@ -574,7 +664,10 @@ namespace forms1
         {
             try
             {
-                transCalc_H = double.Parse(edit_H.Text, NumberStyles.Float);
+                if (edit_H.Text != "")
+                {
+                    transCalc_H = double.Parse(edit_H.Text, NumberStyles.Float);
+                }
             }
             catch (Exception ex)
             {

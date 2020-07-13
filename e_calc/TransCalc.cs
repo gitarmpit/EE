@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Windows.Forms.VisualStyles;
 using System.CodeDom.Compiler;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace forms1
 {
@@ -75,7 +76,7 @@ namespace forms1
         public string awg_max_current_amp_2;
         public string L2;
         public string Vout_idle;
-        public string Vout_imax;
+        public string Vout_load;
         public string Iout_max;
         public string total_thickness_mm;
         public string turns_ratio;
@@ -89,43 +90,42 @@ namespace forms1
         public bool IsAmpacity1Exceeded;
         public bool IsAmpacity2Exceeded;
 
-        public trans_calc_result_text(trans_calc_result res)
+        public trans_calc_result_text(trans_calc_result res, bool processSecondary)
         {
             this.warnings = new List<string>();
+            IsAmpacity1Exceeded = false;
+            IsAmpacity2Exceeded = false;
+            IsWindowExceeded = false;
 
-            if (res.Ip_full_load > res.primary.awg_max_current_amp)
+            if (processSecondary)
             {
-                var Ip = String.Format("{0:0.##}", res.Ip_full_load);
-                var maxAmpacity = String.Format("{0:0.##}", res.primary.awg_max_current_amp);
-                warnings.Add($"Ip={Ip}A exceeds the maximum ampacity of the primary={maxAmpacity}A");
-                IsAmpacity1Exceeded = true;
-            }
-            else
-            {
-                IsAmpacity1Exceeded = false;
-            }
+                if (res.Ip_full_load > 0.00000001 &&
+                    res.primary.awg_max_current_amp > 0.00000001 &&
+                    res.Ip_full_load > res.primary.awg_max_current_amp)
+                {
+                    var Ip = String.Format("{0:0.##}", res.Ip_full_load);
+                    var maxAmpacity = String.Format("{0:0.##}", res.primary.awg_max_current_amp);
+                    warnings.Add($"Ip={Ip}A exceeds the maximum ampacity of the primary={maxAmpacity}A");
+                    IsAmpacity1Exceeded = true;
+                }
 
-            if (1 - res.secondary.awg_max_current_amp / res.I_out_max  > 0.05)
-            {
-                var Iout = String.Format("{0:0.##}", res.I_out_max);
-                var maxAmpacity = String.Format("{0:0.##}", res.secondary.awg_max_current_amp);
-                warnings.Add($"Iout={Iout}A exceeds the maximum ampacity of the secondary={maxAmpacity}A");
-                IsAmpacity2Exceeded = true;
-            }
-            else
-            {
-                IsAmpacity2Exceeded = false;
-            }
+                if (res.Iout_max > 0.00000001 &&
+                    res.secondary.awg_max_current_amp > 0.0000001 &&
+                    (1 - res.secondary.awg_max_current_amp / res.Iout_max) > 0.05)
+                {
+                    var Iout = String.Format("{0:0.##}", res.Iout_max);
+                    var maxAmpacity = String.Format("{0:0.##}", res.secondary.awg_max_current_amp);
+                    warnings.Add($"Iout={Iout}A exceeds the maximum ampacity of the secondary={maxAmpacity}A");
+                    IsAmpacity2Exceeded = true;
+                }
 
-            if (1 - res.WindowSize / res.total_thickness_mm > 0.05)
-            {
-                var totalBuildup = String.Format("{0:0.#}", res.total_thickness_mm);
-                warnings.Add($"Total build-up: {totalBuildup}mm exceeds the maximum window size: {res.WindowSize}mm");
-                IsWindowExceeded = true;
-            }
-            else
-            {
-                IsWindowExceeded = false;
+                if (res.WindowSize > 0.0000001 && 
+                    (1 - res.WindowSize / res.total_thickness_mm) > 0.05)
+                {
+                    var totalBuildup = String.Format("{0:0.#}", res.total_thickness_mm);
+                    warnings.Add($"Total build-up: {totalBuildup}mm exceeds the maximum window size: {res.WindowSize}mm");
+                    IsWindowExceeded = true;
+                }
             }
 
             this.length_m_1 = String.Format("{0:0.##}", res.primary.length_m);
@@ -136,80 +136,113 @@ namespace forms1
             this.N_per_layer_1 = res.primary.N_per_layer.ToString();
             this.totalLayers_1 = res.primary.totalLayers.ToString();
             this.lastLayerTurns_1 =
-                (res.primary.lastLayerTurns != 0) ? res.primary.lastLayerTurns.ToString() : "";
+                (res.primary.lastLayerTurns != 0) ? res.primary.lastLayerTurns.ToString() : "- -";
             this.mpath_l_m = String.Format("{0:0.##}", res.mpath_l_m);
             this.awg_max_current_amp_1 =
-                (res.primary.awg_max_current_amp > 0.0000001) ? String.Format("{0:0.##}", res.primary.awg_max_current_amp) : "";
+                (res.primary.awg_max_current_amp > 0.0000001) ? String.Format("{0:0.##}", res.primary.awg_max_current_amp) : "- -";
             this.L1 =
-                (res.primary.L > 0.0000001) ? String.Format("{0:0.##}", res.primary.L) : "";
+                (res.primary.L > 0.0000001) ? String.Format("{0:0.##}", res.primary.L) : "- -";
 
             this.B_max = String.Format("{0:0.##}", res.B_max);
             this.H_amp_t_m =
-                (res.H_amp_t_m > 0.0000001) ? String.Format("{0:0.##}", res.H_amp_t_m) : "";
+                (res.H > 0.0000001) ? String.Format("{0:0.##}", res.H) : "- -";
 
             this.I_ex_amp =
-                (res.I_ex_amp > 0.0000001) ? String.Format("{0:0.##}", res.I_ex_amp) : "";
+                (res.I_ex_amp > 0.0000001) ? String.Format("{0:0.##}", res.I_ex_amp) : "- -";
 
             this.permeability =
-                (res.permeability > 0.0000001) ? String.Format("{0:0.##}", res.permeability) : "";
+                (res.permeability > 0.0000001) ? String.Format("{0:0.##}", res.permeability) : "- -";
 
             this.weight_g_1 =
-                (res.primary.mass > 0.0000001) ? String.Format("{0:0.##}", res.primary.mass) : "";
+                (res.primary.mass > 0.0000001) ? String.Format("{0:0.##}", res.primary.mass) : "- -";
 
-            this.length_m_2 = String.Format("{0:0.##}", res.secondary.length_m);
-            this.length_ft_2 = String.Format("{0:0.##}", res.secondary.length_ft);
-            this.thickness_mm_2 = String.Format("{0:0.##}", res.secondary.thickness_mm);
-            this.resistance_2 = String.Format("{0:0.##}", res.secondary.resistance);
-            this.N_2 = res.secondary.N.ToString();
-            this.N_per_layer_2 = res.secondary.N_per_layer.ToString();
-            this.totalLayers_2 = res.secondary.totalLayers.ToString();
-            this.lastLayerTurns_2 =
-                (res.secondary.lastLayerTurns != 0) ? res.secondary.lastLayerTurns.ToString() : "";
-
-            this.awg_max_current_amp_2 =
-                (res.secondary.awg_max_current_amp > 0.0000001) ? String.Format("{0:0.##}", res.secondary.awg_max_current_amp) : "";
-
-            this.L2 =
-                (res.secondary.L > 0.0000001) ? String.Format("{0:0.##}", res.secondary.L) : "";
-
-            this.weight_g_2 =
-                (res.secondary.mass > 0.0000001) ? String.Format("{0:0.##}", res.secondary.mass) : "";
-
-            this.total_thickness_mm =
-                (res.total_thickness_mm > 0.0000001) ? String.Format("{0:0.##}", res.total_thickness_mm) : "";
-
-            this.Vout_idle = String.Format("{0:0.##}", res.Vout_idle);
-            this.Vout_imax = String.Format("{0:0.##}", res.Vout_imax);
-            this.Iout_max = String.Format("{0:0.##}", res.I_out_max);
-            if (res.turns_ratio > 1)
+            /////////////////////////////////
+            if (processSecondary)
             {
-                this.turns_ratio = String.Format("{0:0.##}", res.turns_ratio) + ":1";
+                this.length_m_2 = String.Format("{0:0.##}", res.secondary.length_m);
+                this.length_ft_2 = String.Format("{0:0.##}", res.secondary.length_ft);
+                this.thickness_mm_2 = String.Format("{0:0.##}", res.secondary.thickness_mm);
+                this.resistance_2 = String.Format("{0:0.##}", res.secondary.resistance);
+                this.N_2 = res.secondary.N.ToString();
+                this.N_per_layer_2 = res.secondary.N_per_layer.ToString();
+                this.totalLayers_2 = res.secondary.totalLayers.ToString();
+                this.lastLayerTurns_2 =
+                    (res.secondary.lastLayerTurns != 0) ? res.secondary.lastLayerTurns.ToString() : "";
+
+                this.awg_max_current_amp_2 =
+                    (res.secondary.awg_max_current_amp > 0.0000001) ? String.Format("{0:0.##}", res.secondary.awg_max_current_amp) : "- -";
+
+                this.L2 =
+                    (res.secondary.L > 0.0000001) ? String.Format("{0:0.##}", res.secondary.L) : "- -";
+
+                this.weight_g_2 =
+                    (res.secondary.mass > 0.0000001) ? String.Format("{0:0.##}", res.secondary.mass) : "- -";
+
+                this.total_thickness_mm =
+                    (res.total_thickness_mm > 0.0000001) ? String.Format("{0:0.##}", res.total_thickness_mm) : "- -";
+
+                this.Vout_idle = String.Format("{0:0.##}", res.Vout_idle);
+                this.Vout_load = (res.Vout_load > 0.0000001) ?
+                    String.Format("{0:0.##}", res.Vout_load) : "- -";
+                this.Iout_max =
+                    (res.Iout_max > 0.0000001) ? String.Format("{0:0.##}", res.Iout_max) : "- -";
+                
+                if (res.turns_ratio > 1)
+                {
+                    this.turns_ratio = String.Format("{0:0.##}", res.turns_ratio) + ":1";
+                }
+                else
+                {
+                    this.turns_ratio = "1:" + String.Format("{0:0.##}", 1 / res.turns_ratio);
+                }
+                if (res.wire_csa_ratio > 1)
+                {
+                    this.wire_csa_ratio = String.Format("{0:0.##}", res.wire_csa_ratio) + ":1";
+
+                }
+                else
+                {
+                    this.wire_csa_ratio = "1:" + String.Format("{0:0.##}", 1 / res.wire_csa_ratio);
+                }
+                this.wire_total_weight = String.Format("{0:0.##}", res.wire_total_weight);
+
+                if (res.wire_weight_ratio > 1)
+                {
+                    this.wire_weight_ratio = String.Format("{0:0.##}", res.wire_weight_ratio) + ":1";
+                }
+                else
+                {
+                    this.wire_weight_ratio = "1:" + String.Format("{0:0.##}", 1 / res.wire_weight_ratio);
+                }
+                this.Ip_full_load = (res.Ip_full_load > 0.00000001) ?
+                    String.Format("{0:0.##}", res.Ip_full_load) : "- -";
+                this.power_VA = (res.power_VA > 0.0000000001) ?
+                    String.Format("{0:0.##}", res.power_VA) : "- -";
             }
             else
             {
-                this.turns_ratio = "1:" + String.Format("{0:0.##}", 1 / res.turns_ratio);
+                this.length_m_2 = "- -";
+                this.length_ft_2 = "- -";
+                this.thickness_mm_2 = "- -";
+                this.resistance_2 = "- -";
+                this.N_2 = "- -";
+                this.N_per_layer_2 = "- -";
+                this.totalLayers_2 = "- -";
+                this.lastLayerTurns_2 = "- -";
+                this.awg_max_current_amp_2 = "- -";
+                this.L2 = "- -";
+                this.weight_g_2 = "- -";
+                this.total_thickness_mm = "- -";
+                this.Vout_idle = "- -";
+                this.Vout_load = "- -";
+                this.Iout_max = "- -";
+                this.turns_ratio = "- -";
+                this.wire_csa_ratio = "- -";
+                this.wire_total_weight = "- -";
+                this.wire_weight_ratio = "- -";
+                this.Ip_full_load = "- -";
+                this.power_VA = "- -";
             }
-            if (res.wire_csa_ratio > 1)
-            {
-                this.wire_csa_ratio = String.Format("{0:0.##}", res.wire_csa_ratio) + ":1";
-
-            }
-            else
-            {
-                this.wire_csa_ratio = "1:" + String.Format("{0:0.##}", 1 / res.wire_csa_ratio);
-            }
-            this.wire_total_weight = String.Format("{0:0.##}", res.wire_total_weight);
-
-            if (res.wire_weight_ratio > 1)
-            {
-                this.wire_weight_ratio = String.Format("{0:0.##}", res.wire_weight_ratio) + ":1";
-            }
-            else
-            {
-                this.wire_weight_ratio = "1:" + String.Format("{0:0.##}", 1 / res.wire_weight_ratio);
-            }
-            this.Ip_full_load = String.Format("{0:0.##}", res.Ip_full_load);
-            this.power_VA = String.Format("{0:0.##}", res.power_VA);
         }
     }
 
@@ -237,10 +270,10 @@ namespace forms1
         public double B_max;
         public double permeability;
         public double I_ex_amp;
-        public double H_amp_t_m;
+        public double H;
         public double Vout_idle;
-        public double Vout_imax;
-        public double I_out_max;
+        public double Vout_load;
+        public double Iout_max;
         public double total_thickness_mm;
         public double turns_ratio;
         public double wire_total_weight;
@@ -610,23 +643,26 @@ namespace forms1
             }
 
             res.awg = awg;
-            if (wfactor != "")
+            if (wfactor == "")
             {
-                res.w_factor = double.Parse(wfactor, NumberStyles.Float);
-                if (res.w_factor < .5 || res.w_factor > 1)
-                {
-                    throw new Exception($"{winding}: W factor has to be in the range of 0.5 to 1");
-                }
+                throw new Exception("W factor not set");
+            }
 
-                if (N != "")
+            res.w_factor = double.Parse(wfactor, NumberStyles.Float);
+            if (res.w_factor < .5 || res.w_factor > 1)
+            {
+                throw new Exception($"{winding}: W factor has to be in the range of 0.5 to 1");
+            }
+
+            if (N != "")
+            {
+                res.N = int.Parse(N, NumberStyles.Integer);
+                if (res.N < 1)
                 {
-                    res.N = int.Parse(N, NumberStyles.Integer);
-                    if (res.N < 1)
-                    {
-                        throw new Exception("Invalid value for turns");
-                    }
+                    throw new Exception("Invalid value for turns");
                 }
             }
+
 
             if (N_per_layer != "")
             {
@@ -693,17 +729,17 @@ namespace forms1
                 L1 = V_in / (I_ex * omega);
             }
 
-            if (u > 0.00000000001 && (u < 1000 || u > 10000))
+            if (u > 0.00000000001 && (u < 100 || u > 20000))
             {
-                throw new Exception($"Calculated permeability={u} is not in the expected range of 1000 to 10000. Check the values of Bmax/I_ex/H Amp-t-m");
+                throw new Exception($"Calculated permeability={u} is not in the expected range of 100 to 20000. Check the values of Bmax/I_ex/H Amp-t-m");
             }
-            if (H_peak > 0.00000000001 && (H_peak < 1 || H_peak > 2000))
+            if (H_peak > 0.00000000001 && (H_peak < 1 || H_peak > 5000))
             {
-                throw new Exception($"Calculated H={H_peak} Amp-t-m is not in the expected range of 1 to 2000. Check the values of Bmax/I_ex/Amp-t-m");
+                throw new Exception($"Calculated H={H_peak} Amp-t-m is not in the expected range of 1 to 5000. Check the values of Bmax/I_ex/Amp-t-m");
             }
 
             result.B_max = input.common.B_max;
-            result.H_amp_t_m = H_peak;
+            result.H = H_peak;
             result.I_ex_amp = I_ex;
             result.permeability = u;
 
@@ -711,13 +747,12 @@ namespace forms1
             trans_calc_result_winding w1 = calculateWinding(input.common, input.primary);
             result.primary = w1;
             result.primary.L = L1;
-            result.total_thickness_mm = result.primary.thickness_mm + input.common.InsulationThickness;
-
-
  
             //Calculate secondary if configured 
             if (input.processSecondary)
             {
+                result.total_thickness_mm = result.primary.thickness_mm + input.common.InsulationThickness;
+
                 if (input.common.Vout_idle > 0.00000001 && input.secondary.N == 0)
                 {
                     input.secondary.N = (int) (input.primary.N / input.common.Vin * input.common.Vout_idle / input.common.CouplingCoeff);
@@ -728,7 +763,7 @@ namespace forms1
                 }
 
                 result.turns_ratio = (double)input.primary.N / (double)input.secondary.N;
-                result.I_out_max = input.common.Iout_max;
+                result.Iout_max = input.common.Iout_max;
 
                 input.common.Core_H += w1.thickness_mm / 1000;
                 input.common.Core_W += w1.thickness_mm / 1000;
@@ -742,28 +777,43 @@ namespace forms1
                 result.Vout_idle = input.common.Vout_idle;
                 double ratio_squared = Math.Pow(w2.N / w1.N, 2);
                 double total_R = w1.resistance * ratio_squared + w2.resistance;
-                double regulation_vdrop = input.common.Iout_max * total_R;
-                if (regulation_vdrop > result.Vout_idle / 2)
-                {
-                    throw new Exception($"Voltage drop too high: {regulation_vdrop}. Check Iout, Vout, wire ga");
-                }
-                result.Vout_imax = result.Vout_idle - regulation_vdrop;
 
-                result.I_out_max = input.common.Iout_max;
+                if (input.common.Iout_max > 0.0000000001)
+                {
+                    double regulation_vdrop = input.common.Iout_max * total_R;
+                    if (regulation_vdrop > result.Vout_idle / 2)
+                    {
+                        throw new Exception($"Voltage drop too high: {regulation_vdrop}. Check Iout, Vout, wire ga");
+                    }
+                    result.Vout_load = result.Vout_idle - regulation_vdrop;
+                    result.Iout_max = input.common.Iout_max;
+                    result.power_VA = result.Iout_max * result.Vout_load;
+                }
+
                 result.total_thickness_mm += w2.thickness_mm;
                 result.wire_total_weight = w1.mass + w2.mass;
                 result.wire_csa_ratio = input.primary.awg.Csa_m2 / input.secondary.awg.Csa_m2;
                 result.wire_weight_ratio = w1.mass / w2.mass;
-                result.Ip_full_load = 
-                    Math.Sqrt (Math.Pow (result.I_out_max / result.turns_ratio, 2) + 
+                
+                if (input.common.Iout_max > 0.0000000001)
+                {
+                    result.Ip_full_load =
+                    Math.Sqrt(Math.Pow(result.Iout_max / result.turns_ratio, 2) +
                     Math.Pow(result.I_ex_amp, 2));
-                result.power_VA = result.I_out_max * result.Vout_imax;
-
+                }
             }
 
             result.WindowSize = input.common.WindowSize;
+            if (H_units == H_UNITS.AMP_TURNS_IN)
+            {
+                result.H *= 0.0254;
+            }
+            else if (H_units == H_UNITS.OERSTEDS)
+            {
+                result.H = AmpTurns_to_Oe(result.H);
+            }
 
-            return new trans_calc_result_text(result); 
+            return new trans_calc_result_text(result, input.processSecondary); 
         }
         private trans_calc_input convertTextToInput(trans_calc_input_text strin) 
         {
@@ -909,16 +959,14 @@ namespace forms1
                 res.common.mpath_l_cm = (Mpath_H + Mpath_W) * 2;
             }
 
-            if (strin.window_size == "")
+            if (strin.window_size != "")
             {
-                throw new Exception("Window size not set");
-            }
-
-            // in cm
-            res.common.WindowSize = double.Parse(strin.window_size, NumberStyles.Float);
-            if (res.common.WindowSize < 0.1 || res.common.WindowSize > 50)
-            {
-                throw new Exception("Invalid window size in cm");
+                // in cm
+                res.common.WindowSize = double.Parse(strin.window_size, NumberStyles.Float);
+                if (res.common.WindowSize < 0.1 || res.common.WindowSize > 50)
+                {
+                    throw new Exception("Invalid window size in cm");
+                }
             }
 
             if (strin.coupling_coeff == "")
@@ -943,15 +991,17 @@ namespace forms1
                 throw new Exception("Stacking factor has to be in the range of 0.5 to 1.0");
             }
 
-            if (strin.insulationThickness == "")
+            if (strin.insulationThickness != "")
             {
-                throw new Exception("Insulation thickness not set");
-            }
-
-            res.common.InsulationThickness = double.Parse(strin.insulationThickness, NumberStyles.Float);
-            if (res.common.InsulationThickness < 0 || res.common.InsulationThickness > res.common.WindowSize)
+                res.common.InsulationThickness = double.Parse(strin.insulationThickness, NumberStyles.Float);
+            }            
+            
+            if (res.common.WindowSize > 0.0000001)
             {
-                throw new Exception("Insulation thickness in mm cannot exceed window size");
+                if (res.common.InsulationThickness < 0 || res.common.InsulationThickness > res.common.WindowSize)
+                {
+                    throw new Exception("Insulation thickness in mm cannot exceed window size");
+                }
             }
 
             if (strin.Vout != "")
@@ -1000,11 +1050,6 @@ namespace forms1
 
         private trans_calc_result_winding calculateWinding(trans_calc_input_common common, trans_calc_input_winding w)
         {
-            if (w.w_factor < 0.000000000001)
-            {
-                throw new Exception("W factor not set");
-            }
-
             double dl = w.awg.Diameter_m / w.w_factor;
             double dh = w.awg.Diameter_m / w.w_factor;
 
