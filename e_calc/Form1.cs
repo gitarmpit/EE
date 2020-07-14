@@ -142,6 +142,7 @@ namespace forms1
                 edit_ampacity2.Text = input.ampacity2;
 
                 edit_max_temp.Text = input.maxTemp;
+                edit_max_eq_R.Text = input.max_eq_R;
 
                 if (tc.IsTempUnitsC)
                 {
@@ -172,6 +173,20 @@ namespace forms1
                     radioButton_H_oe.Select();
                     label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
                     res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
+                }
+
+                if (tc.IsMassUnits_g)
+                {
+                    radioButton_weight_g.Select();
+                    res_label_units_weight1.Text = "g:";
+                    res_label_units_weight2.Text = "g:";
+                    res_label_units_total_weight.Text = "g:";
+                }
+                else
+                {
+                    radioButton_weight_lbs.Select();
+                    res_label_units_weight1.Text = "lbs:";
+                    res_label_units_total_weight.Text = "lbs:";
                 }
             }
             catch (Exception ex)
@@ -256,8 +271,11 @@ namespace forms1
                 strin.N2 = edit_N2.Text;
                 strin.N_per_layer2 = edit_N_PerLayer2.Text;
                 strin.maxTemp = edit_max_temp.Text;
+                strin.max_eq_R = edit_max_eq_R.Text;
 
                 trans_calc_result_text result = tc.Calculate(strin);
+
+                SetResultUnits();
 
                 res_length_m_1.Text = result.length_m_1;
                 res_length_ft_1.Text = result.length_ft_1;
@@ -296,6 +314,8 @@ namespace forms1
                 res_wire_weight_ratio.Text = result.wire_weight_ratio;
                 res_Ip_full_load.Text = result.Ip_full_load;
                 res_powerVA.Text = result.power_VA;
+                res_total_eq_R.Text = result.total_eq_R;
+                res_regulation.Text = result.regulation;
 
                 foreach (string msg in result.warnings)
                 {
@@ -306,6 +326,12 @@ namespace forms1
                 {
                     res_total_thickness_mm.ForeColor =
                         result.IsWindowExceeded ? Color.Red : Color.FromArgb(0, 180, 0);
+                }
+
+                if (res_total_eq_R.Text != "- -")
+                {
+                    res_total_eq_R.ForeColor =
+                        result.IsMaxResistanceExceeded ? Color.Red : Color.FromArgb(0, 180, 0);
                 }
 
                 if (res_Ip_full_load.Text != "- -")
@@ -379,6 +405,7 @@ namespace forms1
             edit_N_PerLayer2.Text = "";
             edit_ampacity2.Text = "";
             transCalc_H = 0;
+            edit_max_eq_R.Text = "";
 
             ClearResults();
         }
@@ -428,6 +455,8 @@ namespace forms1
             res_wire_total_mass.Text = "- -";
             res_powerVA.Text = "- -";
             res_csa_ratio.Text = "- -";
+            res_regulation.Text = "- -";
+            res_total_eq_R.Text = "- -";
             res_warnings.Text = "";
         }
 
@@ -557,9 +586,7 @@ namespace forms1
                 parseBeta();
                 e.Handled = true;
                 e.SuppressKeyPress = true;
-
             }
-
         }
 
         private void radioButton_R_CheckedChanged(object sender, EventArgs e)
@@ -627,6 +654,35 @@ namespace forms1
             }
         }
 
+        private void SetResultUnits()
+        {
+            res_label_units_weight1.Text = tc.IsMassUnits_g ? "g:" : "lbs:";
+            res_label_units_weight2.Text = tc.IsMassUnits_g ? "g:" : "lbs:";
+            res_label_units_total_weight.Text = tc.IsMassUnits_g ? "g:" : "lbs:";
+
+            if (radioButton_H_amp_t_m.Checked)
+            {
+                res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_M];
+            }
+            else if (radioButton_H_amp_t_in.Checked)
+            {
+                res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
+            }
+            else if (radioButton_H_oe.Checked)
+            {
+                res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
+            }
+        }
+
+        private void Weight_OnCheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton_weight_g.Checked != tc.IsMassUnits_g)
+            {
+                tc.IsMassUnits_g = radioButton_weight_g.Checked;
+            }
+
+        }
+
         private void H_OnCheckedChanged(object sender, EventArgs e)
         {
             System.Windows.Forms.RadioButton rb = sender as System.Windows.Forms.RadioButton;
@@ -638,19 +694,16 @@ namespace forms1
                     {
                         transCalc_H = tc.Convert_H(transCalc_H, TransCalc.H_UNITS.AMP_TURNS_M);
                         label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_M];
-                        res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_M];
                     }
                     else if (radioButton_H_amp_t_in.Checked)
                     {
                         transCalc_H = tc.Convert_H(transCalc_H, TransCalc.H_UNITS.AMP_TURNS_IN);
                         label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
-                        res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
                     }
                     else if (radioButton_H_oe.Checked)
                     {
                         transCalc_H = tc.Convert_H(transCalc_H, TransCalc.H_UNITS.OERSTEDS);
                         label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
-                        res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
                     }
                     if (transCalc_H > 0.000000001)
                     {
@@ -667,6 +720,10 @@ namespace forms1
                 if (edit_H.Text != "")
                 {
                     transCalc_H = double.Parse(edit_H.Text, NumberStyles.Float);
+                }
+                else
+                {
+                    transCalc_H = 0;
                 }
             }
             catch (Exception ex)

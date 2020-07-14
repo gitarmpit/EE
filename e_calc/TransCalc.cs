@@ -45,6 +45,7 @@ namespace forms1
         public string ampacity2;
         public string maxTemp;
         public string pf;
+        public string max_eq_R;
     }
     struct trans_calc_result_text
     {
@@ -85,19 +86,23 @@ namespace forms1
         public string wire_weight_ratio;
         public string Ip_full_load;
         public string power_VA;
+        public string total_eq_R;
+        public string regulation;
         public List<string> warnings;
         public bool IsWindowExceeded;
         public bool IsAmpacity1Exceeded;
         public bool IsAmpacity2Exceeded;
+        public bool IsMaxResistanceExceeded;
 
-        public trans_calc_result_text(trans_calc_result res, bool processSecondary)
+        public trans_calc_result_text(trans_calc_result res, trans_calc_input input)
         {
             this.warnings = new List<string>();
             IsAmpacity1Exceeded = false;
             IsAmpacity2Exceeded = false;
             IsWindowExceeded = false;
+            IsMaxResistanceExceeded = false;
 
-            if (processSecondary)
+            if (input.processSecondary)
             {
                 if (res.Ip_full_load > 0.00000001 &&
                     res.primary.awg_max_current_amp > 0.00000001 &&
@@ -119,13 +124,21 @@ namespace forms1
                     IsAmpacity2Exceeded = true;
                 }
 
-                if (res.WindowSize > 0.0000001 && 
-                    (1 - res.WindowSize / res.total_thickness_mm) > 0.05)
+                if (input.common.WindowSize > 0.0000001 && 
+                    (1 - input.common.WindowSize / res.total_thickness_mm) > 0.05)
                 {
                     var totalBuildup = String.Format("{0:0.#}", res.total_thickness_mm);
-                    warnings.Add($"Total build-up: {totalBuildup}mm exceeds the maximum window size: {res.WindowSize}mm");
+                    warnings.Add($"Total build-up: {totalBuildup}mm exceeds the maximum window size: {input.common.WindowSize}mm");
                     IsWindowExceeded = true;
                 }
+
+                if (input.common.max_res_R > 0.0000001 && res.total_eq_R > input.common.max_res_R)
+                {
+                    var total_eq_R = String.Format("{0:0.#}", res.total_eq_R);
+                    warnings.Add($"Total R: {total_eq_R} exceeds the maximum total R: {input.common.max_res_R}");
+                    IsMaxResistanceExceeded = true;
+                }
+
             }
 
             this.length_m_1 = String.Format("{0:0.##}", res.primary.length_m);
@@ -157,7 +170,7 @@ namespace forms1
                 (res.primary.mass > 0.0000001) ? String.Format("{0:0.##}", res.primary.mass) : "- -";
 
             /////////////////////////////////
-            if (processSecondary)
+            if (input.processSecondary)
             {
                 this.length_m_2 = String.Format("{0:0.##}", res.secondary.length_m);
                 this.length_ft_2 = String.Format("{0:0.##}", res.secondary.length_ft);
@@ -218,6 +231,12 @@ namespace forms1
                     String.Format("{0:0.##}", res.Ip_full_load) : "- -";
                 this.power_VA = (res.power_VA > 0.0000000001) ?
                     String.Format("{0:0.##}", res.power_VA) : "- -";
+
+                this.regulation = (res.regulation > 0.0000000001) ?
+                    String.Format("{0:0.##}", res.regulation) : "- -";
+
+                this.total_eq_R = (res.total_eq_R > 0.0000000001) ?
+                    String.Format("{0:0.##}", res.total_eq_R) : "- -";
             }
             else
             {
@@ -242,6 +261,8 @@ namespace forms1
                 this.wire_weight_ratio = "- -";
                 this.Ip_full_load = "- -";
                 this.power_VA = "- -";
+                this.total_eq_R = "- -";
+                this.regulation = "- -";
             }
         }
     }
@@ -281,7 +302,8 @@ namespace forms1
         public double wire_weight_ratio;
         public double Ip_full_load;
         public double power_VA;
-        public double WindowSize;
+        public double total_eq_R;
+        public double regulation;
     }
 
     struct trans_calc_input_common
@@ -302,6 +324,7 @@ namespace forms1
 
         public double mpath_l_cm;
         public double max_temp;
+        public double max_res_R;
 
         public double WindowSize;
         public double CouplingCoeff;
@@ -395,6 +418,7 @@ namespace forms1
     {
         private static double u0 = 4 * Math.PI * 10e-8;
         private List<AWG> awgValues = new List<AWG>();
+        private double lbs_in_g = 0.00220462262185;
 
         public enum H_UNITS
         {
@@ -528,7 +552,7 @@ namespace forms1
             string csv = File.ReadAllText("transcalc.csv");
             csv = csv.Trim(new char[] { '\r', '\n', ' ' });
             string[] values = csv.Split(',');
-            if (values.Length == 33)
+            if (values.Length == 34)
             {
                 string mains = values[0];
                 if (mains != "120" && mains != "220" )
@@ -569,12 +593,13 @@ namespace forms1
                 input_text.ampacity2 = values[28];
 
                 input_text.maxTemp = values[29];
+                input_text.max_eq_R = values[30];
 
-                if (values[30] == "0")
+                if (values[31] == "0")
                 {
                     tempUnitsC = true;
                 }
-                else if (values[30] == "1")
+                else if (values[31] == "1")
                 {
                     tempUnitsC = false;
                 }
@@ -583,15 +608,15 @@ namespace forms1
                     throw new Exception("Error parsing Temp units");
                 }
 
-                if (values[31] == "0")
+                if (values[32] == "0")
                 {
                     H_Units = H_UNITS.AMP_TURNS_M;
                 }
-                else if (values[31] == "1")
+                else if (values[32] == "1")
                 {
                     H_Units = H_UNITS.AMP_TURNS_IN;
                 }
-                else if (values[31] == "2")
+                else if (values[32] == "2")
                 {
                     H_Units = H_UNITS.OERSTEDS;
                 }
@@ -600,11 +625,11 @@ namespace forms1
                     throw new Exception("Error parsing H units");
                 }
 
-                if (values[32] == "0")
+                if (values[33] == "0")
                 {
                     mass_units_g = true;
                 }
-                else if (values[32] == "1")
+                else if (values[33] == "1")
                 {
                     mass_units_g = false;
                 }
@@ -677,7 +702,6 @@ namespace forms1
 
         public trans_calc_result_text Calculate(trans_calc_input_text text_input)
         {
-
             trans_calc_input input = convertTextToInput(text_input);
 
             double Epeak = input.common.Vin * Math.Sqrt(2);
@@ -708,34 +732,43 @@ namespace forms1
 
             result.mpath_l_m = l_m;
 
-            //Priority: Iex, permeability, H
-            if (I_ex > 0.000000000001)
+            if (result.mpath_l_m > 0.0000001)
             {
-                L1 = V_in / (I_ex * omega);
-                u = (L1 * l_m) / (input.primary.N * input.primary.N * Ae) / u0;
-                H_peak = input.common.B_max / u / u0;
-            }
-            else if (u > 0.0000000000001)
-            {
-                L1 = input.primary.N * input.primary.N * u * u0 * Ae / l_m;
-                I_ex = V_in / (omega * L1);
-                H_peak = input.common.B_max / u / u0;
-            }
-            else if (H_peak > 0.0000000000001)
-            {
-                //divide by sqrt(2) to get RMS
-                I_ex = H_peak / input.primary.N * l_m / Math.Sqrt(2);
-                u = input.common.B_max / H_peak / u0;
-                L1 = V_in / (I_ex * omega);
+                //Priority: Iex, permeability, H
+                if (I_ex > 0.000000000001)
+                {
+                    L1 = V_in / (I_ex * omega);
+                    u = (L1 * l_m) / (input.primary.N * input.primary.N * Ae) / u0;
+                    H_peak = input.common.B_max / u / u0;
+                }
+                else if (u > 0.0000000000001)
+                {
+                    L1 = input.primary.N * input.primary.N * u * u0 * Ae / l_m;
+                    I_ex = V_in / (omega * L1);
+                    H_peak = input.common.B_max / u / u0;
+                }
+                else if (H_peak > 0.0000000000001)
+                {
+                    //divide by sqrt(2) to get RMS
+                    I_ex = H_peak / input.primary.N * l_m / Math.Sqrt(2);
+                    u = input.common.B_max / H_peak / u0;
+                    L1 = V_in / (I_ex * omega);
+                }
             }
 
             if (u > 0.00000000001 && (u < 100 || u > 20000))
             {
                 throw new Exception($"Calculated permeability={u} is not in the expected range of 100 to 20000. Check the values of Bmax/I_ex/H Amp-t-m");
             }
+            
             if (H_peak > 0.00000000001 && (H_peak < 1 || H_peak > 5000))
             {
                 throw new Exception($"Calculated H={H_peak} Amp-t-m is not in the expected range of 1 to 5000. Check the values of Bmax/I_ex/Amp-t-m");
+            }
+
+            if (L1 > 0.00000000001 && (L1 < 0.1 || L1 > 1000))
+            {
+                throw new Exception($"Calculated L1={L1} L1 is not in the expected range of 0.1 to 1000H. Check the values of Bmax/I_ex/Amp-t-m");
             }
 
             result.B_max = input.common.B_max;
@@ -775,8 +808,7 @@ namespace forms1
                 }
 
                 result.Vout_idle = input.common.Vout_idle;
-                double ratio_squared = Math.Pow(w2.N / w1.N, 2);
-                double total_R = w1.resistance * ratio_squared + w2.resistance;
+                double total_R = w1.resistance / result.turns_ratio / result.turns_ratio + w2.resistance;
 
                 if (input.common.Iout_max > 0.0000000001)
                 {
@@ -788,6 +820,7 @@ namespace forms1
                     result.Vout_load = result.Vout_idle - regulation_vdrop;
                     result.Iout_max = input.common.Iout_max;
                     result.power_VA = result.Iout_max * result.Vout_load;
+                    result.regulation = (result.Vout_idle - result.Vout_load) / result.Vout_idle * 100;
                 }
 
                 result.total_thickness_mm += w2.thickness_mm;
@@ -801,9 +834,10 @@ namespace forms1
                     Math.Sqrt(Math.Pow(result.Iout_max / result.turns_ratio, 2) +
                     Math.Pow(result.I_ex_amp, 2));
                 }
+
+                result.total_eq_R = total_R;
             }
 
-            result.WindowSize = input.common.WindowSize;
             if (H_units == H_UNITS.AMP_TURNS_IN)
             {
                 result.H *= 0.0254;
@@ -813,7 +847,14 @@ namespace forms1
                 result.H = AmpTurns_to_Oe(result.H);
             }
 
-            return new trans_calc_result_text(result, input.processSecondary); 
+            if (!IsMassUnits_g)
+            {
+                result.wire_total_weight *= lbs_in_g;
+                result.primary.mass *= lbs_in_g;
+                result.secondary.mass *= lbs_in_g;
+            }
+
+            return new trans_calc_result_text(result, input); 
         }
         private trans_calc_input convertTextToInput(trans_calc_input_text strin) 
         {
@@ -1032,6 +1073,16 @@ namespace forms1
             {
                 res.common.max_temp = 20;
             }
+
+            if (strin.max_eq_R != "")
+            {
+                res.common.max_res_R = double.Parse(strin.max_eq_R, NumberStyles.Float);
+                if (res.common.max_res_R < 1)
+                {
+                    throw new Exception("Invalid value of max equivalent R");
+                }
+            }
+
 
             res.primary = processWinding("Primary", strin.awg1, strin.wfactor1, strin.N1, strin.N_per_layer1, strin.ampacity1);
 
