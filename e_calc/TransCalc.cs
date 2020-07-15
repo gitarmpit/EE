@@ -61,8 +61,8 @@ namespace forms1
         public string awg_max_current_amp_1;
         public string L1;
         public string B_max;
-        public string H_amp_t_m;
-        public string I_ex_amp;
+        public string H;
+        public string I_ex;
         public string permeability;
         public string weight_g_1;
         public string weight_g_2;
@@ -157,11 +157,11 @@ namespace forms1
                 (res.primary.L > 0.0000001) ? String.Format("{0:0.##}", res.primary.L) : "- -";
 
             this.B_max = String.Format("{0:0.##}", res.B_max);
-            this.H_amp_t_m =
+            this.H =
                 (res.H > 0.0000001) ? String.Format("{0:0.##}", res.H) : "- -";
 
-            this.I_ex_amp =
-                (res.I_ex_amp > 0.0000001) ? String.Format("{0:0.##}", res.I_ex_amp) : "- -";
+            this.I_ex =
+                (res.I_ex > 0.0000001) ? String.Format("{0:0.##}", res.I_ex) : "- -";
 
             this.permeability =
                 (res.permeability > 0.0000001) ? String.Format("{0:0.##}", res.permeability) : "- -";
@@ -290,7 +290,7 @@ namespace forms1
         public double mpath_l_m;
         public double B_max;
         public double permeability;
-        public double I_ex_amp;
+        public double I_ex;
         public double H;
         public double Vout_idle;
         public double Vout_load;
@@ -773,7 +773,7 @@ namespace forms1
 
             result.B_max = input.common.B_max;
             result.H = H_peak;
-            result.I_ex_amp = I_ex;
+            result.I_ex = I_ex;
             result.permeability = u;
 
             // Calculate primary
@@ -830,9 +830,11 @@ namespace forms1
                 
                 if (input.common.Iout_max > 0.0000000001)
                 {
+                    double ph0 = Math.Acos(input.common.pf1);
+                    double Ip_re = result.Iout_max/ result.turns_ratio + result.I_ex * input.common.pf1;
+                    double Ip_im = result.I_ex * Math.Sin(ph0);
                     result.Ip_full_load =
-                    Math.Sqrt(Math.Pow(result.Iout_max / result.turns_ratio, 2) +
-                    Math.Pow(result.I_ex_amp, 2));
+                        Math.Sqrt(Math.Pow(Ip_re, 2) + Math.Pow(Ip_im, 2));
                 }
 
                 result.total_eq_R = total_R;
@@ -931,7 +933,7 @@ namespace forms1
             if (strin.pf != "")
             {
                 res.common.pf1 = double.Parse(strin.pf, NumberStyles.Float);
-                if (res.common.pf1 < 0 && res.common.pf1 > 1.0)
+                if (res.common.pf1 < 0 || res.common.pf1 > 1.0)
                 {
                     throw new Exception("pf has to be between 0 and 1");
                 }

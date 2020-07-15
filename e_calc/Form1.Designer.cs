@@ -33,6 +33,10 @@
             this.transCalcPage = new System.Windows.Forms.TabPage();
             this.res_warnings = new System.Windows.Forms.RichTextBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.res_regulation = new System.Windows.Forms.Label();
+            this.label80 = new System.Windows.Forms.Label();
+            this.res_total_eq_R = new System.Windows.Forms.Label();
+            this.label49 = new System.Windows.Forms.Label();
             this.label53 = new System.Windows.Forms.Label();
             this.label41 = new System.Windows.Forms.Label();
             this.res_label_units_total_weight = new System.Windows.Forms.Label();
@@ -96,7 +100,7 @@
             this.label67 = new System.Windows.Forms.Label();
             this.res_max_current_1 = new System.Windows.Forms.Label();
             this.label66 = new System.Windows.Forms.Label();
-            this.res_amptm = new System.Windows.Forms.Label();
+            this.res_H = new System.Windows.Forms.Label();
             this.label58 = new System.Windows.Forms.Label();
             this.res_Iex = new System.Windows.Forms.Label();
             this.label57 = new System.Windows.Forms.Label();
@@ -250,10 +254,6 @@
             this.label_R2 = new System.Windows.Forms.Label();
             this.label_R1 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
-            this.label49 = new System.Windows.Forms.Label();
-            this.res_total_eq_R = new System.Windows.Forms.Label();
-            this.label80 = new System.Windows.Forms.Label();
-            this.res_regulation = new System.Windows.Forms.Label();
             this.calcTab.SuspendLayout();
             this.transCalcPage.SuspendLayout();
             this.groupBox8.SuspendLayout();
@@ -392,6 +392,46 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Secondary results:";
             this.groupBox8.Paint += new System.Windows.Forms.PaintEventHandler(this.groupBox_Paint);
+            // 
+            // res_regulation
+            // 
+            this.res_regulation.AutoSize = true;
+            this.res_regulation.Location = new System.Drawing.Point(171, 538);
+            this.res_regulation.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.res_regulation.Name = "res_regulation";
+            this.res_regulation.Size = new System.Drawing.Size(26, 20);
+            this.res_regulation.TabIndex = 579;
+            this.res_regulation.Text = "- -";
+            // 
+            // label80
+            // 
+            this.label80.AutoSize = true;
+            this.label80.Location = new System.Drawing.Point(22, 538);
+            this.label80.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label80.Name = "label80";
+            this.label80.Size = new System.Drawing.Size(113, 20);
+            this.label80.TabIndex = 578;
+            this.label80.Text = "% Regulation:";
+            // 
+            // res_total_eq_R
+            // 
+            this.res_total_eq_R.AutoSize = true;
+            this.res_total_eq_R.Location = new System.Drawing.Point(171, 508);
+            this.res_total_eq_R.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.res_total_eq_R.Name = "res_total_eq_R";
+            this.res_total_eq_R.Size = new System.Drawing.Size(26, 20);
+            this.res_total_eq_R.TabIndex = 577;
+            this.res_total_eq_R.Text = "- -";
+            // 
+            // label49
+            // 
+            this.label49.AutoSize = true;
+            this.label49.Location = new System.Drawing.Point(22, 508);
+            this.label49.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label49.Name = "label49";
+            this.label49.Size = new System.Drawing.Size(148, 20);
+            this.label49.TabIndex = 576;
+            this.label49.Text = "Total equivalent R:";
             // 
             // label53
             // 
@@ -746,11 +786,11 @@
             // res_total_thickness_mm
             // 
             this.res_total_thickness_mm.AutoSize = true;
-            this.res_total_thickness_mm.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.res_total_thickness_mm.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.res_total_thickness_mm.Location = new System.Drawing.Point(172, 218);
             this.res_total_thickness_mm.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.res_total_thickness_mm.Name = "res_total_thickness_mm";
-            this.res_total_thickness_mm.Size = new System.Drawing.Size(26, 20);
+            this.res_total_thickness_mm.Size = new System.Drawing.Size(22, 18);
             this.res_total_thickness_mm.TabIndex = 551;
             this.res_total_thickness_mm.Text = "- -";
             // 
@@ -941,7 +981,7 @@
             this.groupBox_primaryResults.Controls.Add(this.label67);
             this.groupBox_primaryResults.Controls.Add(this.res_max_current_1);
             this.groupBox_primaryResults.Controls.Add(this.label66);
-            this.groupBox_primaryResults.Controls.Add(this.res_amptm);
+            this.groupBox_primaryResults.Controls.Add(this.res_H);
             this.groupBox_primaryResults.Controls.Add(this.label58);
             this.groupBox_primaryResults.Controls.Add(this.res_Iex);
             this.groupBox_primaryResults.Controls.Add(this.label57);
@@ -1078,15 +1118,15 @@
             this.label66.TabIndex = 510;
             this.label66.Text = "AWG max current, A:";
             // 
-            // res_amptm
+            // res_H
             // 
-            this.res_amptm.AutoSize = true;
-            this.res_amptm.Location = new System.Drawing.Point(169, 314);
-            this.res_amptm.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.res_amptm.Name = "res_amptm";
-            this.res_amptm.Size = new System.Drawing.Size(26, 20);
-            this.res_amptm.TabIndex = 501;
-            this.res_amptm.Text = "- -";
+            this.res_H.AutoSize = true;
+            this.res_H.Location = new System.Drawing.Point(169, 314);
+            this.res_H.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.res_H.Name = "res_H";
+            this.res_H.Size = new System.Drawing.Size(26, 20);
+            this.res_H.TabIndex = 501;
+            this.res_H.Text = "- -";
             // 
             // label58
             // 
@@ -2756,46 +2796,6 @@
             this.label17.Size = new System.Drawing.Size(304, 378);
             this.label17.TabIndex = 0;
             // 
-            // label49
-            // 
-            this.label49.AutoSize = true;
-            this.label49.Location = new System.Drawing.Point(22, 508);
-            this.label49.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label49.Name = "label49";
-            this.label49.Size = new System.Drawing.Size(148, 20);
-            this.label49.TabIndex = 576;
-            this.label49.Text = "Total equivalent R:";
-            // 
-            // res_total_eq_R
-            // 
-            this.res_total_eq_R.AutoSize = true;
-            this.res_total_eq_R.Location = new System.Drawing.Point(171, 508);
-            this.res_total_eq_R.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.res_total_eq_R.Name = "res_total_eq_R";
-            this.res_total_eq_R.Size = new System.Drawing.Size(26, 20);
-            this.res_total_eq_R.TabIndex = 577;
-            this.res_total_eq_R.Text = "- -";
-            // 
-            // label80
-            // 
-            this.label80.AutoSize = true;
-            this.label80.Location = new System.Drawing.Point(22, 538);
-            this.label80.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label80.Name = "label80";
-            this.label80.Size = new System.Drawing.Size(113, 20);
-            this.label80.TabIndex = 578;
-            this.label80.Text = "% Regulation:";
-            // 
-            // res_regulation
-            // 
-            this.res_regulation.AutoSize = true;
-            this.res_regulation.Location = new System.Drawing.Point(171, 538);
-            this.res_regulation.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.res_regulation.Name = "res_regulation";
-            this.res_regulation.Size = new System.Drawing.Size(26, 20);
-            this.res_regulation.TabIndex = 579;
-            this.res_regulation.Text = "- -";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -2967,7 +2967,7 @@
         private System.Windows.Forms.Label label67;
         private System.Windows.Forms.Label res_max_current_1;
         private System.Windows.Forms.Label label66;
-        private System.Windows.Forms.Label res_amptm;
+        private System.Windows.Forms.Label res_H;
         private System.Windows.Forms.Label res_Iex;
         private System.Windows.Forms.Label label57;
         private System.Windows.Forms.Label res_permeability;

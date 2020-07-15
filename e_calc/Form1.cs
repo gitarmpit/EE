@@ -289,8 +289,8 @@ namespace forms1
                 res_max_current_1.Text = result.awg_max_current_amp_1;
                 res_L1.Text = result.L1;
                 res_Bmax.Text = result.B_max;
-                res_amptm.Text = result.H_amp_t_m;
-                res_Iex.Text = result.I_ex_amp;
+                res_H.Text = result.H;
+                res_Iex.Text = result.I_ex;
                 res_permeability.Text = result.permeability;
                 res_weight_g1.Text = result.weight_g_1;
                 res_length_m_2.Text = result.length_m_2;
@@ -425,7 +425,7 @@ namespace forms1
             res_L1.Text = "- -";
             res_Bmax.Text = "- -";
             res_permeability.Text = "- -";
-            res_amptm.Text = "- -";
+            res_H.Text = "- -";
             res_Iex.Text = "- -";
             res_Ip_full_load.Text = "- -";
             res_Ip_full_load.ForeColor = Color.Black;
@@ -633,12 +633,37 @@ namespace forms1
         }
         private void OnLoad(object sender, EventArgs e)
         {
-
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    var sr = new StreamReader(openFileDialog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
 
         private void OnSave(object sender, EventArgs e)
         {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Title = "Save settings in a *csv file";
+            saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
+            saveFileDialog.RestoreDirectory = true;
+            saveFileDialog.Filter = "Csv file|*.csv";
+            saveFileDialog.ShowDialog();
 
+            // If the file name is not an empty string open it for saving.
+            if (saveFileDialog.FileName != "")
+            {
+                // Saves the Image via a FileStream created by the OpenFile method.
+                System.IO.FileStream fs =
+                    (System.IO.FileStream)saveFileDialog.OpenFile();
+                fs.Close();
+            }
         }
 
         private void Temp_OnCheckedChanged(object sender, EventArgs e)
