@@ -33,7 +33,6 @@ namespace forms1
         {
             radioButton_V.Select();
 
-            edit_Bmax.Text = "1.0";
             label_Vce_Rc.Text = "Vce";
             label_VeRe.Text = "Ve";
 
@@ -92,114 +91,67 @@ namespace forms1
                 calculateBias();
             }
 
-            try
-            {
-                tc = new TransCalc();
-
-                trans_calc_input_text input = tc.Load();
-                if (input.Vin == "120")
-                {
-                    radiobutton_mains_US.Select();
-                }
-                else if (input.Vin == "220")
-                {
-                    radiobutton_mains_EU.Select();
-                }
-                else
-                {
-                    throw new Exception($"Unexpected mains voltage: {input.Vin}");
-                }
-                transCalc_H = double.Parse(input.H, NumberStyles.Float);
-                edit_Bmax.Text = input.Bmax;
-                edit_permeability.Text = input.permeability;
-                edit_Iex.Text = input.Iex;
-                edit_H.Text = input.H;
-                edit_coreSize_W.Text = input.core_W;
-                edit_coreSize_H.Text = input.core_H;
-                edit_coreSize_L.Text = input.core_L;
-                edit_Ae_W.Text = input.Ae_W;
-                edit_Ae_H.Text = input.Ae_H;
-                edit_mpath_W.Text = input.mpath_W;
-                edit_mpath_H.Text = input.mpath_H;
-                edit_windowSize.Text = input.window_size;
-                edit_couplingCoeff.Text = input.coupling_coeff;
-                edit_stackingFactor.Text = input.stackingFactor;
-                edit_insulationThickness.Text = input.insulationThickness;
-                edit_Vout.Text = input.Vout;
-                edit_Iout_max.Text = input.Iout_max;
-
-                edit_awg1.Text = input.awg1;
-                edit_Wfactor1.Text = input.wfactor1;
-                edit_N1.Text = input.N1;
-                edit_N_PerLayer1.Text = input.N_per_layer1;
-                edit_ampacity1.Text = input.ampacity1;
-                edit_power_factor_1.Text = input.pf;
-
-                edit_awg2.Text = input.awg2;
-                edit_Wfactor2.Text = input.wfactor2;
-                edit_N2.Text = input.N2;
-                edit_N_PerLayer2.Text = input.N_per_layer2;
-                edit_ampacity2.Text = input.ampacity2;
-
-                edit_max_temp.Text = input.maxTemp;
-                edit_max_eq_R.Text = input.max_eq_R;
-
-                if (tc.IsTempUnitsC)
-                {
-                    radioButton_tempC.Select();
-                    label_units_maxtemp.Text = "C:";
-                }
-                else
-                {
-                    radioButton_tempF.Select();
-                    label_units_maxtemp.Text = "F:";
-                }
-
-                if (tc.H_Units == TransCalc.H_UNITS.AMP_TURNS_M)
-                {
-                    radioButton_H_amp_t_m.Select();
-                    label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_M];
-                    res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_M];
-
-                }
-                else if (tc.H_Units == TransCalc.H_UNITS.AMP_TURNS_IN)
-                {
-                    radioButton_H_amp_t_m.Select();
-                    label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
-                    res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
-                }
-                else
-                {
-                    radioButton_H_oe.Select();
-                    label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
-                    res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
-                }
-
-                if (tc.IsMassUnits_g)
-                {
-                    radioButton_weight_g.Select();
-                    res_label_units_weight1.Text = "g:";
-                    res_label_units_weight2.Text = "g:";
-                    res_label_units_total_weight.Text = "g:";
-                }
-                else
-                {
-                    radioButton_weight_lbs.Select();
-                    res_label_units_weight1.Text = "lbs:";
-                    res_label_units_total_weight.Text = "lbs:";
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                Environment.Exit(1);
-            }
-
+            tc = new TransCalc();
+            SetUnitRadioButtons();
         }
 
         private void OnCalculate(object sender, EventArgs e)
         {
             runTransCalc();
+        }
+
+        private trans_calc_input_text buildInput()
+        {
+            trans_calc_input_text strin = new trans_calc_input_text();
+            if (radiobutton_mains_US.Checked)
+            {
+                strin.Vin = "120";
+            }
+            else
+            {
+                strin.Vin = "220";
+            }
+
+            strin.Bmax = edit_Bmax.Text;
+            strin.permeability = edit_permeability.Text;
+            strin.Iex = edit_Iex.Text;
+            if (transCalc_H > 0.00000001)
+            {
+                strin.H = transCalc_H.ToString();
+            }
+            else
+            {
+                strin.H = "";
+            }
+            strin.core_W = edit_coreSize_W.Text;
+            strin.core_H = edit_coreSize_H.Text;
+            strin.core_L = edit_coreSize_L.Text;
+            strin.Ae_W = edit_Ae_W.Text;
+            strin.Ae_H = edit_Ae_H.Text;
+            strin.mpath_W = edit_mpath_W.Text;
+            strin.mpath_H = edit_mpath_H.Text;
+            strin.window_size = edit_windowSize.Text;
+            strin.coupling_coeff = edit_couplingCoeff.Text;
+            strin.stackingFactor = edit_stackingFactor.Text;
+            strin.insulationThickness = edit_insulationThickness.Text;
+            strin.Vout = edit_Vout.Text;
+            strin.Iout_max = edit_Iout_max.Text;
+            strin.awg1 = edit_awg1.Text;
+            strin.wfactor1 = edit_Wfactor1.Text;
+            strin.N1 = edit_N1.Text;
+            strin.N_per_layer1 = edit_N_PerLayer1.Text;
+            strin.ampacity1 = edit_ampacity1.Text;
+            strin.ampacity2 = edit_ampacity2.Text;
+            strin.pf = edit_power_factor_1.Text;
+
+            strin.awg2 = edit_awg2.Text;
+            strin.wfactor2 = edit_Wfactor2.Text;
+            strin.N2 = edit_N2.Text;
+            strin.N_per_layer2 = edit_N_PerLayer2.Text;
+            strin.maxTemp = edit_max_temp.Text;
+            strin.max_eq_R = edit_max_eq_R.Text;
+
+            return strin;
         }
 
         private void runTransCalc()
@@ -223,55 +175,7 @@ namespace forms1
                     edit_stackingFactor.Text = "1";
                 }
 
-                trans_calc_input_text strin = new trans_calc_input_text();
-                if (radiobutton_mains_US.Checked)
-                {
-                    strin.Vin = "120";
-                    strin.freq = "60";
-                }
-                else
-                {
-                    strin.Vin = "220";
-                    strin.freq = "50";
-                }
-                strin.Bmax = edit_Bmax.Text;
-                strin.permeability = edit_permeability.Text;
-                strin.Iex = edit_Iex.Text;
-                if (transCalc_H > 0.00000001)
-                {
-                    strin.H = transCalc_H.ToString();
-                }
-                else
-                {
-                    strin.H = "";
-                }
-                strin.core_W = edit_coreSize_W.Text;
-                strin.core_H = edit_coreSize_H.Text;
-                strin.core_L = edit_coreSize_L.Text;
-                strin.Ae_W = edit_Ae_W.Text;
-                strin.Ae_H = edit_Ae_H.Text;
-                strin.mpath_W = edit_mpath_W.Text;
-                strin.mpath_H = edit_mpath_H.Text;
-                strin.window_size = edit_windowSize.Text;
-                strin.coupling_coeff = edit_couplingCoeff.Text;
-                strin.stackingFactor = edit_stackingFactor.Text;
-                strin.insulationThickness = edit_insulationThickness.Text;
-                strin.Vout = edit_Vout.Text;
-                strin.Iout_max = edit_Iout_max.Text;
-                strin.awg1 = edit_awg1.Text;
-                strin.wfactor1 = edit_Wfactor1.Text;
-                strin.N1 = edit_N1.Text;
-                strin.N_per_layer1 = edit_N_PerLayer1.Text;
-                strin.ampacity1 = edit_ampacity1.Text;
-                strin.ampacity2 = edit_ampacity2.Text;
-                strin.pf = edit_power_factor_1.Text;
-
-                strin.awg2 = edit_awg2.Text;
-                strin.wfactor2 = edit_Wfactor2.Text;
-                strin.N2 = edit_N2.Text;
-                strin.N_per_layer2 = edit_N_PerLayer2.Text;
-                strin.maxTemp = edit_max_temp.Text;
-                strin.max_eq_R = edit_max_eq_R.Text;
+                trans_calc_input_text strin = buildInput();
 
                 trans_calc_result_text result = tc.Calculate(strin);
 
@@ -349,6 +253,8 @@ namespace forms1
                     res_max_current_2.ForeColor =
                         result.IsAmpacity2Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
                 }
+
+                button_saveResults.Enabled = true;
             }
             catch (Exception ex)
             {
@@ -458,6 +364,7 @@ namespace forms1
             res_regulation.Text = "- -";
             res_total_eq_R.Text = "- -";
             res_warnings.Text = "";
+            button_saveResults.Enabled = false;
         }
 
         private string RtoText (double r)
@@ -631,23 +538,125 @@ namespace forms1
             }
 
         }
-        private void OnLoad(object sender, EventArgs e)
+        private void OnLoadSettings(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                try
+                if (openFileDialog.FileName != "")
                 {
-                    var sr = new StreamReader(openFileDialog.FileName);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
+                    try
+                    {
+                        trans_calc_input_text input = tc.Load(openFileDialog.FileName);
+                        if (input.Vin == "120")
+                        {
+                            radiobutton_mains_US.Select();
+                        }
+                        else if (input.Vin == "220")
+                        {
+                            radiobutton_mains_EU.Select();
+                        }
+                        else
+                        {
+                            throw new Exception($"Unexpected mains voltage: {input.Vin}");
+                        }
+                        transCalc_H = double.Parse(input.H, NumberStyles.Float);
+                        edit_Bmax.Text = input.Bmax;
+                        edit_permeability.Text = input.permeability;
+                        edit_Iex.Text = input.Iex;
+                        edit_H.Text = input.H;
+                        edit_coreSize_W.Text = input.core_W;
+                        edit_coreSize_H.Text = input.core_H;
+                        edit_coreSize_L.Text = input.core_L;
+                        edit_Ae_W.Text = input.Ae_W;
+                        edit_Ae_H.Text = input.Ae_H;
+                        edit_mpath_W.Text = input.mpath_W;
+                        edit_mpath_H.Text = input.mpath_H;
+                        edit_windowSize.Text = input.window_size;
+                        edit_couplingCoeff.Text = input.coupling_coeff;
+                        edit_stackingFactor.Text = input.stackingFactor;
+                        edit_insulationThickness.Text = input.insulationThickness;
+                        edit_Vout.Text = input.Vout;
+                        edit_Iout_max.Text = input.Iout_max;
+
+                        edit_awg1.Text = input.awg1;
+                        edit_Wfactor1.Text = input.wfactor1;
+                        edit_N1.Text = input.N1;
+                        edit_N_PerLayer1.Text = input.N_per_layer1;
+                        edit_ampacity1.Text = input.ampacity1;
+                        edit_power_factor_1.Text = input.pf;
+
+                        edit_awg2.Text = input.awg2;
+                        edit_Wfactor2.Text = input.wfactor2;
+                        edit_N2.Text = input.N2;
+                        edit_N_PerLayer2.Text = input.N_per_layer2;
+                        edit_ampacity2.Text = input.ampacity2;
+
+                        edit_max_temp.Text = input.maxTemp;
+                        edit_max_eq_R.Text = input.max_eq_R;
+
+                        SetUnitRadioButtons();
+                            
+                        button_saveResults.Enabled = false;
+
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 }
             }
         }
 
-        private void OnSave(object sender, EventArgs e)
+        private void SetUnitRadioButtons()
+        {
+            if (tc.IsTempUnitsC)
+            {
+                radioButton_tempC.Select();
+                label_units_maxtemp.Text = "C:";
+            }
+            else
+            {
+                radioButton_tempF.Select();
+                label_units_maxtemp.Text = "F:";
+            }
+
+            if (tc.H_Units == TransCalc.H_UNITS.AMP_TURNS_M)
+            {
+                radioButton_H_amp_t_m.Select();
+                label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_M];
+                res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_M];
+
+            }
+            else if (tc.H_Units == TransCalc.H_UNITS.AMP_TURNS_IN)
+            {
+                radioButton_H_amp_t_m.Select();
+                label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
+                res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
+            }
+            else
+            {
+                radioButton_H_oe.Select();
+                label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
+                res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
+            }
+
+            if (tc.IsMassUnits_g)
+            {
+                radioButton_weight_g.Select();
+                res_label_units_weight1.Text = "g:";
+                res_label_units_weight2.Text = "g:";
+                res_label_units_total_weight.Text = "g:";
+            }
+            else
+            {
+                radioButton_weight_lbs.Select();
+                res_label_units_weight1.Text = "lbs:";
+                res_label_units_total_weight.Text = "lbs:";
+            }
+        }
+
+        private void OnSaveSettings(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Title = "Save settings in a *csv file";
@@ -656,16 +665,31 @@ namespace forms1
             saveFileDialog.Filter = "Csv file|*.csv";
             saveFileDialog.ShowDialog();
 
+            if (saveFileDialog.FileName != "")
+            {
+                trans_calc_input_text strin = buildInput();
+                tc.SaveSettings(strin, saveFileDialog.FileName);
+            }
+        }
+        private void OnSaveResults(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Title = "Save settings in a tc file";
+            saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
+            saveFileDialog.RestoreDirectory = true;
+            saveFileDialog.Filter = "Tc file|*.tc";
+            saveFileDialog.ShowDialog();
+
             // If the file name is not an empty string open it for saving.
             if (saveFileDialog.FileName != "")
             {
-                // Saves the Image via a FileStream created by the OpenFile method.
-                System.IO.FileStream fs =
-                    (System.IO.FileStream)saveFileDialog.OpenFile();
-                fs.Close();
+                using (StreamWriter sw = new StreamWriter(saveFileDialog.FileName))
+                {
+                    //foreach (string line in lines)
+                        sw.WriteLine("test1");
+                }
             }
         }
-
         private void Temp_OnCheckedChanged(object sender, EventArgs e)
         {
             if (radioButton_tempC.Checked != tc.IsTempUnitsC)

@@ -81,15 +81,16 @@
             this.res_turns_per_layer_2 = new System.Windows.Forms.Label();
             this.label51 = new System.Windows.Forms.Label();
             this.res_L2 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.button_Load = new System.Windows.Forms.Button();
             this.label20 = new System.Windows.Forms.Label();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.radioButton_weight_lbs = new System.Windows.Forms.RadioButton();
             this.radioButton_weight_g = new System.Windows.Forms.RadioButton();
-            this.clearButton = new System.Windows.Forms.Button();
-            this.Save = new System.Windows.Forms.Button();
+            this.button_clearAll = new System.Windows.Forms.Button();
+            this.button_Save = new System.Windows.Forms.Button();
             this.calcButton = new System.Windows.Forms.Button();
             this.groupBox_primaryResults = new System.Windows.Forms.GroupBox();
+            this.button_saveResults = new System.Windows.Forms.Button();
             this.label62 = new System.Windows.Forms.Label();
             this.label_units_buildup1 = new System.Windows.Forms.Label();
             this.res_label_units_H = new System.Windows.Forms.Label();
@@ -296,11 +297,11 @@
             this.transCalcPage.BackColor = System.Drawing.Color.WhiteSmoke;
             this.transCalcPage.Controls.Add(this.res_warnings);
             this.transCalcPage.Controls.Add(this.groupBox8);
-            this.transCalcPage.Controls.Add(this.button1);
+            this.transCalcPage.Controls.Add(this.button_Load);
             this.transCalcPage.Controls.Add(this.label20);
             this.transCalcPage.Controls.Add(this.groupBox9);
-            this.transCalcPage.Controls.Add(this.clearButton);
-            this.transCalcPage.Controls.Add(this.Save);
+            this.transCalcPage.Controls.Add(this.button_clearAll);
+            this.transCalcPage.Controls.Add(this.button_Save);
             this.transCalcPage.Controls.Add(this.calcButton);
             this.transCalcPage.Controls.Add(this.groupBox_primaryResults);
             this.transCalcPage.Controls.Add(this.groupBox6);
@@ -874,16 +875,16 @@
             this.res_L2.TabIndex = 549;
             this.res_L2.Text = "- -";
             // 
-            // button1
+            // button_Load
             // 
-            this.button1.Location = new System.Drawing.Point(12, 636);
-            this.button1.Margin = new System.Windows.Forms.Padding(4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(246, 28);
-            this.button1.TabIndex = 529;
-            this.button1.Text = "Load";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.OnLoad);
+            this.button_Load.Location = new System.Drawing.Point(12, 636);
+            this.button_Load.Margin = new System.Windows.Forms.Padding(4);
+            this.button_Load.Name = "button_Load";
+            this.button_Load.Size = new System.Drawing.Size(246, 28);
+            this.button_Load.TabIndex = 529;
+            this.button_Load.Text = "Load Settings";
+            this.button_Load.UseVisualStyleBackColor = true;
+            this.button_Load.Click += new System.EventHandler(this.OnLoadSettings);
             // 
             // label20
             // 
@@ -899,7 +900,7 @@
             // 
             this.groupBox9.Controls.Add(this.radioButton_weight_lbs);
             this.groupBox9.Controls.Add(this.radioButton_weight_g);
-            this.groupBox9.Location = new System.Drawing.Point(285, 636);
+            this.groupBox9.Location = new System.Drawing.Point(285, 664);
             this.groupBox9.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -936,27 +937,27 @@
             this.radioButton_weight_g.UseVisualStyleBackColor = true;
             this.radioButton_weight_g.CheckedChanged += new System.EventHandler(this.Weight_OnCheckedChanged);
             // 
-            // clearButton
+            // button_clearAll
             // 
-            this.clearButton.Location = new System.Drawing.Point(12, 707);
-            this.clearButton.Margin = new System.Windows.Forms.Padding(4);
-            this.clearButton.Name = "clearButton";
-            this.clearButton.Size = new System.Drawing.Size(246, 28);
-            this.clearButton.TabIndex = 470;
-            this.clearButton.Text = "Clear All";
-            this.clearButton.UseVisualStyleBackColor = true;
-            this.clearButton.Click += new System.EventHandler(this.OnClear);
+            this.button_clearAll.Location = new System.Drawing.Point(12, 707);
+            this.button_clearAll.Margin = new System.Windows.Forms.Padding(4);
+            this.button_clearAll.Name = "button_clearAll";
+            this.button_clearAll.Size = new System.Drawing.Size(246, 28);
+            this.button_clearAll.TabIndex = 470;
+            this.button_clearAll.Text = "Clear All";
+            this.button_clearAll.UseVisualStyleBackColor = true;
+            this.button_clearAll.Click += new System.EventHandler(this.OnClear);
             // 
-            // Save
+            // button_Save
             // 
-            this.Save.Location = new System.Drawing.Point(12, 672);
-            this.Save.Margin = new System.Windows.Forms.Padding(4);
-            this.Save.Name = "Save";
-            this.Save.Size = new System.Drawing.Size(247, 28);
-            this.Save.TabIndex = 471;
-            this.Save.Text = "Save";
-            this.Save.UseVisualStyleBackColor = true;
-            this.Save.Click += new System.EventHandler(this.OnSave);
+            this.button_Save.Location = new System.Drawing.Point(12, 672);
+            this.button_Save.Margin = new System.Windows.Forms.Padding(4);
+            this.button_Save.Name = "button_Save";
+            this.button_Save.Size = new System.Drawing.Size(247, 28);
+            this.button_Save.TabIndex = 471;
+            this.button_Save.Text = "Save Settings";
+            this.button_Save.UseVisualStyleBackColor = true;
+            this.button_Save.Click += new System.EventHandler(this.OnSaveSettings);
             // 
             // calcButton
             // 
@@ -971,6 +972,7 @@
             // 
             // groupBox_primaryResults
             // 
+            this.groupBox_primaryResults.Controls.Add(this.button_saveResults);
             this.groupBox_primaryResults.Controls.Add(this.label62);
             this.groupBox_primaryResults.Controls.Add(this.label_units_buildup1);
             this.groupBox_primaryResults.Controls.Add(this.res_label_units_H);
@@ -1018,6 +1020,17 @@
             this.groupBox_primaryResults.TabStop = false;
             this.groupBox_primaryResults.Text = "Primary results:";
             this.groupBox_primaryResults.Paint += new System.Windows.Forms.PaintEventHandler(this.groupBox_Paint);
+            // 
+            // button_saveResults
+            // 
+            this.button_saveResults.Location = new System.Drawing.Point(29, 515);
+            this.button_saveResults.Margin = new System.Windows.Forms.Padding(4);
+            this.button_saveResults.Name = "button_saveResults";
+            this.button_saveResults.Size = new System.Drawing.Size(170, 28);
+            this.button_saveResults.TabIndex = 577;
+            this.button_saveResults.Text = "Save Results";
+            this.button_saveResults.UseVisualStyleBackColor = true;
+            this.button_saveResults.Click += new System.EventHandler(this.OnSaveResults);
             // 
             // label62
             // 
@@ -1405,7 +1418,7 @@
             // 
             this.groupBox6.Controls.Add(this.radioButton_tempF);
             this.groupBox6.Controls.Add(this.radioButton_tempC);
-            this.groupBox6.Location = new System.Drawing.Point(285, 587);
+            this.groupBox6.Location = new System.Drawing.Point(285, 594);
             this.groupBox6.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -2189,7 +2202,7 @@
             // 
             // edit_ampacity1
             // 
-            this.edit_ampacity1.Location = new System.Drawing.Point(125, 166);
+            this.edit_ampacity1.Location = new System.Drawing.Point(124, 167);
             this.edit_ampacity1.Margin = new System.Windows.Forms.Padding(4);
             this.edit_ampacity1.Name = "edit_ampacity1";
             this.edit_ampacity1.Size = new System.Drawing.Size(71, 26);
@@ -2287,7 +2300,7 @@
             // 
             // edit_awg1
             // 
-            this.edit_awg1.Location = new System.Drawing.Point(123, 22);
+            this.edit_awg1.Location = new System.Drawing.Point(124, 22);
             this.edit_awg1.Margin = new System.Windows.Forms.Padding(4);
             this.edit_awg1.Name = "edit_awg1";
             this.edit_awg1.Size = new System.Drawing.Size(71, 26);
@@ -2295,7 +2308,7 @@
             // 
             // edit_power_factor_1
             // 
-            this.edit_power_factor_1.Location = new System.Drawing.Point(124, 137);
+            this.edit_power_factor_1.Location = new System.Drawing.Point(124, 138);
             this.edit_power_factor_1.Margin = new System.Windows.Forms.Padding(4);
             this.edit_power_factor_1.Name = "edit_power_factor_1";
             this.edit_power_factor_1.Size = new System.Drawing.Size(71, 26);
@@ -2993,14 +3006,14 @@
         private System.Windows.Forms.Label res_totalLayers_1;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Button clearButton;
-        private System.Windows.Forms.Button Save;
+        private System.Windows.Forms.Button button_clearAll;
+        private System.Windows.Forms.Button button_Save;
         private System.Windows.Forms.Button calcButton;
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.RadioButton radioButton_weight_lbs;
         private System.Windows.Forms.RadioButton radioButton_weight_g;
         private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button_Load;
         private System.Windows.Forms.Label res_label_units_weight1;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.Label res_label_units_weight2;
@@ -3076,6 +3089,7 @@
         private System.Windows.Forms.Label label49;
         private System.Windows.Forms.Label label80;
         private System.Windows.Forms.Label res_regulation;
+        private System.Windows.Forms.Button button_saveResults;
     }
 }
 

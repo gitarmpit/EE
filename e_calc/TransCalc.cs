@@ -15,7 +15,7 @@ namespace forms1
     struct trans_calc_input_text
     {
         public string Vin;
-        public string freq;
+        // public string freq;
         public string Bmax;
         public string permeability;
         public string Iex;
@@ -419,12 +419,53 @@ namespace forms1
         private static double u0 = 4 * Math.PI * 10e-8;
         private List<AWG> awgValues = new List<AWG>();
         private double lbs_in_g = 0.00220462262185;
+        private Dictionary<CONFIG_KEYWORDS, string> cfg_keywords;
 
         public enum H_UNITS
         {
             AMP_TURNS_M,
             AMP_TURNS_IN,
             OERSTEDS
+        }
+
+        enum CONFIG_KEYWORDS
+        {
+            UNKNOWN_KEYWORD,
+            V_IN, 
+            B_MAX,
+            H,
+            PERMEABILITY,
+            I_EX,
+            CORE_W,
+            CORE_H,
+            CORE_L,
+            Ae_W,
+            Ae_H,
+            MPATH_W,
+            MPATH_H,
+            WINDOW_SIZE,
+            COUPLING_COEFF,
+            STACKING_FACTOR,
+            INSULATION,
+            V_OUT,
+            IS_V_OUT_AT_MAX_LOAD, 
+            I_OUT,
+            MAX_TEMP,
+            MAX_EQ_R, 
+            AWG_1,
+            W_FACTOR_1,
+            N_1,
+            N_PER_LAYER_1,
+            PF_1,
+            CM_PER_AMP_1,
+            AWG_2,
+            W_FACTOR_2,
+            N_2,
+            N_PER_LAYER_2,
+            CM_PER_AMP_2, 
+            H_UNITS,
+            TEMP_UNITS,
+            WEIGHT_UNITS
         }
 
         private bool tempUnitsC = true;
@@ -463,6 +504,43 @@ namespace forms1
             new AWG(9, 2.90576),
             new AWG(8, 3.2639)
             });
+
+            cfg_keywords = new Dictionary<CONFIG_KEYWORDS, string>();
+            cfg_keywords[CONFIG_KEYWORDS.V_IN] = "V_mains";
+            cfg_keywords[CONFIG_KEYWORDS.B_MAX] = "B";
+            cfg_keywords[CONFIG_KEYWORDS.H] = "H";
+            cfg_keywords[CONFIG_KEYWORDS.PERMEABILITY] = "u";
+            cfg_keywords[CONFIG_KEYWORDS.I_EX] = "Iex";
+            cfg_keywords[CONFIG_KEYWORDS.CORE_W] = "CoreW";
+            cfg_keywords[CONFIG_KEYWORDS.CORE_H] = "CoreH";
+            cfg_keywords[CONFIG_KEYWORDS.CORE_L] = "CoreL";
+            cfg_keywords[CONFIG_KEYWORDS.Ae_W] = "AeW";
+            cfg_keywords[CONFIG_KEYWORDS.Ae_H] = "AeH";
+            cfg_keywords[CONFIG_KEYWORDS.MPATH_W] = "MpathW";
+            cfg_keywords[CONFIG_KEYWORDS.MPATH_H] = "MpathH";
+            cfg_keywords[CONFIG_KEYWORDS.WINDOW_SIZE] = "WindowSize";
+            cfg_keywords[CONFIG_KEYWORDS.COUPLING_COEFF] = "CouplingCoeff";
+            cfg_keywords[CONFIG_KEYWORDS.STACKING_FACTOR] = "StackingFactor";
+            cfg_keywords[CONFIG_KEYWORDS.INSULATION] = "Insulation_mm";
+            cfg_keywords[CONFIG_KEYWORDS.V_OUT] = "Vout";
+            cfg_keywords[CONFIG_KEYWORDS.IS_V_OUT_AT_MAX_LOAD] = "IsVoutAtMaxLoad";
+            cfg_keywords[CONFIG_KEYWORDS.I_OUT] = "Iout";
+            cfg_keywords[CONFIG_KEYWORDS.MAX_TEMP] = "MaxTemp";
+            cfg_keywords[CONFIG_KEYWORDS.MAX_EQ_R] = "MaxEqR";
+            cfg_keywords[CONFIG_KEYWORDS.AWG_1] = "Awg1";
+            cfg_keywords[CONFIG_KEYWORDS.W_FACTOR_1] = "Wfactor1";
+            cfg_keywords[CONFIG_KEYWORDS.N_1] = "N1";
+            cfg_keywords[CONFIG_KEYWORDS.N_PER_LAYER_1] = "N_per_layer1";
+            cfg_keywords[CONFIG_KEYWORDS.PF_1] = "PF1";
+            cfg_keywords[CONFIG_KEYWORDS.CM_PER_AMP_1] = "CM_PER_AMP1";
+            cfg_keywords[CONFIG_KEYWORDS.AWG_2] = "Awg2";
+            cfg_keywords[CONFIG_KEYWORDS.W_FACTOR_2] = "Wfactor2";
+            cfg_keywords[CONFIG_KEYWORDS.N_2] = "N2";
+            cfg_keywords[CONFIG_KEYWORDS.N_PER_LAYER_2] = "N_per_layer2";
+            cfg_keywords[CONFIG_KEYWORDS.CM_PER_AMP_2] = "CM_PER_AMP2";
+            cfg_keywords[CONFIG_KEYWORDS.H_UNITS] = "H_units";
+            cfg_keywords[CONFIG_KEYWORDS.TEMP_UNITS] = "Temp_units";
+            cfg_keywords[CONFIG_KEYWORDS.WEIGHT_UNITS] = "Weight_units";
         }
 
         private AWG parseAWG(string text)
@@ -544,107 +622,142 @@ namespace forms1
             return dH;
         }
 
+        private void ProcessLine (string line, ref trans_calc_input_text strin)
+        {
+            string[] parts = line.Split('=');
 
-        public trans_calc_input_text Load()
+            var key = cfg_keywords.FirstOrDefault(e => e.Value == parts[0].Trim()).Key;
+            if (key == CONFIG_KEYWORDS.UNKNOWN_KEYWORD)
+            {
+                throw new Exception($"Error parsing cfg file, invalid keyword: {line}");
+            }    
+            switch(key)
+            {
+                case CONFIG_KEYWORDS.V_IN:
+                    strin.Vin = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.B_MAX:
+                    strin.Bmax = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.H:
+                    strin.H = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.PERMEABILITY:
+                    strin.permeability = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.I_EX:
+                    strin.Iex = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.CORE_W:
+                    strin.core_W = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.CORE_H:
+                    strin.core_H = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.CORE_L:
+                    strin.core_L = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.Ae_W:
+                    strin.Ae_W = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.Ae_H:
+                    strin.Ae_H = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.MPATH_W:
+                    strin.mpath_W = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.MPATH_H:
+                    strin.mpath_H = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.WINDOW_SIZE:
+                    strin.window_size = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.COUPLING_COEFF:
+                    strin.coupling_coeff = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.STACKING_FACTOR:
+                    strin.stackingFactor = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.INSULATION:
+                    strin.insulationThickness = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.V_OUT:
+                    strin.Vout = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.IS_V_OUT_AT_MAX_LOAD:
+                    // strin.is = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.I_OUT:
+                    strin.Iout_max = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.MAX_TEMP:
+                    strin.maxTemp = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.MAX_EQ_R:
+                    strin.max_eq_R = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.AWG_1:
+                    strin.awg1 = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.W_FACTOR_1:
+                    strin.wfactor1 = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.N_1:
+                    strin.N1 = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.N_PER_LAYER_1:
+                    strin.N_per_layer1 = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.PF_1:
+                    strin.pf = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.CM_PER_AMP_1:
+                    strin.ampacity1 = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.AWG_2:
+                    strin.awg2 = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.W_FACTOR_2:
+                    strin.wfactor2 = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.N_2:
+                    strin.N2 = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.N_PER_LAYER_2:
+                    strin.N_per_layer2 = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.CM_PER_AMP_2:
+                    strin.ampacity2 = parts[1];
+                    break;
+                case CONFIG_KEYWORDS.H_UNITS:
+                    this.H_units =  (H_UNITS) int.Parse(parts[1]);
+                    break;
+                case CONFIG_KEYWORDS.TEMP_UNITS:
+                    this.IsTempUnitsC = parts[1] == "1" ? true : false;
+                    break;
+                case CONFIG_KEYWORDS.WEIGHT_UNITS:
+                    this.IsMassUnits_g = parts[1] == "1" ? true : false;
+                    break;
+                default:
+                    throw new Exception($"Unknown key: {key}");
+            }
+        }
+
+        public trans_calc_input_text Load(string fileName)
         {
             trans_calc_input_text input_text = new trans_calc_input_text();
 
-            string csv = File.ReadAllText("transcalc.csv");
-            csv = csv.Trim(new char[] { '\r', '\n', ' ' });
-            string[] values = csv.Split(',');
-            if (values.Length == 34)
+            using (StreamReader sr = new StreamReader(fileName))
             {
-                string mains = values[0];
-                if (mains != "120" && mains != "220" )
+                while (sr.Peek() >= 0)
                 {
-                    throw new Exception($"Unexpected mains voltage: {mains}");
+                    ProcessLine(sr.ReadLine(), ref input_text);
                 }
-                input_text.Vin = mains;
-
-                input_text.Bmax = values[1];
-                input_text.permeability = values[2];
-                input_text.Iex = values[3];
-                input_text.H = values[4];
-                input_text.core_W = values[5];
-                input_text.core_H = values[6];
-                input_text.core_L = values[7];
-                input_text.Ae_W = values[8];
-                input_text.Ae_H = values[9];
-                input_text.mpath_W = values[10];
-                input_text.mpath_H = values[11];
-                input_text.window_size = values[12];
-                input_text.coupling_coeff = values[13];
-                input_text.stackingFactor = values[14];
-                input_text.insulationThickness = values[15];
-                input_text.Vout = values[16];
-                input_text.Iout_max = values[17];
-
-                input_text.awg1 = values[18];
-                input_text.wfactor1 = values[19];
-                input_text.N1 = values[20];
-                input_text.N_per_layer1 = values[21];
-                input_text.ampacity1 = values[22];
-                input_text.pf = values[23];
-
-                input_text.awg2 = values[24];
-                input_text.wfactor2 = values[25];
-                input_text.N2 = values[26];
-                input_text.N_per_layer2 = values[27];
-                input_text.ampacity2 = values[28];
-
-                input_text.maxTemp = values[29];
-                input_text.max_eq_R = values[30];
-
-                if (values[31] == "0")
-                {
-                    tempUnitsC = true;
-                }
-                else if (values[31] == "1")
-                {
-                    tempUnitsC = false;
-                }
-                else
-                {
-                    throw new Exception("Error parsing Temp units");
-                }
-
-                if (values[32] == "0")
-                {
-                    H_Units = H_UNITS.AMP_TURNS_M;
-                }
-                else if (values[32] == "1")
-                {
-                    H_Units = H_UNITS.AMP_TURNS_IN;
-                }
-                else if (values[32] == "2")
-                {
-                    H_Units = H_UNITS.OERSTEDS;
-                }
-                else
-                {
-                    throw new Exception("Error parsing H units");
-                }
-
-                if (values[33] == "0")
-                {
-                    mass_units_g = true;
-                }
-                else if (values[33] == "1")
-                {
-                    mass_units_g = false;
-                }
-                else
-                {
-                    throw new Exception("Error parsing mass units");
-                }
-            }
-            else
-            {
-                throw new Exception("Error parsing csv file");
             }
 
             return input_text;
         }
+
 
         private trans_calc_input_winding processWinding(string winding, string sawg, string wfactor, 
             string N, string N_per_layer, string ampacity_cm_per_amp)
@@ -700,6 +813,48 @@ namespace forms1
             return res;
         }
 
+        public void SaveSettings(trans_calc_input_text strin, string fileName)
+        {
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.V_IN]}={strin.Vin}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.B_MAX]}={strin.Bmax}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.H]}={strin.H}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.PERMEABILITY]}={strin.permeability}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.I_EX]}={strin.Iex}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.CORE_W]}={strin.core_W}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.CORE_H]}={strin.core_H}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.CORE_L]}={strin.core_L}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.Ae_W]}={strin.Ae_W}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.Ae_H]}={strin.Ae_H}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.MPATH_W]}={strin.mpath_W}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.MPATH_H]}={strin.mpath_H}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.WINDOW_SIZE]}={strin.window_size}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.COUPLING_COEFF]}={strin.coupling_coeff}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.STACKING_FACTOR]}={strin.stackingFactor}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.INSULATION]}={strin.insulationThickness}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.V_OUT]}={strin.Vout}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.IS_V_OUT_AT_MAX_LOAD]}=0");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.I_OUT]}={strin.Iout_max}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.MAX_TEMP]}={strin.maxTemp}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.MAX_EQ_R]}={strin.max_eq_R}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.AWG_1]}={strin.awg1}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.W_FACTOR_1]}={strin.wfactor1}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.N_1]}={strin.N1}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.N_PER_LAYER_1]}={strin.N_per_layer1}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.PF_1]}={strin.pf}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.CM_PER_AMP_1]}={strin.ampacity1}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.AWG_2]}={strin.awg2}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.W_FACTOR_2]}={strin.wfactor2}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.N_2]}={strin.N2}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.N_PER_LAYER_2]}={strin.N_per_layer2}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.CM_PER_AMP_2]}={strin.ampacity2}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.H_UNITS]}={(int)this.H_Units}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.TEMP_UNITS]}={(this.IsTempUnitsC ? "1" : "0")}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.WEIGHT_UNITS]}={(this.IsMassUnits_g ? "1" : "0")}");
+            }
+        }
+            
         public trans_calc_result_text Calculate(trans_calc_input_text text_input)
         {
             trans_calc_input input = convertTextToInput(text_input);
@@ -869,11 +1024,18 @@ namespace forms1
                 throw new Exception("Vin not set");
             }
             res.common.Vin = double.Parse(strin.Vin, NumberStyles.Float);
-            if (strin.freq == "")
+            if (strin.Vin == "120")
             {
-                throw new Exception("Freq not set");
+                res.common.Freq = 60;
             }
-            res.common.Freq = double.Parse(strin.freq, NumberStyles.Float);
+            else if (strin.Vin == "220")
+            {
+                res.common.Freq = 50;
+            }
+            else
+            {
+                throw new Exception($"Unexpected mains voltage: {strin.Vin}, 110 or 220 expected");
+            }
 
             if (strin.Bmax == "" && strin.N1 == "")
             {
