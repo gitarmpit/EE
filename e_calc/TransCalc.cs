@@ -532,12 +532,12 @@ namespace forms1
             cfg_keywords[CONFIG_KEYWORDS.N_1] = "N1";
             cfg_keywords[CONFIG_KEYWORDS.N_PER_LAYER_1] = "N_per_layer1";
             cfg_keywords[CONFIG_KEYWORDS.PF_1] = "PF1";
-            cfg_keywords[CONFIG_KEYWORDS.CM_PER_AMP_1] = "CM_PER_AMP1";
+            cfg_keywords[CONFIG_KEYWORDS.CM_PER_AMP_1] = "CM_Per_Amp1";
             cfg_keywords[CONFIG_KEYWORDS.AWG_2] = "Awg2";
             cfg_keywords[CONFIG_KEYWORDS.W_FACTOR_2] = "Wfactor2";
             cfg_keywords[CONFIG_KEYWORDS.N_2] = "N2";
             cfg_keywords[CONFIG_KEYWORDS.N_PER_LAYER_2] = "N_per_layer2";
-            cfg_keywords[CONFIG_KEYWORDS.CM_PER_AMP_2] = "CM_PER_AMP2";
+            cfg_keywords[CONFIG_KEYWORDS.CM_PER_AMP_2] = "CM_Per_Amp2";
             cfg_keywords[CONFIG_KEYWORDS.H_UNITS] = "H_units";
             cfg_keywords[CONFIG_KEYWORDS.TEMP_UNITS] = "Temp_units";
             cfg_keywords[CONFIG_KEYWORDS.WEIGHT_UNITS] = "Weight_units";
@@ -602,23 +602,26 @@ namespace forms1
 
         public double Convert_H(double dH, H_UNITS to_units)
         {
-            if (H_Units == H_UNITS.AMP_TURNS_IN)
+            if (to_units != H_Units)
             {
-                dH = dH / 0.0254;
+                if (H_Units == H_UNITS.AMP_TURNS_IN)
+                {
+                    dH = dH / 0.0254;
+                }
+                if (to_units == H_UNITS.OERSTEDS)
+                {
+                    dH = AmpTurns_to_Oe(dH);
+                }
+                else if (H_Units == H_UNITS.OERSTEDS)
+                {
+                    dH = Oe_to_Ampturns(dH);
+                }
+                if (to_units == H_UNITS.AMP_TURNS_IN)
+                {
+                    dH = dH * 0.0254;
+                }
+                H_Units = to_units;
             }
-            if (to_units == H_UNITS.OERSTEDS)
-            {
-                dH = AmpTurns_to_Oe(dH);
-            }
-            else if (H_Units == H_UNITS.OERSTEDS)
-            {
-                dH = Oe_to_Ampturns(dH);
-            }
-            if (to_units == H_UNITS.AMP_TURNS_IN)
-            {
-                dH = dH * 0.0254;
-            }
-            H_Units = to_units;
             return dH;
         }
 
@@ -626,7 +629,7 @@ namespace forms1
         {
             string[] parts = line.Split('=');
 
-            var key = cfg_keywords.FirstOrDefault(e => e.Value == parts[0].Trim()).Key;
+            var key = cfg_keywords.FirstOrDefault(e => e.Value.Equals(parts[0].Trim(), StringComparison.OrdinalIgnoreCase)).Key;
             if (key == CONFIG_KEYWORDS.UNKNOWN_KEYWORD)
             {
                 throw new Exception($"Error parsing cfg file, invalid keyword: {line}");

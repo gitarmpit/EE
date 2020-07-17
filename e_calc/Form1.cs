@@ -630,7 +630,7 @@ namespace forms1
             }
             else if (tc.H_Units == TransCalc.H_UNITS.AMP_TURNS_IN)
             {
-                radioButton_H_amp_t_m.Select();
+                radioButton_H_amp_t_in.Select();
                 label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
                 res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
             }
