@@ -1056,11 +1056,7 @@ namespace forms1
                 }
             }
 
-            trans_calc_result result = new trans_calc_result();
-
-            result.mpath_l_m = l_m;
-
-            if (result.mpath_l_m > 0.0000001)
+            if (l_m > 0.0000001)
             {
                 //Priority: Iex, permeability, H
                 if (I_ex > 0.000000000001)
@@ -1099,6 +1095,8 @@ namespace forms1
                 throw new Exception($"Calculated L1={L1} L1 is not in the expected range of 0.1 to 1000H. Check the values of Bmax/I_ex/Amp-t-m");
             }
 
+            trans_calc_result result = new trans_calc_result();
+
             result.B_max = input.common.B_max;
             result.H = H_peak;
             result.I_ex = I_ex;
@@ -1112,7 +1110,7 @@ namespace forms1
             //Calculate secondary if configured 
             if (input.processSecondary)
             {
-                result.total_thickness_mm = result.primary.thickness_mm + input.common.InsulationThickness;
+                result.total_thickness_mm = w1.thickness_mm + input.common.InsulationThickness;
                 result.Iout_max = input.common.Iout_max;
                 input.common.Core_H += w1.thickness_mm / 1000;
                 input.common.Core_W += w1.thickness_mm / 1000;
@@ -1129,11 +1127,6 @@ namespace forms1
                 result.turns_ratio = (double)input.primary.N / (double)input.secondary.N;
 
                 trans_calc_result_winding w2 = calculateWinding(input.common, input.secondary);
-                result.secondary = w2;
-                if (u > 0.00000000001)
-                {
-                    result.secondary.L = w2.N * w2.N * u * u0 * Ae / l_m;
-                }
 
                 result.Vout_idle = input.common.Vout;
                 double total_R = w1.resistance / result.turns_ratio / result.turns_ratio + w2.resistance;
@@ -1149,24 +1142,28 @@ namespace forms1
                     result.Iout_max = input.common.Iout_max;
                     result.power_VA = result.Iout_max * result.Vout_load;
                     result.regulation = (result.Vout_idle - result.Vout_load) / result.Vout_idle * 100;
-                }
 
-                result.total_thickness_mm += w2.thickness_mm;
-                result.wire_total_weight = w1.mass + w2.mass;
-                result.wire_csa_ratio = input.primary.awg.Csa_m2 / input.secondary.awg.Csa_m2;
-                result.wire_weight_ratio = w1.mass / w2.mass;
-                
-                if (input.common.Iout_max > 0.0000000001)
-                {
                     double ph0 = Math.Acos(input.common.pf1);
-                    double Ip_re = result.Iout_max/ result.turns_ratio + result.I_ex * input.common.pf1;
+                    double Ip_re = result.Iout_max / result.turns_ratio + result.I_ex * input.common.pf1;
                     double Ip_im = result.I_ex * Math.Sin(ph0);
                     result.Ip_full_load =
                         Math.Sqrt(Math.Pow(Ip_re, 2) + Math.Pow(Ip_im, 2));
                 }
 
+                if (u > 0.00000000001)
+                {
+                    w2.L = w2.N * w2.N * u * u0 * Ae / l_m;
+                }
+
+                result.secondary = w2;
+                result.total_thickness_mm += w2.thickness_mm;
+                result.wire_total_weight = w1.mass + w2.mass;
+                result.wire_csa_ratio = input.primary.awg.Csa_m2 / input.secondary.awg.Csa_m2;
+                result.wire_weight_ratio = w1.mass / w2.mass;
                 result.total_eq_R = total_R;
             }
+
+            result.mpath_l_m = l_m;
 
             if (H_units == H_UNITS.AMP_TURNS_IN)
             {
