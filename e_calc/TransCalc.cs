@@ -1049,7 +1049,31 @@ namespace forms1
                 input.common.Core_H += w1.thickness_mm / 1000;
                 input.common.Core_W += w1.thickness_mm / 1000;
 
-                trans_calc_result_winding w2 = CalculateSecondary(input, w1.resistance, ref result);
+                trans_calc_result_winding w2;
+                int maxAttemps = 100;
+                int count = 0;
+                double Vout_load = input.common.Vout;
+                while (true)
+                {
+                    w2 = CalculateSecondary(input, w1.resistance, ref result);
+                    double Vout_ratio = 1 - result.Vout_load / Vout_load;
+
+                    bool recalcVatFullLoad =
+                        input.common.IsVoutAtFullLoad &&
+                        input.common.Iout_max > 0.0000000001 &&
+                        result.Vout_load > 0.0000000000001 &&
+                        result.Vout_idle > 0.0000000000001 &&
+                        Math.Abs(Vout_ratio) > 0.00001 && 
+                        ++count < maxAttemps;
+
+                    if (!recalcVatFullLoad)
+                    {
+                        break;
+                    }
+
+                    double Vdelta = (Vout_load - result.Vout_load);
+                    input.common.Vout += Vdelta;
+                }
 
                 if (result.permeability > 0.00000000001 && result.mpath_l_m > 0.0000001)
                 {
@@ -1165,34 +1189,39 @@ namespace forms1
 
         private trans_calc_result_winding CalculateSecondary (trans_calc_input input, double w1_R, ref trans_calc_result result)
         {
-            if (input.common.Vout > 0.00000001 && input.secondary.N == 0)
+            double Vout = input.common.Vout;
+
+            if (Vout > 0.00000001 && input.secondary.N == 0)
             {
-                input.secondary.N = (int)(input.primary.N / input.common.Vin * input.common.Vout / input.common.CouplingCoeff);
+                input.secondary.N = (int)(input.primary.N / input.common.Vin * Vout / input.common.CouplingCoeff);
             }
             else if (input.secondary.N > 0)
             {
-                input.common.Vout = input.common.Vin / input.primary.N * input.secondary.N * input.common.CouplingCoeff;
+                Vout = input.common.Vin / input.primary.N * input.secondary.N * input.common.CouplingCoeff;
             }
 
             double turns_ratio = (double)input.primary.N / (double)input.secondary.N;
 
             trans_calc_result_winding w2 = calculateWinding(input.common, input.secondary);
 
-            result.Vout_idle = input.common.Vout;
+            double Vout_idle = Vout;
+            double Vout_load = 0;
+
             double total_R = w1_R / turns_ratio / turns_ratio + w2.resistance;
 
             if (input.common.Iout_max > 0.0000000001)
             {
                 double regulation_vdrop = input.common.Iout_max * total_R;
-                if (regulation_vdrop > result.Vout_idle / 2)
+                if (regulation_vdrop > Vout_idle / 2)
                 {
                     throw new Exception($"Voltage drop too high: {regulation_vdrop}. Check Iout, Vout, wire ga");
                 }
-                result.Vout_load = result.Vout_idle - regulation_vdrop;
+                
+                Vout_load = Vout_idle - regulation_vdrop;
 
                 result.Iout_max = input.common.Iout_max;
-                result.power_VA = result.Iout_max * result.Vout_load;
-                result.regulation = (result.Vout_idle - result.Vout_load) / result.Vout_idle * 100;
+                result.power_VA = result.Iout_max * Vout_load;
+                result.regulation = (Vout_idle - Vout_load) / Vout_idle * 100;
 
                 double ph0 = Math.Acos(input.common.pf1);
                 double Ip_re = result.Iout_max / turns_ratio + result.I_ex * input.common.pf1;
@@ -1201,6 +1230,8 @@ namespace forms1
                     Math.Sqrt(Math.Pow(Ip_re, 2) + Math.Pow(Ip_im, 2));
             }
 
+            result.Vout_idle = Vout_idle;
+            result.Vout_load = Vout_load;
             result.turns_ratio = turns_ratio;
             result.total_eq_R = total_R;
 
