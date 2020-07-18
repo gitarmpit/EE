@@ -1063,6 +1063,13 @@ namespace forms1
                 result.wire_weight_ratio = w1.mass / w2.mass;
             }
 
+            ConvertUnits(ref result);
+
+            return new trans_calc_result_text(result, input); 
+        }
+
+        private void ConvertUnits (ref trans_calc_result result)
+        {
             if (H_units == H_UNITS.AMP_TURNS_IN)
             {
                 result.H *= 0.0254;
@@ -1078,8 +1085,6 @@ namespace forms1
                 result.primary.mass *= lbs_in_g;
                 result.secondary.mass *= lbs_in_g;
             }
-
-            return new trans_calc_result_text(result, input); 
         }
 
         private trans_calc_result CalculateCommon(ref trans_calc_input input, out double L1, out double Ae)
@@ -1169,12 +1174,12 @@ namespace forms1
                 input.common.Vout = input.common.Vin / input.primary.N * input.secondary.N * input.common.CouplingCoeff;
             }
 
-            result.turns_ratio = (double)input.primary.N / (double)input.secondary.N;
+            double turns_ratio = (double)input.primary.N / (double)input.secondary.N;
 
             trans_calc_result_winding w2 = calculateWinding(input.common, input.secondary);
 
             result.Vout_idle = input.common.Vout;
-            double total_R = w1_R / result.turns_ratio / result.turns_ratio + w2.resistance;
+            double total_R = w1_R / turns_ratio / turns_ratio + w2.resistance;
 
             if (input.common.Iout_max > 0.0000000001)
             {
@@ -1185,18 +1190,18 @@ namespace forms1
                 }
                 result.Vout_load = result.Vout_idle - regulation_vdrop;
 
-
                 result.Iout_max = input.common.Iout_max;
                 result.power_VA = result.Iout_max * result.Vout_load;
                 result.regulation = (result.Vout_idle - result.Vout_load) / result.Vout_idle * 100;
 
                 double ph0 = Math.Acos(input.common.pf1);
-                double Ip_re = result.Iout_max / result.turns_ratio + result.I_ex * input.common.pf1;
+                double Ip_re = result.Iout_max / turns_ratio + result.I_ex * input.common.pf1;
                 double Ip_im = result.I_ex * Math.Sin(ph0);
                 result.Ip_full_load =
                     Math.Sqrt(Math.Pow(Ip_re, 2) + Math.Pow(Ip_im, 2));
             }
 
+            result.turns_ratio = turns_ratio;
             result.total_eq_R = total_R;
 
             return w2;
