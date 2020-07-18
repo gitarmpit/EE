@@ -1116,42 +1116,7 @@ namespace forms1
                 input.common.Core_H += w1.thickness_mm / 1000;
                 input.common.Core_W += w1.thickness_mm / 1000;
 
-                if (input.common.Vout > 0.00000001 && input.secondary.N == 0)
-                {
-                    input.secondary.N = (int) (input.primary.N / input.common.Vin * input.common.Vout / input.common.CouplingCoeff);
-                }
-                else if (input.secondary.N > 0)
-                {
-                    input.common.Vout = input.common.Vin / input.primary.N * input.secondary.N * input.common.CouplingCoeff;
-                }
-
-                result.turns_ratio = (double)input.primary.N / (double)input.secondary.N;
-
-                trans_calc_result_winding w2 = calculateWinding(input.common, input.secondary);
-
-                result.Vout_idle = input.common.Vout;
-                double total_R = w1.resistance / result.turns_ratio / result.turns_ratio + w2.resistance;
-
-                if (input.common.Iout_max > 0.0000000001)
-                {
-                    double regulation_vdrop = input.common.Iout_max * total_R;
-                    if (regulation_vdrop > result.Vout_idle / 2)
-                    {
-                        throw new Exception($"Voltage drop too high: {regulation_vdrop}. Check Iout, Vout, wire ga");
-                    }
-                    result.Vout_load = result.Vout_idle - regulation_vdrop;
-                    
-                    
-                    result.Iout_max = input.common.Iout_max;
-                    result.power_VA = result.Iout_max * result.Vout_load;
-                    result.regulation = (result.Vout_idle - result.Vout_load) / result.Vout_idle * 100;
-
-                    double ph0 = Math.Acos(input.common.pf1);
-                    double Ip_re = result.Iout_max / result.turns_ratio + result.I_ex * input.common.pf1;
-                    double Ip_im = result.I_ex * Math.Sin(ph0);
-                    result.Ip_full_load =
-                        Math.Sqrt(Math.Pow(Ip_re, 2) + Math.Pow(Ip_im, 2));
-                }
+                trans_calc_result_winding w2 = ProcessSecondary(input, w1.resistance, ref result);
 
                 if (u > 0.00000000001)
                 {
@@ -1163,9 +1128,7 @@ namespace forms1
                 result.wire_total_weight = w1.mass + w2.mass;
                 result.wire_csa_ratio = input.primary.awg.Csa_m2 / input.secondary.awg.Csa_m2;
                 result.wire_weight_ratio = w1.mass / w2.mass;
-                result.total_eq_R = total_R;
             }
-
 
             if (H_units == H_UNITS.AMP_TURNS_IN)
             {
@@ -1185,6 +1148,52 @@ namespace forms1
 
             return new trans_calc_result_text(result, input); 
         }
+
+        private trans_calc_result_winding ProcessSecondary (trans_calc_input input, double w1_R, ref trans_calc_result result)
+        {
+            if (input.common.Vout > 0.00000001 && input.secondary.N == 0)
+            {
+                input.secondary.N = (int)(input.primary.N / input.common.Vin * input.common.Vout / input.common.CouplingCoeff);
+            }
+            else if (input.secondary.N > 0)
+            {
+                input.common.Vout = input.common.Vin / input.primary.N * input.secondary.N * input.common.CouplingCoeff;
+            }
+
+            result.turns_ratio = (double)input.primary.N / (double)input.secondary.N;
+
+            trans_calc_result_winding w2 = calculateWinding(input.common, input.secondary);
+
+            result.Vout_idle = input.common.Vout;
+            double total_R = w1_R / result.turns_ratio / result.turns_ratio + w2.resistance;
+
+            if (input.common.Iout_max > 0.0000000001)
+            {
+                double regulation_vdrop = input.common.Iout_max * total_R;
+                if (regulation_vdrop > result.Vout_idle / 2)
+                {
+                    throw new Exception($"Voltage drop too high: {regulation_vdrop}. Check Iout, Vout, wire ga");
+                }
+                result.Vout_load = result.Vout_idle - regulation_vdrop;
+
+
+                result.Iout_max = input.common.Iout_max;
+                result.power_VA = result.Iout_max * result.Vout_load;
+                result.regulation = (result.Vout_idle - result.Vout_load) / result.Vout_idle * 100;
+
+                double ph0 = Math.Acos(input.common.pf1);
+                double Ip_re = result.Iout_max / result.turns_ratio + result.I_ex * input.common.pf1;
+                double Ip_im = result.I_ex * Math.Sin(ph0);
+                result.Ip_full_load =
+                    Math.Sqrt(Math.Pow(Ip_re, 2) + Math.Pow(Ip_im, 2));
+            }
+
+            result.total_eq_R = total_R;
+
+            return w2;
+
+        }
+
         private trans_calc_input convertTextToInput(trans_calc_input_text strin) 
         {
             trans_calc_input res =  new trans_calc_input();
