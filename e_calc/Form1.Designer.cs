@@ -440,9 +440,9 @@
             this.label53.Location = new System.Drawing.Point(82, 170);
             this.label53.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label53.Name = "label53";
-            this.label53.Size = new System.Drawing.Size(28, 20);
+            this.label53.Size = new System.Drawing.Size(42, 20);
             this.label53.TabIndex = 575;
-            this.label53.Text = "m:";
+            this.label53.Text = "mm:";
             // 
             // label41
             // 
@@ -1048,9 +1048,9 @@
             this.label_units_buildup1.Location = new System.Drawing.Point(88, 170);
             this.label_units_buildup1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label_units_buildup1.Name = "label_units_buildup1";
-            this.label_units_buildup1.Size = new System.Drawing.Size(28, 20);
+            this.label_units_buildup1.Size = new System.Drawing.Size(42, 20);
             this.label_units_buildup1.TabIndex = 532;
-            this.label_units_buildup1.Text = "m:";
+            this.label_units_buildup1.Text = "mm:";
             // 
             // res_label_units_H
             // 

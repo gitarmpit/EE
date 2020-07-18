@@ -20,9 +20,9 @@ namespace forms1
     {
         private Bias bias;
         private TransCalc tc;
-        private string[] H_labels = new string[] { "Amp-t/m", "Amp-t/in", "Oe" };
         // Units that require conversion:
         private double transCalc_H;
+        private List<string> tc_warnings;
 
         public MainForm()
         {
@@ -93,6 +93,8 @@ namespace forms1
 
             tc = new TransCalc();
             SetUnitRadioButtons();
+            button_saveResults.Enabled = false;
+            radiobutton_mains_US.Select();
         }
 
         private void OnCalculate(object sender, EventArgs e)
@@ -150,6 +152,7 @@ namespace forms1
             strin.N_per_layer2 = edit_N_PerLayer2.Text;
             strin.maxTemp = edit_max_temp.Text;
             strin.max_eq_R = edit_max_eq_R.Text;
+            strin.isVoutAtFullLoad = checkBox_fullLoad.Checked;
 
             return strin;
         }
@@ -183,35 +186,35 @@ namespace forms1
 
                 res_length_m_1.Text = result.length_m_1;
                 res_length_ft_1.Text = result.length_ft_1;
-                res_thickness_mm_1.Text = result.thickness_mm_1;
-                res_resistance_1.Text = result.resistance_1;
+                res_thickness_mm_1.Text = result.buildup_mm_1;
+                res_resistance_1.Text = result.R_1;
                 res_turns_1.Text = result.N_1;
                 res_turns_per_layer_1.Text = result.N_per_layer_1;
                 res_totalLayers_1.Text = result.totalLayers_1;
                 res_lastLayerTurns_1.Text = result.lastLayerTurns_1;
                 res_mpath_m.Text = result.mpath_l_m;
                 res_max_current_1.Text = result.awg_max_current_amp_1;
-                res_L1.Text = result.L1;
+                res_L1.Text = result.L_1;
                 res_Bmax.Text = result.B_max;
                 res_H.Text = result.H;
                 res_Iex.Text = result.I_ex;
                 res_permeability.Text = result.permeability;
-                res_weight_g1.Text = result.weight_g_1;
+                res_weight_g1.Text = result.weight_1;
                 res_length_m_2.Text = result.length_m_2;
                 res_length_ft_2.Text = result.length_ft_2;
-                res_thickness_mm_2.Text = result.thickness_mm_2;
-                res_resistance_2.Text = result.resistance_2;
+                res_thickness_mm_2.Text = result.buildup_mm_2;
+                res_resistance_2.Text = result.R_2;
                 res_turns_2.Text = result.N_2;
                 res_turns_per_layer_2.Text = result.N_per_layer_2;
                 res_totalLayers_2.Text = result.totalLayers_2;
                 res_lastLayerTurns_2.Text = result.lastLayerTurns_2;
                 res_max_current_2.Text = result.awg_max_current_amp_2;
-                res_L2.Text = result.L2;
+                res_L2.Text = result.L_2;
                 res_Vout_idle.Text = result.Vout_idle;
                 res_Vout_imax.Text = result.Vout_load;
                 res_Iout.Text = result.Iout_max;
                 res_total_thickness_mm.Text = result.total_thickness_mm;
-                res_weight_g2.Text = result.weight_g_2;
+                res_weight_g2.Text = result.weight_2;
                 res_turns_ratio.Text = result.turns_ratio;
                 res_csa_ratio.Text = result.wire_csa_ratio;
                 res_wire_total_mass.Text = result.wire_total_weight;
@@ -221,24 +224,26 @@ namespace forms1
                 res_total_eq_R.Text = result.total_eq_R;
                 res_regulation.Text = result.regulation;
 
+                tc_warnings = new List<string>();
+                tc_warnings = result.warnings;
                 foreach (string msg in result.warnings)
                 {
                     res_warnings.Text += msg + "\n";    
                 }
 
-                if (res_total_thickness_mm.Text != "- -")
+                if (res_total_thickness_mm.Text != TransCalc.EmptyValue)
                 {
                     res_total_thickness_mm.ForeColor =
                         result.IsWindowExceeded ? Color.Red : Color.FromArgb(0, 180, 0);
                 }
 
-                if (res_total_eq_R.Text != "- -")
+                if (res_total_eq_R.Text != TransCalc.EmptyValue)
                 {
                     res_total_eq_R.ForeColor =
                         result.IsMaxResistanceExceeded ? Color.Red : Color.FromArgb(0, 180, 0);
                 }
 
-                if (res_Ip_full_load.Text != "- -")
+                if (res_Ip_full_load.Text != TransCalc.EmptyValue)
                 {
                     res_Ip_full_load.ForeColor =
                         result.IsAmpacity1Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
@@ -246,7 +251,7 @@ namespace forms1
                         result.IsAmpacity1Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
                 }
 
-                if (res_Iout.Text != "- -")
+                if (res_Iout.Text != TransCalc.EmptyValue)
                 {
                     res_Iout.ForeColor =
                         result.IsAmpacity2Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
@@ -319,50 +324,50 @@ namespace forms1
         private void ClearResults()
         {
 
-            res_turns_1.Text = "- -";
-            res_turns_per_layer_1.Text = "- -";
-            res_totalLayers_1.Text = "- -";
-            res_lastLayerTurns_1.Text = "- -";
-            res_length_m_1.Text = "- -";
-            res_length_ft_1.Text = "- -";
-            res_thickness_mm_1.Text = "- -";
-            res_resistance_1.Text = "- -";
-            res_mpath_m.Text = "- -";
-            res_L1.Text = "- -";
-            res_Bmax.Text = "- -";
-            res_permeability.Text = "- -";
-            res_H.Text = "- -";
-            res_Iex.Text = "- -";
-            res_Ip_full_load.Text = "- -";
+            res_turns_1.Text = TransCalc.EmptyValue;
+            res_turns_per_layer_1.Text = TransCalc.EmptyValue;
+            res_totalLayers_1.Text = TransCalc.EmptyValue;
+            res_lastLayerTurns_1.Text = TransCalc.EmptyValue;
+            res_length_m_1.Text = TransCalc.EmptyValue;
+            res_length_ft_1.Text = TransCalc.EmptyValue;
+            res_thickness_mm_1.Text = TransCalc.EmptyValue;
+            res_resistance_1.Text = TransCalc.EmptyValue;
+            res_mpath_m.Text = TransCalc.EmptyValue;
+            res_L1.Text = TransCalc.EmptyValue;
+            res_Bmax.Text = TransCalc.EmptyValue;
+            res_permeability.Text = TransCalc.EmptyValue;
+            res_H.Text = TransCalc.EmptyValue;
+            res_Iex.Text = TransCalc.EmptyValue;
+            res_Ip_full_load.Text = TransCalc.EmptyValue;
             res_Ip_full_load.ForeColor = Color.Black;
-            res_max_current_1.Text = "- -";
+            res_max_current_1.Text = TransCalc.EmptyValue;
             res_max_current_1.ForeColor = Color.Black;
-            res_weight_g1.Text = "- -";
+            res_weight_g1.Text = TransCalc.EmptyValue;
 
-            res_turns_2.Text = "- -";
-            res_turns_per_layer_2.Text = "- -";
-            res_totalLayers_2.Text = "- -";
-            res_lastLayerTurns_2.Text = "- -";
-            res_length_m_2.Text = "- -";
-            res_length_ft_2.Text = "- -";
-            res_thickness_mm_2.Text = "- -";
-            res_resistance_2.Text = "- -";
-            res_total_thickness_mm.Text = "- -";
+            res_turns_2.Text = TransCalc.EmptyValue;
+            res_turns_per_layer_2.Text = TransCalc.EmptyValue;
+            res_totalLayers_2.Text = TransCalc.EmptyValue;
+            res_lastLayerTurns_2.Text = TransCalc.EmptyValue;
+            res_length_m_2.Text = TransCalc.EmptyValue;
+            res_length_ft_2.Text = TransCalc.EmptyValue;
+            res_thickness_mm_2.Text = TransCalc.EmptyValue;
+            res_resistance_2.Text = TransCalc.EmptyValue;
+            res_total_thickness_mm.Text = TransCalc.EmptyValue;
             res_total_thickness_mm.ForeColor = Color.Black;
-            res_L2.Text = "- -";
-            res_Vout_idle.Text = "- -";
-            res_Vout_imax.Text = "- -";
-            res_Iout.Text = "- -";
-            res_max_current_2.Text = "- -";
+            res_L2.Text = TransCalc.EmptyValue;
+            res_Vout_idle.Text = TransCalc.EmptyValue;
+            res_Vout_imax.Text = TransCalc.EmptyValue;
+            res_Iout.Text = TransCalc.EmptyValue;
+            res_max_current_2.Text = TransCalc.EmptyValue;
             res_max_current_2.ForeColor = Color.Black;
-            res_weight_g2.Text = "- -";
-            res_turns_ratio.Text = "- -";
-            res_wire_weight_ratio.Text = "- -";
-            res_wire_total_mass.Text = "- -";
-            res_powerVA.Text = "- -";
-            res_csa_ratio.Text = "- -";
-            res_regulation.Text = "- -";
-            res_total_eq_R.Text = "- -";
+            res_weight_g2.Text = TransCalc.EmptyValue;
+            res_turns_ratio.Text = TransCalc.EmptyValue;
+            res_wire_weight_ratio.Text = TransCalc.EmptyValue;
+            res_wire_total_mass.Text = TransCalc.EmptyValue;
+            res_powerVA.Text = TransCalc.EmptyValue;
+            res_csa_ratio.Text = TransCalc.EmptyValue;
+            res_regulation.Text = TransCalc.EmptyValue;
+            res_total_eq_R.Text = TransCalc.EmptyValue;
             res_warnings.Text = "";
             button_saveResults.Enabled = false;
         }
@@ -541,6 +546,7 @@ namespace forms1
         private void OnLoadSettings(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Tc input file|*.tcin";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 if (openFileDialog.FileName != "")
@@ -560,11 +566,18 @@ namespace forms1
                         {
                             throw new Exception($"Unexpected mains voltage: {input.Vin}");
                         }
-                        transCalc_H = double.Parse(input.H, NumberStyles.Float);
+
+                        checkBox_fullLoad.Checked = input.isVoutAtFullLoad;
+
                         edit_Bmax.Text = input.Bmax;
                         edit_permeability.Text = input.permeability;
                         edit_Iex.Text = input.Iex;
-                        edit_H.Text = input.H;
+                        transCalc_H = double.Parse(input.H, NumberStyles.Float);
+                        if (transCalc_H > 0.000000001)
+                        {
+                            edit_H.Text = String.Format("{0:0.##}", transCalc_H);
+                        }
+
                         edit_coreSize_W.Text = input.core_W;
                         edit_coreSize_H.Text = input.core_H;
                         edit_coreSize_L.Text = input.core_L;
@@ -624,36 +637,32 @@ namespace forms1
             if (tc.H_Units == TransCalc.H_UNITS.AMP_TURNS_M)
             {
                 radioButton_H_amp_t_m.Select();
-                label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_M];
-                res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_M];
 
             }
             else if (tc.H_Units == TransCalc.H_UNITS.AMP_TURNS_IN)
             {
                 radioButton_H_amp_t_in.Select();
-                label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
-                res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
             }
             else
             {
                 radioButton_H_oe.Select();
-                label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
-                res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
             }
+
+            label_units_H.Text = tc.HUnitlsLabel;
+            res_label_units_H.Text = tc.HUnitlsLabel;
 
             if (tc.IsMassUnits_g)
             {
                 radioButton_weight_g.Select();
-                res_label_units_weight1.Text = "g:";
-                res_label_units_weight2.Text = "g:";
-                res_label_units_total_weight.Text = "g:";
             }
             else
             {
                 radioButton_weight_lbs.Select();
-                res_label_units_weight1.Text = "lbs:";
-                res_label_units_total_weight.Text = "lbs:";
             }
+
+            res_label_units_weight1.Text = tc.MassUnitsLabel + ":";
+            res_label_units_weight2.Text = tc.MassUnitsLabel + ":";
+            res_label_units_total_weight.Text = tc.MassUnitsLabel + ":";
         }
 
         private void OnSaveSettings(object sender, EventArgs e)
@@ -662,7 +671,7 @@ namespace forms1
             saveFileDialog.Title = "Save settings in a *csv file";
             saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
             saveFileDialog.RestoreDirectory = true;
-            saveFileDialog.Filter = "Csv file|*.csv";
+            saveFileDialog.Filter = "Tc input file|*.tcin";
             saveFileDialog.ShowDialog();
 
             if (saveFileDialog.FileName != "")
@@ -677,17 +686,55 @@ namespace forms1
             saveFileDialog.Title = "Save settings in a tc file";
             saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
             saveFileDialog.RestoreDirectory = true;
-            saveFileDialog.Filter = "Tc file|*.tc";
+            saveFileDialog.Filter = "Tc output file|*.tcout";
             saveFileDialog.ShowDialog();
 
             // If the file name is not an empty string open it for saving.
             if (saveFileDialog.FileName != "")
             {
-                using (StreamWriter sw = new StreamWriter(saveFileDialog.FileName))
-                {
-                    //foreach (string line in lines)
-                        sw.WriteLine("test1");
-                }
+                trans_calc_input_text strin = buildInput();
+                trans_calc_result_text result = new trans_calc_result_text();
+                result.length_m_1 = res_length_m_1.Text;
+                result.length_ft_1 = res_length_ft_1.Text;
+                result.buildup_mm_1 = res_thickness_mm_1.Text;
+                result.R_1 = res_resistance_1.Text;
+                result.N_1 = res_turns_1.Text;
+                result.N_per_layer_1 = res_turns_per_layer_1.Text;
+                result.totalLayers_1 = res_totalLayers_1.Text;
+                result.lastLayerTurns_1 = res_lastLayerTurns_1.Text;
+                result.mpath_l_m = res_mpath_m.Text;
+                result.awg_max_current_amp_1 = res_max_current_1.Text;
+                result.L_1 = res_L1.Text;
+                result.B_max = res_Bmax.Text;
+                result.H = res_H.Text;
+                result.I_ex = res_Iex.Text;
+                result.permeability = res_permeability.Text;
+                result.weight_1 = res_weight_g1.Text;
+                result.length_m_2 = res_length_m_2.Text;
+                result.length_ft_2 = res_length_ft_2.Text;
+                result.buildup_mm_2 = res_thickness_mm_2.Text;
+                result.R_2 = res_resistance_2.Text;
+                result.N_2 = res_turns_2.Text;
+                result.N_per_layer_2 = res_turns_per_layer_2.Text;
+                result.totalLayers_2 = res_totalLayers_2.Text;
+                result.lastLayerTurns_2 = res_lastLayerTurns_2.Text;
+                result.awg_max_current_amp_2 = res_max_current_2.Text;
+                result.L_2 = res_L2.Text;
+                result.Vout_idle = res_Vout_idle.Text;
+                result.Vout_load = res_Vout_imax.Text;
+                result.Iout_max = res_Iout.Text;
+                result.total_thickness_mm = res_total_thickness_mm.Text;
+                result.weight_2 = res_weight_g2.Text;
+                result.turns_ratio = res_turns_ratio.Text;
+                result.wire_csa_ratio = res_csa_ratio.Text;
+                result.wire_total_weight = res_wire_total_mass.Text;
+                result.wire_weight_ratio = res_wire_weight_ratio.Text;
+                result.Ip_full_load = res_Ip_full_load.Text;
+                result.power_VA = res_powerVA.Text;
+                result.total_eq_R = res_total_eq_R.Text;
+                result.regulation = res_regulation.Text;
+                result.warnings = tc_warnings;
+                tc.SaveResults(strin, result, saveFileDialog.FileName);
             }
         }
         private void Temp_OnCheckedChanged(object sender, EventArgs e)
@@ -699,28 +746,16 @@ namespace forms1
                     edit_max_temp.Text = tc.UpdateTempText(edit_max_temp.Text);
                 }
                 tc.IsTempUnitsC = radioButton_tempC.Checked;
-                label_units_maxtemp.Text = tc.IsTempUnitsC ? "C:" : "F:";
+                label_units_maxtemp.Text = tc.TempUnitsLabel + ":";
             }
         }
 
         private void SetResultUnits()
         {
-            res_label_units_weight1.Text = tc.IsMassUnits_g ? "g:" : "lbs:";
-            res_label_units_weight2.Text = tc.IsMassUnits_g ? "g:" : "lbs:";
-            res_label_units_total_weight.Text = tc.IsMassUnits_g ? "g:" : "lbs:";
-
-            if (radioButton_H_amp_t_m.Checked)
-            {
-                res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_M];
-            }
-            else if (radioButton_H_amp_t_in.Checked)
-            {
-                res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
-            }
-            else if (radioButton_H_oe.Checked)
-            {
-                res_label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
-            }
+            res_label_units_weight1.Text = tc.MassUnitsLabel + ":";
+            res_label_units_weight2.Text = tc.MassUnitsLabel + ":";
+            res_label_units_total_weight.Text = tc.MassUnitsLabel + ":";
+            res_label_units_H.Text = tc.HUnitlsLabel;
         }
 
         private void Weight_OnCheckedChanged(object sender, EventArgs e)
@@ -742,18 +777,18 @@ namespace forms1
                     if (radioButton_H_amp_t_m.Checked)
                     {
                         transCalc_H = tc.Convert_H(transCalc_H, TransCalc.H_UNITS.AMP_TURNS_M);
-                        label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_M];
                     }
                     else if (radioButton_H_amp_t_in.Checked)
                     {
                         transCalc_H = tc.Convert_H(transCalc_H, TransCalc.H_UNITS.AMP_TURNS_IN);
-                        label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.AMP_TURNS_IN];
                     }
                     else if (radioButton_H_oe.Checked)
                     {
                         transCalc_H = tc.Convert_H(transCalc_H, TransCalc.H_UNITS.OERSTEDS);
-                        label_units_H.Text = H_labels[(int)TransCalc.H_UNITS.OERSTEDS];
                     }
+                    
+                    label_units_H.Text = tc.HUnitlsLabel;
+
                     if (transCalc_H > 0.000000001)
                     {
                         edit_H.Text = String.Format("{0:0.##}", transCalc_H);

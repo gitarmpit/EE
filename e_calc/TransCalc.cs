@@ -15,7 +15,6 @@ namespace forms1
     struct trans_calc_input_text
     {
         public string Vin;
-        // public string freq;
         public string Bmax;
         public string permeability;
         public string Iex;
@@ -46,36 +45,37 @@ namespace forms1
         public string maxTemp;
         public string pf;
         public string max_eq_R;
+        public bool isVoutAtFullLoad;
     }
     struct trans_calc_result_text
     {
         public string length_m_1;
         public string length_ft_1;
-        public string thickness_mm_1;
-        public string resistance_1;
+        public string buildup_mm_1;
+        public string R_1;
         public string N_1;
         public string N_per_layer_1;
         public string totalLayers_1;
         public string lastLayerTurns_1;
         public string mpath_l_m;
         public string awg_max_current_amp_1;
-        public string L1;
+        public string L_1;
         public string B_max;
         public string H;
         public string I_ex;
         public string permeability;
-        public string weight_g_1;
-        public string weight_g_2;
+        public string weight_1;
+        public string weight_2;
         public string length_m_2;
         public string length_ft_2;
-        public string thickness_mm_2;
-        public string resistance_2;
+        public string buildup_mm_2;
+        public string R_2;
         public string N_2;
         public string N_per_layer_2;
         public string totalLayers_2;
         public string lastLayerTurns_2;
         public string awg_max_current_amp_2;
-        public string L2;
+        public string L_2;
         public string Vout_idle;
         public string Vout_load;
         public string Iout_max;
@@ -143,39 +143,40 @@ namespace forms1
 
             this.length_m_1 = String.Format("{0:0.##}", res.primary.length_m);
             this.length_ft_1 = String.Format("{0:0.##}", res.primary.length_ft);
-            this.thickness_mm_1 = String.Format("{0:0.##}", res.primary.thickness_mm);
-            this.resistance_1 = String.Format("{0:0.##}", res.primary.resistance);
+            this.buildup_mm_1 = String.Format("{0:0.##}", res.primary.thickness_mm);
+            this.R_1 = String.Format("{0:0.##}", res.primary.resistance);
             this.N_1 = res.primary.N.ToString();
             this.N_per_layer_1 = res.primary.N_per_layer.ToString();
             this.totalLayers_1 = res.primary.totalLayers.ToString();
             this.lastLayerTurns_1 =
-                (res.primary.lastLayerTurns != 0) ? res.primary.lastLayerTurns.ToString() : "- -";
-            this.mpath_l_m = String.Format("{0:0.##}", res.mpath_l_m);
+                (res.primary.lastLayerTurns != 0) ? res.primary.lastLayerTurns.ToString() : TransCalc.EmptyValue;
+            this.mpath_l_m = (res.mpath_l_m > 0.0000001) ?
+                String.Format("{0:0.##}", res.mpath_l_m) : TransCalc.EmptyValue;
             this.awg_max_current_amp_1 =
-                (res.primary.awg_max_current_amp > 0.0000001) ? String.Format("{0:0.##}", res.primary.awg_max_current_amp) : "- -";
-            this.L1 =
-                (res.primary.L > 0.0000001) ? String.Format("{0:0.##}", res.primary.L) : "- -";
+                (res.primary.awg_max_current_amp > 0.0000001) ? String.Format("{0:0.##}", res.primary.awg_max_current_amp) : TransCalc.EmptyValue;
+            this.L_1 =
+                (res.primary.L > 0.0000001) ? String.Format("{0:0.##}", res.primary.L) : TransCalc.EmptyValue;
 
             this.B_max = String.Format("{0:0.##}", res.B_max);
             this.H =
-                (res.H > 0.0000001) ? String.Format("{0:0.##}", res.H) : "- -";
+                (res.H > 0.0000001) ? String.Format("{0:0.##}", res.H) : TransCalc.EmptyValue;
 
             this.I_ex =
-                (res.I_ex > 0.0000001) ? String.Format("{0:0.##}", res.I_ex) : "- -";
+                (res.I_ex > 0.0000001) ? String.Format("{0:0.##}", res.I_ex) : TransCalc.EmptyValue;
 
             this.permeability =
-                (res.permeability > 0.0000001) ? String.Format("{0:0.##}", res.permeability) : "- -";
+                (res.permeability > 0.0000001) ? String.Format("{0:0.##}", res.permeability) : TransCalc.EmptyValue;
 
-            this.weight_g_1 =
-                (res.primary.mass > 0.0000001) ? String.Format("{0:0.##}", res.primary.mass) : "- -";
+            this.weight_1 =
+                (res.primary.mass > 0.0000001) ? String.Format("{0:0.##}", res.primary.mass) : TransCalc.EmptyValue;
 
             /////////////////////////////////
             if (input.processSecondary)
             {
                 this.length_m_2 = String.Format("{0:0.##}", res.secondary.length_m);
                 this.length_ft_2 = String.Format("{0:0.##}", res.secondary.length_ft);
-                this.thickness_mm_2 = String.Format("{0:0.##}", res.secondary.thickness_mm);
-                this.resistance_2 = String.Format("{0:0.##}", res.secondary.resistance);
+                this.buildup_mm_2 = String.Format("{0:0.##}", res.secondary.thickness_mm);
+                this.R_2 = String.Format("{0:0.##}", res.secondary.resistance);
                 this.N_2 = res.secondary.N.ToString();
                 this.N_per_layer_2 = res.secondary.N_per_layer.ToString();
                 this.totalLayers_2 = res.secondary.totalLayers.ToString();
@@ -183,22 +184,22 @@ namespace forms1
                     (res.secondary.lastLayerTurns != 0) ? res.secondary.lastLayerTurns.ToString() : "";
 
                 this.awg_max_current_amp_2 =
-                    (res.secondary.awg_max_current_amp > 0.0000001) ? String.Format("{0:0.##}", res.secondary.awg_max_current_amp) : "- -";
+                    (res.secondary.awg_max_current_amp > 0.0000001) ? String.Format("{0:0.##}", res.secondary.awg_max_current_amp) : TransCalc.EmptyValue;
 
-                this.L2 =
-                    (res.secondary.L > 0.0000001) ? String.Format("{0:0.##}", res.secondary.L) : "- -";
+                this.L_2 =
+                    (res.secondary.L > 0.0000001) ? String.Format("{0:0.##}", res.secondary.L) : TransCalc.EmptyValue;
 
-                this.weight_g_2 =
-                    (res.secondary.mass > 0.0000001) ? String.Format("{0:0.##}", res.secondary.mass) : "- -";
+                this.weight_2 =
+                    (res.secondary.mass > 0.0000001) ? String.Format("{0:0.##}", res.secondary.mass) : TransCalc.EmptyValue;
 
                 this.total_thickness_mm =
-                    (res.total_thickness_mm > 0.0000001) ? String.Format("{0:0.##}", res.total_thickness_mm) : "- -";
+                    (res.total_thickness_mm > 0.0000001) ? String.Format("{0:0.##}", res.total_thickness_mm) : TransCalc.EmptyValue;
 
                 this.Vout_idle = String.Format("{0:0.##}", res.Vout_idle);
                 this.Vout_load = (res.Vout_load > 0.0000001) ?
-                    String.Format("{0:0.##}", res.Vout_load) : "- -";
+                    String.Format("{0:0.##}", res.Vout_load) : TransCalc.EmptyValue;
                 this.Iout_max =
-                    (res.Iout_max > 0.0000001) ? String.Format("{0:0.##}", res.Iout_max) : "- -";
+                    (res.Iout_max > 0.0000001) ? String.Format("{0:0.##}", res.Iout_max) : TransCalc.EmptyValue;
                 
                 if (res.turns_ratio > 1)
                 {
@@ -228,41 +229,41 @@ namespace forms1
                     this.wire_weight_ratio = "1:" + String.Format("{0:0.##}", 1 / res.wire_weight_ratio);
                 }
                 this.Ip_full_load = (res.Ip_full_load > 0.00000001) ?
-                    String.Format("{0:0.##}", res.Ip_full_load) : "- -";
+                    String.Format("{0:0.##}", res.Ip_full_load) : TransCalc.EmptyValue;
                 this.power_VA = (res.power_VA > 0.0000000001) ?
-                    String.Format("{0:0.##}", res.power_VA) : "- -";
+                    String.Format("{0:0.##}", res.power_VA) : TransCalc.EmptyValue;
 
                 this.regulation = (res.regulation > 0.0000000001) ?
-                    String.Format("{0:0.##}", res.regulation) : "- -";
+                    String.Format("{0:0.##}", res.regulation) : TransCalc.EmptyValue;
 
                 this.total_eq_R = (res.total_eq_R > 0.0000000001) ?
-                    String.Format("{0:0.##}", res.total_eq_R) : "- -";
+                    String.Format("{0:0.##}", res.total_eq_R) : TransCalc.EmptyValue;
             }
             else
             {
-                this.length_m_2 = "- -";
-                this.length_ft_2 = "- -";
-                this.thickness_mm_2 = "- -";
-                this.resistance_2 = "- -";
-                this.N_2 = "- -";
-                this.N_per_layer_2 = "- -";
-                this.totalLayers_2 = "- -";
-                this.lastLayerTurns_2 = "- -";
-                this.awg_max_current_amp_2 = "- -";
-                this.L2 = "- -";
-                this.weight_g_2 = "- -";
-                this.total_thickness_mm = "- -";
-                this.Vout_idle = "- -";
-                this.Vout_load = "- -";
-                this.Iout_max = "- -";
-                this.turns_ratio = "- -";
-                this.wire_csa_ratio = "- -";
-                this.wire_total_weight = "- -";
-                this.wire_weight_ratio = "- -";
-                this.Ip_full_load = "- -";
-                this.power_VA = "- -";
-                this.total_eq_R = "- -";
-                this.regulation = "- -";
+                this.length_m_2 = TransCalc.EmptyValue;
+                this.length_ft_2 = TransCalc.EmptyValue;
+                this.buildup_mm_2 = TransCalc.EmptyValue;
+                this.R_2 = TransCalc.EmptyValue;
+                this.N_2 = TransCalc.EmptyValue;
+                this.N_per_layer_2 = TransCalc.EmptyValue;
+                this.totalLayers_2 = TransCalc.EmptyValue;
+                this.lastLayerTurns_2 = TransCalc.EmptyValue;
+                this.awg_max_current_amp_2 = TransCalc.EmptyValue;
+                this.L_2 = TransCalc.EmptyValue;
+                this.weight_2 = TransCalc.EmptyValue;
+                this.total_thickness_mm = TransCalc.EmptyValue;
+                this.Vout_idle = TransCalc.EmptyValue;
+                this.Vout_load = TransCalc.EmptyValue;
+                this.Iout_max = TransCalc.EmptyValue;
+                this.turns_ratio = TransCalc.EmptyValue;
+                this.wire_csa_ratio = TransCalc.EmptyValue;
+                this.wire_total_weight = TransCalc.EmptyValue;
+                this.wire_weight_ratio = TransCalc.EmptyValue;
+                this.Ip_full_load = TransCalc.EmptyValue;
+                this.power_VA = TransCalc.EmptyValue;
+                this.total_eq_R = TransCalc.EmptyValue;
+                this.regulation = TransCalc.EmptyValue;
             }
         }
     }
@@ -333,6 +334,7 @@ namespace forms1
 
         public double Vout_idle;
         public double Iout_max;
+        public bool   IsVoutAtFullLoad;
     }
 
     struct trans_calc_input_winding
@@ -471,6 +473,8 @@ namespace forms1
         private bool tempUnitsC = true;
         private H_UNITS H_units;
         private bool mass_units_g = true;
+        public static string EmptyValue = "- -";
+        private string[] H_labels = new string[] { "Amp-t/m", "Amp-t/in", "Oe" };
 
         public TransCalc()
         {
@@ -572,6 +576,25 @@ namespace forms1
             get { return mass_units_g; }
             set { mass_units_g = value; }
         }
+
+        public string MassUnitsLabel
+        {
+            get { return IsMassUnits_g ? "g" : "lbs";  }
+        }
+
+        public string TempUnitsLabel
+        {
+            get { return IsTempUnitsC ? "C" : "F"; }
+        }
+
+        public string HUnitlsLabel
+        {
+            get 
+            {
+                return H_labels[(int)H_Units];
+            }
+        }
+
 
         public static double F_to_C(double f)
         {
@@ -688,7 +711,7 @@ namespace forms1
                     strin.Vout = parts[1];
                     break;
                 case CONFIG_KEYWORDS.IS_V_OUT_AT_MAX_LOAD:
-                    // strin.is = parts[1];
+                    strin.isVoutAtFullLoad = bool.Parse (parts[1]);
                     break;
                 case CONFIG_KEYWORDS.I_OUT:
                     strin.Iout_max = parts[1];
@@ -816,6 +839,151 @@ namespace forms1
             return res;
         }
 
+        public void SaveResults(trans_calc_input_text strin, trans_calc_result_text result, string fileName)
+        {
+            trans_calc_input input = convertTextToInput(strin);
+
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                sw.WriteLine("Input:\n");
+                
+                sw.WriteLine($"Core size  WxHxL     : {strin.core_W} x {strin.core_H} x {strin.core_L} cm");
+                sw.WriteLine($"Ae, WxH              : {strin.Ae_W} x {strin.Ae_H} cm");
+                if (strin.window_size != "")
+                {
+                    sw.WriteLine($"Window size          : {strin.window_size} mm");
+                }
+                if (input.common.mpath_l_cm > 0.0000001)
+                {
+                    sw.WriteLine($"Mpath, WxH           : {strin.mpath_W} x {strin.mpath_H} cm");
+                }
+                if (strin.Bmax != "")
+                {   
+                    sw.WriteLine($"Bmax                 : {strin.Bmax} T");
+                }
+                if (strin.H != "")
+                {
+                    sw.WriteLine($"H                    : {strin.H} " + HUnitlsLabel);
+                }
+                if (strin.permeability != "")
+                {
+                    sw.WriteLine($"u/u0                 : {strin.permeability}");
+                }
+                if (strin.Iex != "")
+                {
+                    sw.WriteLine($"Iex                  : {strin.Iex} A");
+                }
+
+                sw.WriteLine($"L1/L2 coupling coeff : {strin.coupling_coeff}");
+                sw.WriteLine($"Stacking factor      : {strin.stackingFactor}");
+                if (strin.insulationThickness != "")
+                {
+                    sw.WriteLine($"Insulation           : {strin.insulationThickness} mm");
+                }
+                if (strin.Vout != "")
+                {
+                    string fullLoad = strin.isVoutAtFullLoad ? "(full load)" : "(idle)";
+                    sw.WriteLine($"Vout                 : {strin.Vout} {fullLoad}");
+                }
+                if (strin.Iout_max != "")
+                {
+                    sw.WriteLine($"Iout max             : {strin.Iout_max} A");
+                }
+                sw.WriteLine($"Max temperature      : {strin.maxTemp} " + TempUnitsLabel);
+                if (strin.max_eq_R != "")
+                {
+                    sw.WriteLine($"Max equivalent R     : {strin.max_eq_R}");
+                }
+                sw.WriteLine();
+
+                sw.WriteLine($"Primary   : {strin.awg1} AWG, Wfactor: {strin.wfactor1}, N: {strin.N1}, " +
+                    $"N per layer: {strin.N_per_layer1} C.M. per amp: {strin.ampacity1}");
+
+                if (input.processSecondary)
+                {
+                    sw.WriteLine($"Secondary : {strin.awg2} AWG, Wfactor: {strin.wfactor2}, N: {strin.N2}, " +
+                        $"N per layer: {strin.N_per_layer2} C.M. per amp: {strin.ampacity2}");
+                }
+
+                sw.WriteLine($"\nMains: {input.common.Vin.ToString()}V / {input.common.Freq.ToString()}Hz");
+
+                sw.WriteLine("\n=== Results: =====================================\n");
+                sw.WriteLine("Primary:\n");
+                sw.WriteLine($"Turns                : {result.N_1}");
+                sw.WriteLine($"Turns per layer      : {result.N_per_layer_1}");
+                sw.WriteLine($"Total layers         : {result.totalLayers_1}");
+                sw.WriteLine($"Last layer turns     : {result.lastLayerTurns_1}");
+                sw.WriteLine($"Wire length          : {result.length_m_1} m / {result.length_ft_1} ft");
+                sw.WriteLine($"Build-up             : {result.buildup_mm_1} mm");
+                sw.WriteLine($"R                    : {result.R_1}");
+                if (result.mpath_l_m != EmptyValue)
+                {
+                    sw.WriteLine($"Magnetic path        : {result.mpath_l_m} m");
+                }
+                if (result.L_1 != EmptyValue)
+                {
+                    sw.WriteLine($"L                    : {result.L_1} H");
+                }
+                sw.WriteLine($"Bmax                 : {result.B_max} T");
+                if (result.permeability != EmptyValue)
+                {
+                    sw.WriteLine($"u/u0                 : {result.permeability}");
+                }
+                if (result.H != EmptyValue)
+                {
+                    sw.WriteLine($"H                    : {result.H} " + HUnitlsLabel);
+                }
+                if (result.I_ex != EmptyValue)
+                {
+                    sw.WriteLine($"Iex                  : {result.I_ex} A");
+                }
+                if (result.Ip_full_load != EmptyValue)
+                {
+                    sw.WriteLine($"Ip, full load        : {result.Ip_full_load} A");
+                }
+                if (result.awg_max_current_amp_1 != EmptyValue)
+                {
+                    sw.WriteLine($"AWG max current      : {result.awg_max_current_amp_1} A");
+                }
+                sw.WriteLine($"Weight               : {result.weight_1} " + MassUnitsLabel);
+
+                if (input.processSecondary)
+                {
+                    sw.WriteLine("\nSecondary:\n");
+                    sw.WriteLine($"Turns                : {result.N_2}");
+                    sw.WriteLine($"Turns per layer      : {result.N_per_layer_2}");
+                    sw.WriteLine($"Total layers         : {result.totalLayers_2}");
+                    sw.WriteLine($"Last layer turns     : {result.lastLayerTurns_2}");
+                    sw.WriteLine($"Wire length          : {result.length_m_2} m / {result.length_ft_2} ft");
+                    sw.WriteLine($"Build-up             : {result.buildup_mm_2} mm");
+                    sw.WriteLine($"R                    : {result.R_2}");
+                    sw.WriteLine($"Total build-up       : {result.N_2} mm");
+                    sw.WriteLine($"L                    : {result.L_2} H");
+                    sw.WriteLine($"Vout idle            : {result.Vout_idle} V");
+                    sw.WriteLine($"Vout full load       : {result.Vout_load} V");
+                    sw.WriteLine($"Iout full load       : {result.Iout_max} A");
+                    sw.WriteLine($"AWG max current      : {result.awg_max_current_amp_2} A");
+                    sw.WriteLine($"Weight               : {result.weight_2} " + MassUnitsLabel);
+
+                    sw.WriteLine($"\nTurns ratio          : {result.turns_ratio}");
+                    sw.WriteLine($"Wire c.s.a ratio     : {result.wire_csa_ratio}");
+                    sw.WriteLine($"Total weight         : {result.wire_total_weight} " + MassUnitsLabel);
+                    sw.WriteLine($"Weight ratio         : {result.wire_weight_ratio}");
+                    sw.WriteLine($"Output Power         : {result.power_VA} VA");
+                    sw.WriteLine($"Total equivalent R   : {result.total_eq_R}");
+                    sw.WriteLine($"% Regulation         : {result.regulation}");
+                }
+                if (result.warnings.Count > 0)
+                {
+                    sw.WriteLine("\nWarnings:\n");
+                    foreach (string msg in result.warnings)
+                    {
+                        sw.WriteLine(msg);
+                    }
+                }
+            }
+        }
+
         public void SaveSettings(trans_calc_input_text strin, string fileName)
         {
             using (StreamWriter sw = new StreamWriter(fileName))
@@ -837,7 +1005,7 @@ namespace forms1
                 sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.STACKING_FACTOR]}={strin.stackingFactor}");
                 sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.INSULATION]}={strin.insulationThickness}");
                 sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.V_OUT]}={strin.Vout}");
-                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.IS_V_OUT_AT_MAX_LOAD]}=0");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.IS_V_OUT_AT_MAX_LOAD]}={strin.isVoutAtFullLoad}");
                 sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.I_OUT]}={strin.Iout_max}");
                 sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.MAX_TEMP]}={strin.maxTemp}");
                 sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.MAX_EQ_R]}={strin.max_eq_R}");
@@ -1039,6 +1207,8 @@ namespace forms1
             {
                 throw new Exception($"Unexpected mains voltage: {strin.Vin}, 110 or 220 expected");
             }
+
+            res.common.IsVoutAtFullLoad = strin.isVoutAtFullLoad;
 
             if (strin.Bmax == "" && strin.N1 == "")
             {
