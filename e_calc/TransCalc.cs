@@ -1032,15 +1032,70 @@ namespace forms1
         {
             trans_calc_input input = convertTextToInput(text_input);
 
+            double L1;
+            double Ae;
+            trans_calc_result result = CalculateCommon(ref input, out L1, out Ae);
+
+            // Calculate primary
+            trans_calc_result_winding w1 = calculateWinding(input.common, input.primary);
+            w1.L = L1;
+            result.primary = w1;
+ 
+            //Calculate secondary if configured 
+            if (input.processSecondary)
+            {
+                result.total_thickness_mm = w1.thickness_mm + input.common.InsulationThickness;
+                result.Iout_max = input.common.Iout_max;
+                input.common.Core_H += w1.thickness_mm / 1000;
+                input.common.Core_W += w1.thickness_mm / 1000;
+
+                trans_calc_result_winding w2 = CalculateSecondary(input, w1.resistance, ref result);
+
+                if (result.permeability > 0.00000000001 && result.mpath_l_m > 0.0000001)
+                {
+                    w2.L = w2.N * w2.N * result.permeability * u0 * Ae / result.mpath_l_m;
+                }
+
+                result.secondary = w2;
+                result.total_thickness_mm += w2.thickness_mm;
+                result.wire_total_weight = w1.mass + w2.mass;
+                result.wire_csa_ratio = input.primary.awg.Csa_m2 / input.secondary.awg.Csa_m2;
+                result.wire_weight_ratio = w1.mass / w2.mass;
+            }
+
+            if (H_units == H_UNITS.AMP_TURNS_IN)
+            {
+                result.H *= 0.0254;
+            }
+            else if (H_units == H_UNITS.OERSTEDS)
+            {
+                result.H = AmpTurns_to_Oe(result.H);
+            }
+
+            if (!IsMassUnits_g)
+            {
+                result.wire_total_weight *= lbs_in_g;
+                result.primary.mass *= lbs_in_g;
+                result.secondary.mass *= lbs_in_g;
+            }
+
+            return new trans_calc_result_text(result, input); 
+        }
+
+        private trans_calc_result CalculateCommon(ref trans_calc_input input, out double L1, out double Ae)
+        {
+            trans_calc_result result = new trans_calc_result();
+
             double Epeak = input.common.Vin * Math.Sqrt(2);
             double omega = input.common.Freq * 2 * Math.PI;
-            double Ae = input.common.Ae_W * input.common.Ae_H * input.common.StackingFactor;
+            Ae = input.common.Ae_W * input.common.Ae_H * input.common.StackingFactor;
             double l_m = input.common.mpath_l_cm;
             double V_in = input.common.Vin;
             double I_ex = input.common.I_ex;
             double u = input.common.permeability;
             double H_peak = input.common.H_ampt_m;
-            double L1 = 0;
+            
+            L1 = 0;
 
             // N1 not set, calculate it
             if (input.primary.N == 0)
@@ -1084,7 +1139,7 @@ namespace forms1
             {
                 throw new Exception($"Calculated permeability={u} is not in the expected range of 100 to 20000. Check the values of Bmax/I_ex/H Amp-t-m");
             }
-            
+
             if (H_peak > 0.00000000001 && (H_peak < 1 || H_peak > 5000))
             {
                 throw new Exception($"Calculated H={H_peak} Amp-t-m is not in the expected range of 1 to 5000. Check the values of Bmax/I_ex/Amp-t-m");
@@ -1095,61 +1150,15 @@ namespace forms1
                 throw new Exception($"Calculated L1={L1} L1 is not in the expected range of 0.1 to 1000H. Check the values of Bmax/I_ex/Amp-t-m");
             }
 
-            trans_calc_result result = new trans_calc_result();
-
             result.mpath_l_m = l_m;
             result.B_max = input.common.B_max;
             result.H = H_peak;
             result.I_ex = I_ex;
             result.permeability = u;
-
-            // Calculate primary
-            trans_calc_result_winding w1 = calculateWinding(input.common, input.primary);
-            result.primary = w1;
-            result.primary.L = L1;
- 
-            //Calculate secondary if configured 
-            if (input.processSecondary)
-            {
-                result.total_thickness_mm = w1.thickness_mm + input.common.InsulationThickness;
-                result.Iout_max = input.common.Iout_max;
-                input.common.Core_H += w1.thickness_mm / 1000;
-                input.common.Core_W += w1.thickness_mm / 1000;
-
-                trans_calc_result_winding w2 = ProcessSecondary(input, w1.resistance, ref result);
-
-                if (u > 0.00000000001)
-                {
-                    w2.L = w2.N * w2.N * u * u0 * Ae / l_m;
-                }
-
-                result.secondary = w2;
-                result.total_thickness_mm += w2.thickness_mm;
-                result.wire_total_weight = w1.mass + w2.mass;
-                result.wire_csa_ratio = input.primary.awg.Csa_m2 / input.secondary.awg.Csa_m2;
-                result.wire_weight_ratio = w1.mass / w2.mass;
-            }
-
-            if (H_units == H_UNITS.AMP_TURNS_IN)
-            {
-                result.H *= 0.0254;
-            }
-            else if (H_units == H_UNITS.OERSTEDS)
-            {
-                result.H = AmpTurns_to_Oe(result.H);
-            }
-
-            if (!IsMassUnits_g)
-            {
-                result.wire_total_weight *= lbs_in_g;
-                result.primary.mass *= lbs_in_g;
-                result.secondary.mass *= lbs_in_g;
-            }
-
-            return new trans_calc_result_text(result, input); 
+            return result;
         }
 
-        private trans_calc_result_winding ProcessSecondary (trans_calc_input input, double w1_R, ref trans_calc_result result)
+        private trans_calc_result_winding CalculateSecondary (trans_calc_input input, double w1_R, ref trans_calc_result result)
         {
             if (input.common.Vout > 0.00000001 && input.secondary.N == 0)
             {
