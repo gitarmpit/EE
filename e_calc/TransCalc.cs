@@ -1097,6 +1097,7 @@ namespace forms1
 
             trans_calc_result result = new trans_calc_result();
 
+            result.mpath_l_m = l_m;
             result.B_max = input.common.B_max;
             result.H = H_peak;
             result.I_ex = I_ex;
@@ -1139,6 +1140,8 @@ namespace forms1
                         throw new Exception($"Voltage drop too high: {regulation_vdrop}. Check Iout, Vout, wire ga");
                     }
                     result.Vout_load = result.Vout_idle - regulation_vdrop;
+                    
+                    
                     result.Iout_max = input.common.Iout_max;
                     result.power_VA = result.Iout_max * result.Vout_load;
                     result.regulation = (result.Vout_idle - result.Vout_load) / result.Vout_idle * 100;
@@ -1163,7 +1166,6 @@ namespace forms1
                 result.total_eq_R = total_R;
             }
 
-            result.mpath_l_m = l_m;
 
             if (H_units == H_UNITS.AMP_TURNS_IN)
             {
