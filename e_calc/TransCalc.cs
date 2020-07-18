@@ -332,7 +332,7 @@ namespace forms1
         public double StackingFactor;
         public double InsulationThickness;
 
-        public double Vout_idle;
+        public double Vout;
         public double Iout_max;
         public bool   IsVoutAtFullLoad;
     }
@@ -358,6 +358,8 @@ namespace forms1
     {
         private int gauge;
         private double diameter_mm;
+        private const double meters_in_inch = 0.0254;
+        public  static double meters_in_foot = meters_in_inch * 12;
         private const double mm_in_mils = 1 / 0.0254;
         // private const double copper_resistivity = 1.678e-8;
         // Annealed copper
@@ -785,7 +787,7 @@ namespace forms1
         }
 
 
-        private trans_calc_input_winding processWinding(string winding, string sawg, string wfactor, 
+        private trans_calc_input_winding convertWinding(string winding, string sawg, string wfactor, 
             string N, string N_per_layer, string ampacity_cm_per_amp)
         {
             trans_calc_input_winding res = new trans_calc_input_winding();
@@ -1111,21 +1113,21 @@ namespace forms1
             if (input.processSecondary)
             {
                 result.total_thickness_mm = result.primary.thickness_mm + input.common.InsulationThickness;
+                result.Iout_max = input.common.Iout_max;
+                input.common.Core_H += w1.thickness_mm / 1000;
+                input.common.Core_W += w1.thickness_mm / 1000;
 
-                if (input.common.Vout_idle > 0.00000001 && input.secondary.N == 0)
+                if (input.common.Vout > 0.00000001 && input.secondary.N == 0)
                 {
-                    input.secondary.N = (int) (input.primary.N / input.common.Vin * input.common.Vout_idle / input.common.CouplingCoeff);
+                    input.secondary.N = (int) (input.primary.N / input.common.Vin * input.common.Vout / input.common.CouplingCoeff);
                 }
                 else if (input.secondary.N > 0)
                 {
-                    input.common.Vout_idle = input.common.Vin / input.primary.N * input.secondary.N * input.common.CouplingCoeff;
+                    input.common.Vout = input.common.Vin / input.primary.N * input.secondary.N * input.common.CouplingCoeff;
                 }
 
                 result.turns_ratio = (double)input.primary.N / (double)input.secondary.N;
-                result.Iout_max = input.common.Iout_max;
 
-                input.common.Core_H += w1.thickness_mm / 1000;
-                input.common.Core_W += w1.thickness_mm / 1000;
                 trans_calc_result_winding w2 = calculateWinding(input.common, input.secondary);
                 result.secondary = w2;
                 if (u > 0.00000000001)
@@ -1133,7 +1135,7 @@ namespace forms1
                     result.secondary.L = w2.N * w2.N * u * u0 * Ae / l_m;
                 }
 
-                result.Vout_idle = input.common.Vout_idle;
+                result.Vout_idle = input.common.Vout;
                 double total_R = w1.resistance / result.turns_ratio / result.turns_ratio + w2.resistance;
 
                 if (input.common.Iout_max > 0.0000000001)
@@ -1384,8 +1386,8 @@ namespace forms1
 
             if (strin.Vout != "")
             {
-                res.common.Vout_idle = double.Parse(strin.Vout, NumberStyles.Float);
-                if (res.common.Vout_idle < 0.1)
+                res.common.Vout = double.Parse(strin.Vout, NumberStyles.Float);
+                if (res.common.Vout < 0.1)
                 {
                     throw new Exception("Invalid Vout value");
                 }
@@ -1421,11 +1423,11 @@ namespace forms1
             }
 
 
-            res.primary = processWinding("Primary", strin.awg1, strin.wfactor1, strin.N1, strin.N_per_layer1, strin.ampacity1);
+            res.primary = convertWinding("Primary", strin.awg1, strin.wfactor1, strin.N1, strin.N_per_layer1, strin.ampacity1);
 
             if ((strin.N2 != "" || strin.Vout != ""))
             {
-                res.secondary = processWinding("Secondary", strin.awg2, strin.wfactor2, strin.N2, strin.N_per_layer2, strin.ampacity2);
+                res.secondary = convertWinding("Secondary", strin.awg2, strin.wfactor2, strin.N2, strin.N_per_layer2, strin.ampacity2);
                 res.processSecondary = true;
             }
             else
@@ -1481,7 +1483,7 @@ namespace forms1
                 length_m += p * turnsPerLayerSaved;
             }
 
-            double length_f = length_m * 3.28084;
+            double length_f = length_m / AWG.meters_in_foot;
             double thickness = totalLayers * dh;
             double resistance = w.awg.CalculateResistance(length_m, common.max_temp);
             double mass = w.awg.CalculateMass_g(length_m);
