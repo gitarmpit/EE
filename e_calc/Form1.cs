@@ -223,6 +223,8 @@ namespace forms1
                 res_powerVA.Text = result.power_VA;
                 res_total_eq_R.Text = result.total_eq_R;
                 res_regulation.Text = result.regulation;
+                res_AWG1.Text = result.AWG1;
+                res_AWG2.Text = result.AWG2;
 
                 tc_warnings = new List<string>();
                 tc_warnings = result.warnings;

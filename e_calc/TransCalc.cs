@@ -93,6 +93,8 @@ namespace forms1
         public bool IsAmpacity1Exceeded;
         public bool IsAmpacity2Exceeded;
         public bool IsMaxResistanceExceeded;
+        public string AWG1;
+        public string AWG2;
 
         public trans_calc_result_text(trans_calc_result res, trans_calc_input input)
         {
@@ -238,6 +240,8 @@ namespace forms1
 
                 this.total_eq_R = (res.total_eq_R > 0.0000000001) ?
                     String.Format("{0:0.##}", res.total_eq_R) : TransCalc.EmptyValue;
+                this.AWG1 = res.primary.awg.Gauge.ToString();
+                this.AWG2 = res.secondary.awg.Gauge.ToString();
             }
             else
             {
@@ -264,12 +268,14 @@ namespace forms1
                 this.power_VA = TransCalc.EmptyValue;
                 this.total_eq_R = TransCalc.EmptyValue;
                 this.regulation = TransCalc.EmptyValue;
+                this.AWG1 = TransCalc.EmptyValue;
+                this.AWG2 = TransCalc.EmptyValue;
             }
         }
     }
 
 
-    struct trans_calc_result_winding
+    class trans_calc_result_winding
     {
         public double length_m;
         public double length_ft;
@@ -282,12 +288,13 @@ namespace forms1
         public double L;
         public double awg_max_current_amp;
         public double mass;
+        public AWG awg;
     }
 
     struct trans_calc_result
     {
-        public trans_calc_result_winding primary;
         public trans_calc_result_winding secondary;
+        public trans_calc_result_winding primary;
         public double mpath_l_m;
         public double B_max;
         public double permeability;
@@ -374,7 +381,7 @@ namespace forms1
             this.diameter_mm = value;
         }
 
-        public double Gauge
+        public int Gauge
         {
             get { return gauge; }
         }
@@ -402,6 +409,11 @@ namespace forms1
         public double GetCircularMils()
         {
             return Diameter_mils * Diameter_mils;
+        }
+
+        public double GetMaxCurrent (double ampacity_mil_per_amp)
+        {
+            return GetCircularMils() / ampacity_mil_per_amp;
         }
 
         public double CalculateResistance(double length_m, double tempC)
@@ -791,12 +803,13 @@ namespace forms1
             string N, string N_per_layer, string ampacity_cm_per_amp)
         {
             trans_calc_input_winding res = new trans_calc_input_winding();
-            if (sawg == "")
+            
+            AWG awg = null;    
+            
+            if (sawg != "")
             {
-                throw new Exception("AWG not set");
+                awg = parseAWG(sawg);
             }
-
-            AWG awg = parseAWG(sawg);
 
             if (ampacity_cm_per_amp != "")
             {
@@ -959,7 +972,7 @@ namespace forms1
                     sw.WriteLine($"Wire length          : {result.length_m_2} m / {result.length_ft_2} ft");
                     sw.WriteLine($"Build-up             : {result.buildup_mm_2} mm");
                     sw.WriteLine($"R                    : {result.R_2}");
-                    sw.WriteLine($"Total build-up       : {result.N_2} mm");
+                    sw.WriteLine($"Total build-up       : {result.total_thickness_mm} mm");
                     sw.WriteLine($"L                    : {result.L_2} H");
                     sw.WriteLine($"Vout idle            : {result.Vout_idle} V");
                     sw.WriteLine($"Vout full load       : {result.Vout_load} V");
@@ -1083,7 +1096,7 @@ namespace forms1
                 result.secondary = w2;
                 result.total_thickness_mm += w2.thickness_mm;
                 result.wire_total_weight = w1.mass + w2.mass;
-                result.wire_csa_ratio = input.primary.awg.Csa_m2 / input.secondary.awg.Csa_m2;
+                result.wire_csa_ratio = w1.awg.Csa_m2 / w2.awg.Csa_m2;
                 result.wire_weight_ratio = w1.mass / w2.mass;
             }
 
@@ -1202,7 +1215,30 @@ namespace forms1
 
             double turns_ratio = (double)input.primary.N / (double)input.secondary.N;
 
-            trans_calc_result_winding w2 = calculateWinding(input.common, input.secondary);
+            bool need_to_retrty = false;
+            trans_calc_result_winding w2 = null;
+            int minAWG = 8;
+            if (input.secondary.awg == null)
+            {
+                need_to_retrty = true;
+            }
+            do
+            {
+                if (need_to_retrty)
+                {
+                    input.secondary.awg = AutoSelectAWG(minAWG++, input.secondary, input.common.Iout_max);
+                    if (input.secondary.awg == null)
+                    {
+                        throw new Exception("Autoselect: failed to select AWG for secondary");
+                    }
+                }
+                w2 = calculateWinding(input.common, input.secondary);
+                if (input.common.WindowSize < 0.000000001 ||
+                    result.total_thickness_mm + w2.thickness_mm <= input.common.WindowSize)
+                {
+                    need_to_retrty = false;
+                }
+            } while (need_to_retrty);
 
             double Vout_idle = Vout;
             double Vout_load = 0;
@@ -1234,9 +1270,23 @@ namespace forms1
             result.Vout_load = Vout_load;
             result.turns_ratio = turns_ratio;
             result.total_eq_R = total_R;
-
             return w2;
 
+        }
+
+        private AWG AutoSelectAWG(int minAWG, trans_calc_input_winding w, double requiredCurrent)
+        {
+            var awgList = awgValues.Where(v => (v.Gauge >= minAWG)).Reverse();
+
+            if (requiredCurrent > 0.0000000001 && w.ampacity_mil_per_amp > 0.000000001)
+            {
+                return awgList.Where(v => v.GetMaxCurrent(w.ampacity_mil_per_amp) >= requiredCurrent).
+                    FirstOrDefault();
+            }
+            else
+            {
+                return awgList.Where(v => v.Gauge == minAWG).First();
+            }
         }
 
         private trans_calc_input convertTextToInput(trans_calc_input_text strin) 
@@ -1554,6 +1604,8 @@ namespace forms1
             {
                 res.awg_max_current_amp = w.awg.GetCircularMils() / w.ampacity_mil_per_amp;
             }
+
+            res.awg = w.awg;
 
             return res;
         }
