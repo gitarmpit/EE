@@ -95,6 +95,7 @@ namespace forms1
             SetUnitRadioButtons();
             button_saveResults.Enabled = false;
             radiobutton_mains_US.Select();
+            radioButton_minimizeRegulation.Select();
         }
 
         private void OnCalculate(object sender, EventArgs e)
@@ -153,7 +154,7 @@ namespace forms1
             strin.maxTemp = edit_max_temp.Text;
             strin.max_eq_R = edit_max_eq_R.Text;
             strin.isVoutAtFullLoad = checkBox_fullLoad.Checked;
-
+            strin.isMinimizeRegulation = radioButton_minimizeRegulation.Checked;
             return strin;
         }
 
@@ -370,6 +371,8 @@ namespace forms1
             res_csa_ratio.Text = TransCalc.EmptyValue;
             res_regulation.Text = TransCalc.EmptyValue;
             res_total_eq_R.Text = TransCalc.EmptyValue;
+            res_AWG1.Text = TransCalc.EmptyValue;
+            res_AWG2.Text = TransCalc.EmptyValue;
             res_warnings.Text = "";
             button_saveResults.Enabled = false;
         }
@@ -735,6 +738,8 @@ namespace forms1
                 result.power_VA = res_powerVA.Text;
                 result.total_eq_R = res_total_eq_R.Text;
                 result.regulation = res_regulation.Text;
+                result.AWG1 = res_AWG1.Text;
+                result.AWG2 = res_AWG2.Text;
                 result.warnings = tc_warnings;
                 tc.SaveResults(strin, result, saveFileDialog.FileName);
             }

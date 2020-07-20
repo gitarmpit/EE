@@ -46,6 +46,7 @@ namespace forms1
         public string pf;
         public string max_eq_R;
         public bool isVoutAtFullLoad;
+        public bool isMinimizeRegulation; //auto mode
     }
     struct trans_calc_result_text
     {
@@ -359,6 +360,7 @@ namespace forms1
         public trans_calc_input_winding primary;
         public trans_calc_input_winding secondary;
         public bool processSecondary;
+        public bool isMinimizeRegulation;
     }
 
     class AWG
@@ -924,6 +926,7 @@ namespace forms1
 
                 sw.WriteLine("\n=== Results: =====================================\n");
                 sw.WriteLine("Primary:\n");
+                sw.WriteLine($"AWG                  : {result.AWG1}");
                 sw.WriteLine($"Turns                : {result.N_1}");
                 sw.WriteLine($"Turns per layer      : {result.N_per_layer_1}");
                 sw.WriteLine($"Total layers         : {result.totalLayers_1}");
@@ -965,6 +968,7 @@ namespace forms1
                 if (input.processSecondary)
                 {
                     sw.WriteLine("\nSecondary:\n");
+                    sw.WriteLine($"AWG                  : {result.AWG2}");
                     sw.WriteLine($"Turns                : {result.N_2}");
                     sw.WriteLine($"Turns per layer      : {result.N_per_layer_2}");
                     sw.WriteLine($"Total layers         : {result.totalLayers_2}");
@@ -1050,59 +1054,100 @@ namespace forms1
             trans_calc_result result = CalculateCommon(ref input, out L1, out Ae);
 
             // Calculate primary
-            trans_calc_result_winding w1 = calculateWinding(input.common, input.primary);
-            w1.L = L1;
-            result.primary = w1;
- 
-            //Calculate secondary if configured 
-            if (input.processSecondary)
+            bool recalculte_primary = false;
+            do
             {
-                result.total_thickness_mm = w1.thickness_mm + input.common.InsulationThickness;
-                result.Iout_max = input.common.Iout_max;
-                input.common.Core_H += w1.thickness_mm / 1000;
-                input.common.Core_W += w1.thickness_mm / 1000;
+                trans_calc_result_winding w1 = calculateWinding(input.common, input.primary);
+                
+                w1.L = L1;
+                result.primary = w1;
 
-                trans_calc_result_winding w2;
-                int maxAttemps = 100;
-                int count = 0;
-                double Vout_load = input.common.Vout;
-                while (true)
+                //Calculate secondary if configured 
+                if (input.processSecondary)
                 {
-                    w2 = CalculateSecondary(input, w1.resistance, ref result);
-                    double Vout_ratio = 1 - result.Vout_load / Vout_load;
+                    result.Iout_max = input.common.Iout_max;
+                    input.common.Core_H += w1.thickness_mm / 1000;
+                    input.common.Core_W += w1.thickness_mm / 1000;
 
-                    bool recalcVatFullLoad =
-                        input.common.IsVoutAtFullLoad &&
-                        input.common.Iout_max > 0.0000000001 &&
-                        result.Vout_load > 0.0000000000001 &&
-                        result.Vout_idle > 0.0000000000001 &&
-                        Math.Abs(Vout_ratio) > 0.00001 && 
-                        ++count < maxAttemps;
-
-                    if (!recalcVatFullLoad)
+                    bool retry_secondary = false;
+                    int minAWG = 8;
+                    if (input.secondary.awg == null)
                     {
-                        break;
+                        retry_secondary = true;
                     }
 
-                    double Vdelta = (Vout_load - result.Vout_load);
-                    input.common.Vout += Vdelta;
-                }
+                    trans_calc_result_winding w2 = null;
+                    do
+                    {
+                        if (retry_secondary)
+                        {
+                            input.secondary.awg = AutoSelectAWG(minAWG++, input.isMinimizeRegulation, input.secondary, input.common.Iout_max);
+                            if (input.secondary.awg == null)
+                            {
+                                throw new Exception("Autoselect: failed to select AWG for secondary");
+                            }
+                        }
 
-                if (result.permeability > 0.00000000001 && result.mpath_l_m > 0.0000001)
-                {
-                    w2.L = w2.N * w2.N * result.permeability * u0 * Ae / result.mpath_l_m;
-                }
+                        w2 = CalculateSecondaryWithRetries(input, w1.resistance, ref result);
 
-                result.secondary = w2;
-                result.total_thickness_mm += w2.thickness_mm;
-                result.wire_total_weight = w1.mass + w2.mass;
-                result.wire_csa_ratio = w1.awg.Csa_m2 / w2.awg.Csa_m2;
-                result.wire_weight_ratio = w1.mass / w2.mass;
+                        if (retry_secondary && 
+                            (input.common.WindowSize < 0.000000001 ||
+                             w1.thickness_mm + input.common.InsulationThickness + w2.thickness_mm 
+                             <= input.common.WindowSize))
+                        {
+                            retry_secondary = false;
+                        }
+
+                    } while (retry_secondary);
+
+                    if (result.permeability > 0.00000000001 && result.mpath_l_m > 0.0000001)
+                    {
+                        w2.L = w2.N * w2.N * result.permeability * u0 * Ae / result.mpath_l_m;
+                    }
+
+                    result.secondary = w2;
+                    result.total_thickness_mm = 
+                        w1.thickness_mm + input.common.InsulationThickness + w2.thickness_mm;
+                    result.wire_total_weight = w1.mass + w2.mass;
+                    result.wire_csa_ratio = w1.awg.Csa_m2 / w2.awg.Csa_m2;
+                    result.wire_weight_ratio = w1.mass / w2.mass;
+                }
             }
+            while (recalculte_primary);
 
             ConvertUnits(ref result);
 
             return new trans_calc_result_text(result, input); 
+        }
+
+        private trans_calc_result_winding CalculateSecondaryWithRetries(trans_calc_input input, double w1_R, ref trans_calc_result result)
+        {
+            int maxAttemps = 100;
+            int count = 0;
+            double Vout_load = input.common.Vout;
+            trans_calc_result_winding w2;
+            while (true)
+            {
+                w2 = CalculateSecondary(input, w1_R, ref result);
+                double Vout_ratio = 1 - result.Vout_load / Vout_load;
+
+                bool recalcVatFullLoad =
+                    input.common.IsVoutAtFullLoad &&
+                    input.common.Iout_max > 0.0000000001 &&
+                    result.Vout_load > 0.0000000000001 &&
+                    result.Vout_idle > 0.0000000000001 &&
+                    Math.Abs(Vout_ratio) > 0.00001 &&
+                    ++count < maxAttemps;
+
+                if (!recalcVatFullLoad)
+                {
+                    break;
+                }
+
+                double Vdelta = (Vout_load - result.Vout_load);
+                input.common.Vout += Vdelta;
+            }
+            return w2;
         }
 
         private void ConvertUnits (ref trans_calc_result result)
@@ -1215,30 +1260,7 @@ namespace forms1
 
             double turns_ratio = (double)input.primary.N / (double)input.secondary.N;
 
-            bool need_to_retrty = false;
-            trans_calc_result_winding w2 = null;
-            int minAWG = 8;
-            if (input.secondary.awg == null)
-            {
-                need_to_retrty = true;
-            }
-            do
-            {
-                if (need_to_retrty)
-                {
-                    input.secondary.awg = AutoSelectAWG(minAWG++, input.secondary, input.common.Iout_max);
-                    if (input.secondary.awg == null)
-                    {
-                        throw new Exception("Autoselect: failed to select AWG for secondary");
-                    }
-                }
-                w2 = calculateWinding(input.common, input.secondary);
-                if (input.common.WindowSize < 0.000000001 ||
-                    result.total_thickness_mm + w2.thickness_mm <= input.common.WindowSize)
-                {
-                    need_to_retrty = false;
-                }
-            } while (need_to_retrty);
+            trans_calc_result_winding w2 = calculateWinding(input.common, input.secondary);
 
             double Vout_idle = Vout;
             double Vout_load = 0;
@@ -1274,9 +1296,13 @@ namespace forms1
 
         }
 
-        private AWG AutoSelectAWG(int minAWG, trans_calc_input_winding w, double requiredCurrent)
+        private AWG AutoSelectAWG(int minAWG, bool isMinimizeRegulation, trans_calc_input_winding w, double requiredCurrent)
         {
-            var awgList = awgValues.Where(v => (v.Gauge >= minAWG)).Reverse();
+            var awgList = awgValues.Where(v => (v.Gauge >= minAWG));
+            if (isMinimizeRegulation)
+            {
+                awgList = awgList.Reverse();
+            }
 
             if (requiredCurrent > 0.0000000001 && w.ampacity_mil_per_amp > 0.000000001)
             {
@@ -1285,7 +1311,7 @@ namespace forms1
             }
             else
             {
-                return awgList.Where(v => v.Gauge == minAWG).First();
+                return awgList.Where(v => v.Gauge == minAWG).FirstOrDefault();
             }
         }
 
@@ -1537,6 +1563,8 @@ namespace forms1
             {
                 res.processSecondary = false;
             }
+
+            res.isMinimizeRegulation = strin.isMinimizeRegulation;
 
             return res;
         }

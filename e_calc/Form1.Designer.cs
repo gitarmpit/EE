@@ -259,6 +259,9 @@
             this.res_AWG1 = new System.Windows.Forms.Label();
             this.res_AWG2 = new System.Windows.Forms.Label();
             this.label82 = new System.Windows.Forms.Label();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.radioButton_minimizeBuildup = new System.Windows.Forms.RadioButton();
+            this.radioButton_minimizeRegulation = new System.Windows.Forms.RadioButton();
             this.calcTab.SuspendLayout();
             this.transCalcPage.SuspendLayout();
             this.groupBox8.SuspendLayout();
@@ -280,6 +283,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_Vcc)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_Vbe)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_Beta)).BeginInit();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // calcTab
@@ -299,6 +303,7 @@
             // transCalcPage
             // 
             this.transCalcPage.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.transCalcPage.Controls.Add(this.groupBox3);
             this.transCalcPage.Controls.Add(this.res_warnings);
             this.transCalcPage.Controls.Add(this.groupBox8);
             this.transCalcPage.Controls.Add(this.button_Load);
@@ -899,7 +904,7 @@
             this.groupBox9.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox9.Size = new System.Drawing.Size(214, 40);
+            this.groupBox9.Size = new System.Drawing.Size(214, 48);
             this.groupBox9.TabIndex = 467;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Weight units";
@@ -2856,6 +2861,46 @@
             this.label82.TabIndex = 580;
             this.label82.Text = "AWG:";
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.radioButton_minimizeBuildup);
+            this.groupBox3.Controls.Add(this.radioButton_minimizeRegulation);
+            this.groupBox3.Location = new System.Drawing.Point(287, 695);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox3.Size = new System.Drawing.Size(212, 73);
+            this.groupBox3.TabIndex = 306;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Automode";
+            this.groupBox3.Paint += new System.Windows.Forms.PaintEventHandler(this.groupBox_Paint);
+            // 
+            // radioButton_minimizeBuildup
+            // 
+            this.radioButton_minimizeBuildup.AutoSize = true;
+            this.radioButton_minimizeBuildup.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radioButton_minimizeBuildup.Location = new System.Drawing.Point(20, 44);
+            this.radioButton_minimizeBuildup.Margin = new System.Windows.Forms.Padding(4);
+            this.radioButton_minimizeBuildup.Name = "radioButton_minimizeBuildup";
+            this.radioButton_minimizeBuildup.Size = new System.Drawing.Size(154, 24);
+            this.radioButton_minimizeBuildup.TabIndex = 37;
+            this.radioButton_minimizeBuildup.TabStop = true;
+            this.radioButton_minimizeBuildup.Text = "Minimize buildup";
+            this.radioButton_minimizeBuildup.UseVisualStyleBackColor = true;
+            // 
+            // radioButton_minimizeRegulation
+            // 
+            this.radioButton_minimizeRegulation.AutoSize = true;
+            this.radioButton_minimizeRegulation.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radioButton_minimizeRegulation.Location = new System.Drawing.Point(20, 16);
+            this.radioButton_minimizeRegulation.Margin = new System.Windows.Forms.Padding(4);
+            this.radioButton_minimizeRegulation.Name = "radioButton_minimizeRegulation";
+            this.radioButton_minimizeRegulation.Size = new System.Drawing.Size(174, 24);
+            this.radioButton_minimizeRegulation.TabIndex = 36;
+            this.radioButton_minimizeRegulation.TabStop = true;
+            this.radioButton_minimizeRegulation.Text = "Minimize regulation";
+            this.radioButton_minimizeRegulation.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -2905,6 +2950,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_Vcc)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_Vbe)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_Beta)).EndInit();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -3141,6 +3188,9 @@
         private System.Windows.Forms.Label res_AWG1;
         private System.Windows.Forms.Label res_AWG2;
         private System.Windows.Forms.Label label82;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.RadioButton radioButton_minimizeBuildup;
+        private System.Windows.Forms.RadioButton radioButton_minimizeRegulation;
     }
 }
 
