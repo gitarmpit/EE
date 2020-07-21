@@ -117,7 +117,7 @@ namespace forms1
 
             strin.Bmax = edit_Bmax.Text;
             strin.permeability = edit_permeability.Text;
-            strin.Iex = edit_Iex.Text;
+            strin.I_ex = edit_Iex.Text;
             if (transCalc_H > 0.00000001)
             {
                 strin.H = transCalc_H.ToString();
@@ -576,7 +576,7 @@ namespace forms1
 
                         edit_Bmax.Text = input.Bmax;
                         edit_permeability.Text = input.permeability;
-                        edit_Iex.Text = input.Iex;
+                        edit_Iex.Text = input.I_ex;
                         transCalc_H = double.Parse(input.H, NumberStyles.Float);
                         if (transCalc_H > 0.000000001)
                         {

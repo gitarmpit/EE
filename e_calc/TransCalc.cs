@@ -17,7 +17,7 @@ namespace forms1
         public string Vin;
         public string Bmax;
         public string permeability;
-        public string Iex;
+        public string I_ex;
         public string H;
         public string core_W;
         public string core_H;
@@ -688,7 +688,7 @@ namespace forms1
                     strin.permeability = parts[1];
                     break;
                 case CONFIG_KEYWORDS.I_EX:
-                    strin.Iex = parts[1];
+                    strin.I_ex = parts[1];
                     break;
                 case CONFIG_KEYWORDS.CORE_W:
                     strin.core_W = parts[1];
@@ -886,9 +886,9 @@ namespace forms1
                 {
                     sw.WriteLine($"u/u0                 : {strin.permeability}");
                 }
-                if (strin.Iex != "")
+                if (strin.I_ex != "")
                 {
-                    sw.WriteLine($"Iex                  : {strin.Iex} A");
+                    sw.WriteLine($"Iex                  : {strin.I_ex} A");
                 }
 
                 sw.WriteLine($"L1/L2 coupling coeff : {strin.coupling_coeff}");
@@ -1011,7 +1011,7 @@ namespace forms1
                 sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.B_MAX]}={strin.Bmax}");
                 sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.H]}={strin.H}");
                 sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.PERMEABILITY]}={strin.permeability}");
-                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.I_EX]}={strin.Iex}");
+                sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.I_EX]}={strin.I_ex}");
                 sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.CORE_W]}={strin.core_W}");
                 sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.CORE_H]}={strin.core_H}");
                 sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.CORE_L]}={strin.core_L}");
@@ -1044,7 +1044,36 @@ namespace forms1
                 sw.WriteLine($"{cfg_keywords[CONFIG_KEYWORDS.WEIGHT_UNITS]}={(this.IsMassUnits_g ? "1" : "0")}");
             }
         }
-            
+
+        private void CalculatePrimaryCurrent(trans_calc_input input, ref trans_calc_result result)
+        {
+            double ph0 = Math.Acos(input.common.pf1);
+            if (result.turns_ratio < 0.000001)
+            {
+                throw new Exception("Turns ratio has not been calculated");
+            }
+
+            double Ip_re = input.common.Iout_max / result.turns_ratio + input.common.I_ex * input.common.pf1;
+            double Ip_im = input.common.I_ex * Math.Sin(ph0);
+            result.Ip_full_load =
+                Math.Sqrt(Math.Pow(Ip_re, 2) + Math.Pow(Ip_im, 2));
+        }
+
+        private void CalculateTurnsRatio (ref trans_calc_input input, ref trans_calc_result result)
+        {
+            if (input.common.Vout > 0.00000001 && input.secondary.N == 0)
+            {
+                input.secondary.N = (int)(input.primary.N / input.common.Vin * input.common.Vout / input.common.CouplingCoeff);
+            }
+            else if (input.secondary.N > 0)
+            {
+                input.common.Vout = input.common.Vin / input.primary.N * input.secondary.N * input.common.CouplingCoeff;
+            }
+
+            result.turns_ratio = (double)input.primary.N / (double)input.secondary.N;
+
+        }
+
         public trans_calc_result_text Calculate(trans_calc_input_text text_input)
         {
             trans_calc_input input = convertTextToInput(text_input);
@@ -1054,9 +1083,26 @@ namespace forms1
             trans_calc_result result = CalculateCommon(ref input, out L1, out Ae);
 
             // Calculate primary
-            bool recalculte_primary = false;
+            bool retry_primary = false;
+            int minAWG = 8;
+            if (input.primary.awg == null)
+            {
+                retry_primary = true;
+            }
+
+            if (input.processSecondary)
+            {
+                CalculateTurnsRatio(ref input, ref result);
+                CalculatePrimaryCurrent(input, ref result);
+            }
+
             do
             {
+                if (retry_primary)
+                {
+                    input.primary.awg = AutoSelectAWG(minAWG++, input.isMinimizeRegulation, input.primary, result.Ip_full_load);
+                }
+
                 trans_calc_result_winding w1 = calculateWinding(input.common, input.primary);
                 
                 w1.L = L1;
@@ -1070,7 +1116,7 @@ namespace forms1
                     input.common.Core_W += w1.thickness_mm / 1000;
 
                     bool retry_secondary = false;
-                    int minAWG = 8;
+                    minAWG = 8;
                     if (input.secondary.awg == null)
                     {
                         retry_secondary = true;
@@ -1082,10 +1128,6 @@ namespace forms1
                         if (retry_secondary)
                         {
                             input.secondary.awg = AutoSelectAWG(minAWG++, input.isMinimizeRegulation, input.secondary, input.common.Iout_max);
-                            if (input.secondary.awg == null)
-                            {
-                                throw new Exception("Autoselect: failed to select AWG for secondary");
-                            }
                         }
 
                         w2 = CalculateSecondaryWithRetries(input, w1.resistance, ref result);
@@ -1096,6 +1138,7 @@ namespace forms1
                              <= input.common.WindowSize))
                         {
                             retry_secondary = false;
+                            retry_primary = false;
                         }
 
                     } while (retry_secondary);
@@ -1113,7 +1156,7 @@ namespace forms1
                     result.wire_weight_ratio = w1.mass / w2.mass;
                 }
             }
-            while (recalculte_primary);
+            while (retry_primary);
 
             ConvertUnits(ref result);
 
@@ -1249,23 +1292,17 @@ namespace forms1
         {
             double Vout = input.common.Vout;
 
-            if (Vout > 0.00000001 && input.secondary.N == 0)
-            {
-                input.secondary.N = (int)(input.primary.N / input.common.Vin * Vout / input.common.CouplingCoeff);
-            }
-            else if (input.secondary.N > 0)
-            {
-                Vout = input.common.Vin / input.primary.N * input.secondary.N * input.common.CouplingCoeff;
-            }
-
-            double turns_ratio = (double)input.primary.N / (double)input.secondary.N;
-
             trans_calc_result_winding w2 = calculateWinding(input.common, input.secondary);
 
             double Vout_idle = Vout;
             double Vout_load = 0;
 
-            double total_R = w1_R / turns_ratio / turns_ratio + w2.resistance;
+            if (result.turns_ratio < 0.000001)
+            {
+                throw new Exception("Turns ratio hasn't been calculated");
+            }
+
+            double total_R = w1_R / result.turns_ratio / result.turns_ratio + w2.resistance;
 
             if (input.common.Iout_max > 0.0000000001)
             {
@@ -1282,7 +1319,7 @@ namespace forms1
                 result.regulation = (Vout_idle - Vout_load) / Vout_idle * 100;
 
                 double ph0 = Math.Acos(input.common.pf1);
-                double Ip_re = result.Iout_max / turns_ratio + result.I_ex * input.common.pf1;
+                double Ip_re = result.Iout_max / result.turns_ratio + result.I_ex * input.common.pf1;
                 double Ip_im = result.I_ex * Math.Sin(ph0);
                 result.Ip_full_load =
                     Math.Sqrt(Math.Pow(Ip_re, 2) + Math.Pow(Ip_im, 2));
@@ -1290,7 +1327,6 @@ namespace forms1
 
             result.Vout_idle = Vout_idle;
             result.Vout_load = Vout_load;
-            result.turns_ratio = turns_ratio;
             result.total_eq_R = total_R;
             return w2;
 
@@ -1304,15 +1340,24 @@ namespace forms1
                 awgList = awgList.Reverse();
             }
 
+            AWG awg;
+
             if (requiredCurrent > 0.0000000001 && w.ampacity_mil_per_amp > 0.000000001)
             {
-                return awgList.Where(v => v.GetMaxCurrent(w.ampacity_mil_per_amp) >= requiredCurrent).
+                awg = awgList.Where(v => v.GetMaxCurrent(w.ampacity_mil_per_amp) >= requiredCurrent).
                     FirstOrDefault();
             }
             else
             {
-                return awgList.Where(v => v.Gauge == minAWG).FirstOrDefault();
+                awg = awgList.Where(v => v.Gauge == minAWG).FirstOrDefault();
             }
+
+            if (awg == null)
+            {
+                throw new Exception("Autoselect: failed to select AWG for secondary");
+            }
+
+            return awg;
         }
 
         private trans_calc_input convertTextToInput(trans_calc_input_text strin) 
@@ -1364,10 +1409,10 @@ namespace forms1
                 }
             }
 
-            if (strin.Iex != "")
+            if (strin.I_ex != "")
             {
                 // from mA to A
-                res.common.I_ex = double.Parse(strin.Iex, NumberStyles.Float) / 1000;
+                res.common.I_ex = double.Parse(strin.I_ex, NumberStyles.Float) / 1000;
                 if (res.common.I_ex < 0.01 || res.common.I_ex > 2)
                 {
                     throw new Exception("Iex has to be in the range of 10mA to 2A");
@@ -1579,6 +1624,10 @@ namespace forms1
             if (w.N_per_layer == 0)
             {
                 w.N_per_layer = (int)(common.Core_L / dl);
+                if (w.N_per_layer > w.N)
+                {
+                    w.N_per_layer = w.N;
+                }
             }
 
             if (w.N_per_layer == 0)
@@ -1588,7 +1637,7 @@ namespace forms1
 
             int totalLayers = (int)(w.N / (double)w.N_per_layer);
 
-            int lastTurns = (int)w.N - (totalLayers * (int)w.N_per_layer);
+            int lastTurns = (int)w.N - (totalLayers * w.N_per_layer);
 
             if (lastTurns == 0)
             {
