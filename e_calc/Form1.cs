@@ -13,13 +13,14 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using GroupBox = System.Windows.Forms.GroupBox;
 using TextBox = System.Windows.Forms.TextBox;
+using TransCalc;
 
 namespace forms1
 {
     public partial class MainForm : Form
     {
         private Bias bias;
-        private TransCalc tc;
+        private TransCalc.TransCalc tc;
         // Units that require conversion:
         private double transCalc_H;
         private List<string> tc_warnings;
@@ -91,7 +92,7 @@ namespace forms1
                 calculateBias();
             }
 
-            tc = new TransCalc();
+            tc = new TransCalc.TransCalc();
             SetUnitRadioButtons();
             button_saveResults.Enabled = false;
             radiobutton_mains_US.Select();
@@ -234,19 +235,19 @@ namespace forms1
                     res_warnings.Text += msg + "\n";    
                 }
 
-                if (res_total_thickness_mm.Text != TransCalc.EmptyValue)
+                if (res_total_thickness_mm.Text != Constants.EmptyValue)
                 {
                     res_total_thickness_mm.ForeColor =
                         result.IsWindowExceeded ? Color.Red : Color.FromArgb(0, 180, 0);
                 }
 
-                if (res_total_eq_R.Text != TransCalc.EmptyValue)
+                if (res_total_eq_R.Text != Constants.EmptyValue)
                 {
                     res_total_eq_R.ForeColor =
                         result.IsMaxResistanceExceeded ? Color.Red : Color.FromArgb(0, 180, 0);
                 }
 
-                if (res_Ip_full_load.Text != TransCalc.EmptyValue)
+                if (res_Ip_full_load.Text != Constants.EmptyValue)
                 {
                     res_Ip_full_load.ForeColor =
                         result.IsAmpacity1Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
@@ -254,7 +255,7 @@ namespace forms1
                         result.IsAmpacity1Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
                 }
 
-                if (res_Iout.Text != TransCalc.EmptyValue)
+                if (res_Iout.Text != Constants.EmptyValue)
                 {
                     res_Iout.ForeColor =
                         result.IsAmpacity2Exceeded ? Color.Red : Color.FromArgb(0, 180, 0);
@@ -327,52 +328,52 @@ namespace forms1
         private void ClearResults()
         {
 
-            res_turns_1.Text = TransCalc.EmptyValue;
-            res_turns_per_layer_1.Text = TransCalc.EmptyValue;
-            res_totalLayers_1.Text = TransCalc.EmptyValue;
-            res_lastLayerTurns_1.Text = TransCalc.EmptyValue;
-            res_length_m_1.Text = TransCalc.EmptyValue;
-            res_length_ft_1.Text = TransCalc.EmptyValue;
-            res_thickness_mm_1.Text = TransCalc.EmptyValue;
-            res_resistance_1.Text = TransCalc.EmptyValue;
-            res_mpath_m.Text = TransCalc.EmptyValue;
-            res_L1.Text = TransCalc.EmptyValue;
-            res_Bmax.Text = TransCalc.EmptyValue;
-            res_permeability.Text = TransCalc.EmptyValue;
-            res_H.Text = TransCalc.EmptyValue;
-            res_Iex.Text = TransCalc.EmptyValue;
-            res_Ip_full_load.Text = TransCalc.EmptyValue;
+            res_turns_1.Text = Constants.EmptyValue;
+            res_turns_per_layer_1.Text = Constants.EmptyValue;
+            res_totalLayers_1.Text = Constants.EmptyValue;
+            res_lastLayerTurns_1.Text = Constants.EmptyValue;
+            res_length_m_1.Text = Constants.EmptyValue;
+            res_length_ft_1.Text = Constants.EmptyValue;
+            res_thickness_mm_1.Text = Constants.EmptyValue;
+            res_resistance_1.Text = Constants.EmptyValue;
+            res_mpath_m.Text = Constants.EmptyValue;
+            res_L1.Text = Constants.EmptyValue;
+            res_Bmax.Text = Constants.EmptyValue;
+            res_permeability.Text = Constants.EmptyValue;
+            res_H.Text = Constants.EmptyValue;
+            res_Iex.Text = Constants.EmptyValue;
+            res_Ip_full_load.Text = Constants.EmptyValue;
             res_Ip_full_load.ForeColor = Color.Black;
-            res_max_current_1.Text = TransCalc.EmptyValue;
+            res_max_current_1.Text = Constants.EmptyValue;
             res_max_current_1.ForeColor = Color.Black;
-            res_weight_g1.Text = TransCalc.EmptyValue;
+            res_weight_g1.Text = Constants.EmptyValue;
 
-            res_turns_2.Text = TransCalc.EmptyValue;
-            res_turns_per_layer_2.Text = TransCalc.EmptyValue;
-            res_totalLayers_2.Text = TransCalc.EmptyValue;
-            res_lastLayerTurns_2.Text = TransCalc.EmptyValue;
-            res_length_m_2.Text = TransCalc.EmptyValue;
-            res_length_ft_2.Text = TransCalc.EmptyValue;
-            res_thickness_mm_2.Text = TransCalc.EmptyValue;
-            res_resistance_2.Text = TransCalc.EmptyValue;
-            res_total_thickness_mm.Text = TransCalc.EmptyValue;
+            res_turns_2.Text = Constants.EmptyValue;
+            res_turns_per_layer_2.Text = Constants.EmptyValue;
+            res_totalLayers_2.Text = Constants.EmptyValue;
+            res_lastLayerTurns_2.Text = Constants.EmptyValue;
+            res_length_m_2.Text = Constants.EmptyValue;
+            res_length_ft_2.Text = Constants.EmptyValue;
+            res_thickness_mm_2.Text = Constants.EmptyValue;
+            res_resistance_2.Text = Constants.EmptyValue;
+            res_total_thickness_mm.Text = Constants.EmptyValue;
             res_total_thickness_mm.ForeColor = Color.Black;
-            res_L2.Text = TransCalc.EmptyValue;
-            res_Vout_idle.Text = TransCalc.EmptyValue;
-            res_Vout_imax.Text = TransCalc.EmptyValue;
-            res_Iout.Text = TransCalc.EmptyValue;
-            res_max_current_2.Text = TransCalc.EmptyValue;
+            res_L2.Text = Constants.EmptyValue;
+            res_Vout_idle.Text = Constants.EmptyValue;
+            res_Vout_imax.Text = Constants.EmptyValue;
+            res_Iout.Text = Constants.EmptyValue;
+            res_max_current_2.Text = Constants.EmptyValue;
             res_max_current_2.ForeColor = Color.Black;
-            res_weight_g2.Text = TransCalc.EmptyValue;
-            res_turns_ratio.Text = TransCalc.EmptyValue;
-            res_wire_weight_ratio.Text = TransCalc.EmptyValue;
-            res_wire_total_mass.Text = TransCalc.EmptyValue;
-            res_powerVA.Text = TransCalc.EmptyValue;
-            res_csa_ratio.Text = TransCalc.EmptyValue;
-            res_regulation.Text = TransCalc.EmptyValue;
-            res_total_eq_R.Text = TransCalc.EmptyValue;
-            res_AWG1.Text = TransCalc.EmptyValue;
-            res_AWG2.Text = TransCalc.EmptyValue;
+            res_weight_g2.Text = Constants.EmptyValue;
+            res_turns_ratio.Text = Constants.EmptyValue;
+            res_wire_weight_ratio.Text = Constants.EmptyValue;
+            res_wire_total_mass.Text = Constants.EmptyValue;
+            res_powerVA.Text = Constants.EmptyValue;
+            res_csa_ratio.Text = Constants.EmptyValue;
+            res_regulation.Text = Constants.EmptyValue;
+            res_total_eq_R.Text = Constants.EmptyValue;
+            res_AWG1.Text = Constants.EmptyValue;
+            res_AWG2.Text = Constants.EmptyValue;
             res_warnings.Text = "";
             button_saveResults.Enabled = false;
         }
@@ -639,12 +640,11 @@ namespace forms1
                 label_units_maxtemp.Text = "F:";
             }
 
-            if (tc.H_Units == TransCalc.H_UNITS.AMP_TURNS_M)
+            if (tc.H_Units == TransCalc.TransCalc.H_UNITS.AMP_TURNS_M)
             {
                 radioButton_H_amp_t_m.Select();
-
             }
-            else if (tc.H_Units == TransCalc.H_UNITS.AMP_TURNS_IN)
+            else if (tc.H_Units == TransCalc.TransCalc.H_UNITS.AMP_TURNS_IN)
             {
                 radioButton_H_amp_t_in.Select();
             }
@@ -783,15 +783,15 @@ namespace forms1
                 {
                     if (radioButton_H_amp_t_m.Checked)
                     {
-                        transCalc_H = tc.Convert_H(transCalc_H, TransCalc.H_UNITS.AMP_TURNS_M);
+                        transCalc_H = tc.Convert_H(transCalc_H, TransCalc.TransCalc.H_UNITS.AMP_TURNS_M);
                     }
                     else if (radioButton_H_amp_t_in.Checked)
                     {
-                        transCalc_H = tc.Convert_H(transCalc_H, TransCalc.H_UNITS.AMP_TURNS_IN);
+                        transCalc_H = tc.Convert_H(transCalc_H, TransCalc.TransCalc.H_UNITS.AMP_TURNS_IN);
                     }
                     else if (radioButton_H_oe.Checked)
                     {
-                        transCalc_H = tc.Convert_H(transCalc_H, TransCalc.H_UNITS.OERSTEDS);
+                        transCalc_H = tc.Convert_H(transCalc_H, TransCalc.TransCalc.H_UNITS.OERSTEDS);
                     }
                     
                     label_units_H.Text = tc.HUnitlsLabel;
