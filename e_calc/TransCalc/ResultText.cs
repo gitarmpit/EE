@@ -90,10 +90,10 @@ namespace TransCalc
                     IsWindowExceeded = true;
                 }
 
-                if (input.common.max_res_R > 0.0000001 && res.total_eq_R > input.common.max_res_R)
+                if (input.common.max_eq_R > 0.0000001 && res.total_eq_R > input.common.max_eq_R)
                 {
                     var total_eq_R = String.Format("{0:0.#}", res.total_eq_R);
-                    warnings.Add($"Total R: {total_eq_R} exceeds the maximum total R: {input.common.max_res_R}");
+                    warnings.Add($"Total R: {total_eq_R} exceeds the maximum total R: {input.common.max_eq_R}");
                     IsMaxResistanceExceeded = true;
                 }
 

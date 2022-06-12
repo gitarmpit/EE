@@ -21,7 +21,7 @@ namespace TransCalc
 
         public double mpath_l_cm;
         public double max_temp;
-        public double max_res_R;
+        public double max_eq_R;
 
         public double WindowSize;
         public double CouplingCoeff;
@@ -294,8 +294,8 @@ namespace TransCalc
 
             if (strin.max_eq_R != "")
             {
-                common.max_res_R = double.Parse(strin.max_eq_R, NumberStyles.Float);
-                if (common.max_res_R < 1)
+                common.max_eq_R = double.Parse(strin.max_eq_R, NumberStyles.Float);
+                if (common.max_eq_R < 1)
                 {
                     throw new Exception("Invalid value of max equivalent R");
                 }
