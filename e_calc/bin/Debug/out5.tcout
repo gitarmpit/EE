@@ -1,0 +1,68 @@
+Input:
+
+Core size  WxHxL     : 2.7 x 5.4 x 3.4 cm
+Ae, WxH              : 2.5 x 5 cm
+Window size          : 11 mm
+Mpath, WxH           : 3.2 x 5 cm
+Bmax                 : 1.2 T
+H                    : 400 Amp-t/m
+L1/L2 coupling coeff : 0.995
+Stacking factor      : 0.97
+Insulation           : 1 mm
+Vout                 : 650 (full load)
+Iout max             : 0.15 A
+Max temperature      : 25 C
+Max equivalent R     : 400
+
+Primary   : 23 AWG, Wfactor: .9, N: , N per layer:  C.M. per amp: 600
+Secondary : 28 AWG, Wfactor: .9, N: , N per layer:  C.M. per amp: 1000
+
+Mains: 120V / 60Hz
+
+=== Results: =====================================
+
+Primary:
+
+AWG                  : 23
+Turns                : 309
+Turns per layer      : 53
+Total layers         : 6
+Last layer turns     : 44
+Wire length          : 51.97 m / 170.51 ft
+Build-up             : 3.83 mm
+R                    : 3.54
+Magnetic path        : 0.16 m
+L                    : 2.12 H
+Bmax                 : 1.2 T
+u/u0                 : 2387.32
+H                    : 400 Amp-t/m
+Iex                  : 0.15 A
+Ip, full load        : 0.84 A
+AWG max current      : 0.85 A
+Weight               : 120.38 g
+
+Secondary:
+
+AWG                  : 28
+Turns                : 1682
+Turns per layer      : 95
+Total layers         : 18
+Last layer turns     : 67
+Wire length          : 318.23 m / 1044.06 ft
+Build-up             : 6.4 mm
+R                    : 69.7
+Total build-up       : 11.23 mm
+L                    : 62.75 H
+Vout idle            : 676.18 V
+Vout full load       : 650 V
+Iout full load       : 0.15 A
+AWG max current      : 0.16 A
+Weight               : 229.12 g
+
+Turns ratio          : 1:5.44
+Wire c.s.a ratio     : 3.22:1
+Total weight         : 349.5 g
+Weight ratio         : 1:1.9
+Output Power         : 97.5 VA
+Total equivalent R   : 174.54
+% Regulation         : 3.87
