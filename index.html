@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>EE Calculators</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-rows: 500px 500px;
+      grid-gap: 20px;
+    }
+
+    .raw-container {
+      display: grid;
+      grid-template-columns: 250px 250px 250px 250px;
+      grid-gap: 20px;
+    }
+
+    .calc {
+      border: 10px solid #fff;
+      background-color: #dceae4;
+    }
+
+    .calc p {
+      background-color: #1000;
+      margin-left: 15px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 70px 120px;
+      border: 10px solid #fff;
+      margin: 10px;
+      gap: 10px;
+    }
+
+    label {
+      text-align: left;
+    }
+  </style>
+
+  <script>
+
+    function initKeyHandler(e) {
+    }
+
+    function init() {
+
+      let e = document.getElementById('form-ohm');
+      e.onkeydown = function (e) {
+        if (e.keyCode == 13) {
+          ohms_law();
+        }
+        else if (e.keyCode == 27) {
+          document.getElementById('form-ohm-V').value = "";
+          document.getElementById('form-ohm-R').value = "";
+          document.getElementById('form-ohm-I').value = "";
+          document.getElementById('form-ohm-P').value = "";
+        }
+      }
+
+      e = document.getElementById('form-Xl');
+      e.onkeydown = function (e) {
+        if (e.keyCode == 13) {
+          calc_Xl();
+        }
+        else if (e.keyCode == 27) {
+          document.getElementById('form-Xl-L').value = "";
+          document.getElementById('form-Xl-Xl').value = "";
+          document.getElementById('form-Xl-freq').value = "";
+        }
+      }
+
+      e = document.getElementById('form-Xc');
+      e.onkeydown = function (e) {
+        if (e.keyCode == 13) {
+          calc_Xc();
+        }
+        else if (e.keyCode == 27) {
+          document.getElementById('form-Xc-C').value = "";
+          document.getElementById('form-Xc-Xc').value = "";
+          document.getElementById('form-Xc-freq').value = "";
+        }
+      }
+
+      e = document.getElementById('form-RC');
+      e.onkeydown = function (e) {
+        if (e.keyCode == 13) {
+          calc_cutoff_freq();
+        }
+        else if (e.keyCode == 27) {
+          document.getElementById('form-RC-C').value = "";
+          document.getElementById('form-RC-R').value = "";
+          document.getElementById('form-RC-freq').value = "";
+          document.getElementById('form-RC-t').value = "";
+        }
+      }
+
+      e = document.getElementById('form-tf');
+      e.onkeydown = function (e) {
+        if (e.keyCode == 13) {
+          time_freq_conv();
+        }
+        else if (e.keyCode == 27) {
+          document.getElementById('form-tf-t').value = "";
+          document.getElementById('form-tf-f').value = "";
+        }
+      }
+
+      //form-fw
+      e = document.getElementById('form-fw');
+      e.onkeydown = function (e) {
+        if (e.keyCode == 13) {
+          freq_wl_conv();
+        }
+        else if (e.keyCode == 27) {
+          document.getElementById('form-fw-wl').value = "";
+          document.getElementById('form-fw-f').value = "";
+        }
+      }
+
+      //form-RLC
+      e = document.getElementById('form-RLC');
+      e.onkeydown = function (e) {
+        if (e.keyCode == 13) {
+          rlc_calc();
+        }
+        else if (e.keyCode == 27) {
+          document.getElementById('form-RLC-R').value = "";
+          document.getElementById('form-RLC-L').value = "";
+          document.getElementById('form-RLC-C').value = "";
+          document.getElementById('form-RLC-freq').value = "";
+          document.getElementById('form-RLC-Qs').value = "";
+          document.getElementById('form-RLC-Qp').value = "";
+        }
+      }
+
+      //form-dbm
+      e = document.getElementById('form-dbm');
+      e.onkeydown = function (e) {
+        if (e.keyCode == 13) {
+          dbm_calc();
+        }
+        else if (e.keyCode == 27) {
+          document.getElementById('form-dbm-P').value = "";
+          document.getElementById('form-dbm-dbm').value = "";
+          document.getElementById('form-dbm-Vrms').value = "";
+          document.getElementById('form-dbm-Vpk').value = "";
+          document.getElementById('form-dbm-Vpp').value = "";
+        }
+      }
+
+    }
+
+    function parse_value(str) {
+      let regex = /^([0-9e\-+.]+)([A-Za-z]*)$/;
+      str = str.replace(/\s/g, '');
+      let res = str.match(regex);
+      if (res.length != 3) {
+        throw "Error parsing " + str;
+      }
+      return [res[1], res[2]];
+    }
+
+    function strip_zeroes(s) {
+      return s.replace(/\.*0+$/, '');
+    }
+
+    // L
+    function str_to_L(str_L) {
+      let val = parse_value(str_L);
+      let L = val[0];
+      let k = 0;
+      if (val[1].toLowerCase() == "h" || val[1].toLowerCase() == "") {
+        k = 1;
+      }
+      else if (val[1].toLowerCase() == "m" || val[1].toLowerCase() == "mh") {
+        k = 1e-3;
+      }
+      else if (val[1].toLowerCase() == "u" || val[1].toLowerCase() == "uh") {
+        k = 1e-6;
+      }
+      else if (val[1].toLowerCase() == "n" || val[1].toLowerCase() == "nh") {
+        k = 1e-9;
+      }
+
+      if (k == 0) {
+        throw "error parsing L: " + str_L;
+      }
+
+      L *= k;
+
+      return L;
+    }
+
+    function L_to_str(L) {
+      let units = "H";
+
+      if (L <= 1e-9) {
+        return L.toExponential(3) + "H";
+      }
+
+      if (L < 1e-6) {
+        L *= 1e9;
+        units = "nH";
+      }
+      else if (L < 1e-3) {
+        L *= 1e6;
+        units = "uH";
+      }
+      else if (L < 1) {
+        L *= 1e3;
+        units = "mH";
+      }
+
+      return strip_zeroes(L.toFixed(3)) + units;
+    }
+
+    // C
+    function str_to_C(str_C) {
+      let val = parse_value(str_C);
+      let C = val[0];
+      let k = 0;
+      if (val[1].toLowerCase() == "f" || val[1].toLowerCase() == "") {
+        k = 1;
+      }
+      else if (val[1].toLowerCase() == "m" || val[1].toLowerCase() == "mf") {
+        k = 1e-3;
+      }
+      else if (val[1].toLowerCase() == "u" || val[1].toLowerCase() == "uf") {
+        k = 1e-6;
+      }
+      else if (val[1].toLowerCase() == "n" || val[1].toLowerCase() == "nf") {
+        k = 1e-9;
+      }
+      else if (val[1].toLowerCase() == "p" || val[1].toLowerCase() == "pf") {
+        k = 1e-12;
+      }
+
+      if (k == 0) {
+        throw "error parsing C: " + str_C;
+      }
+
+      C *= k;
+
+      return C;
+    }
+
+    function C_to_str(C) {
+      let units = "F";
+
+      if (C <= 1e-12) {
+        return C.toExponential(3) + "F";
+      }
+
+      if (C < 1e-9) {
+        C *= 1e12;
+        units = "pF";
+      }
+      else if (C < 1e-6) {
+        C *= 1e9;
+        units = "nF";
+      }
+      else if (C < 1e-3) {
+        C *= 1e6;
+        units = "uF";
+      }
+      else if (C < 1) {
+        C *= 1e3;
+        units = "mF";
+      }
+
+      return strip_zeroes(C.toFixed(3)) + units;
+    }
+
+    // Freq
+    function str_to_freq(str_freq) {
+      let val = parse_value(str_freq);
+      let f = val[0];
+      let k = 0;
+      if (val[1].toLowerCase() == "" || val[1].toLowerCase() == "h" || val[1].toLowerCase() == "hz") {
+        k = 1;
+      }
+      else if (val[1].toLowerCase() == "k" || val[1].toLowerCase() == "kh" || val[1].toLowerCase() == "khz") {
+        k = 1e3;
+      }
+      else if (val[1].toLowerCase() == "m" || val[1].toLowerCase() == "mh" || val[1].toLowerCase() == "mhz") {
+        k = 1e6;
+      }
+      else if (val[1].toLowerCase() == "g" || val[1].toLowerCase() == "gh" || val[1].toLowerCase() == "ghz") {
+        k = 1e9;
+      }
+      else if (val[1].toLowerCase() == "t" || val[1].toLowerCase() == "th" || val[1].toLowerCase() == "thz") {
+        k = 1e12;
+      }
+
+      if (k == 0) {
+        throw "error parsing freq: " + str_freq;
+      }
+
+      f *= k;
+
+      return f;
+    }
+
+    function freq_to_str(freq) {
+      let units = "Hz";
+
+      if (freq >= 1e15) {
+        return freq.toExponential(3) + "Hz";
+      }
+
+      if (freq >= 1e12) {
+        freq /= 1e12;
+        units = "THz";
+      }
+      else if (freq >= 1e9) {
+        freq /= 1e9;
+        units = "GHz";
+      }
+      else if (freq >= 1e6) {
+        freq /= 1e6;
+        units = "MHz";
+      }
+      else if (freq >= 1e3) {
+        freq /= 1e3;
+        units = "Khz";
+      }
+      return strip_zeroes(freq.toFixed(3)) + units;
+    }
+
+    // R
+    function str_to_R(str_R) {
+      let val = parse_value(str_R);
+      let R = val[0];
+      let k = 0;
+      if (val[1].toLowerCase() == "r" || val[1] == "" || val[1].toLowerCase() == "ohm") {
+        k = 1;
+      }
+      else if (val[1].toLowerCase() == "k" || val[1].toLowerCase() == "kohm") {
+        k = 1e3;
+      }
+      else if (val[1].toLowerCase() == "g" || val[1].toLowerCase() == "gohm") {
+        k = 1e9;
+      }
+      else if (val[1] == "M" || val[1] == "Mohm" || val[1] == "MOhm") {
+        k = 1e6;
+      }
+      else if (val[1] == "m" || val[1] == "mohm" || val[1] == "mOhm") {
+        k = 1e-3;
+      }
+      else if (val[1].toLowerCase() == "u" || val[1].toLowerCase() == "uohm") {
+        k = 1e-6;
+      }
+      else if (val[1].toLowerCase() == "n" || val[1].toLowerCase() == "nohm") {
+        k = 1e-9;
+      }
+      else if (val[1].toLowerCase() == "p" || val[1].toLowerCase() == "pohm") {
+        k = 1e-12;
+      }
+
+      if (k == 0) {
+        throw "error parsing R: " + str_R;
+      }
+
+      R *= k;
+
+      return R;
+    }
+
+    function R_to_str(R) {
+      let units = "";
+
+      if (R >= 1e12 || R < 1e-9) {
+        return R.toExponential(3);
+      }
+
+      if (R < 1e-6) {
+        R *= 1e9;
+        units = "n";
+      }
+      else if (R < 1e-3) {
+        R *= 1e6;
+        units = "u";
+      }
+      else if (R < 1e3) {
+        units = "";
+      }
+      else if (R < 1e6) {
+        R /= 1e3;
+        units = "k";
+      }
+      else if (R < 1e9) {
+        R /= 1e6;
+        units = "M";
+      }
+      else {
+        R /= 1e9;
+        units = "G";
+      }
+
+      return strip_zeroes(R.toFixed(3)) + units;
+    }
+
+    // Time
+    function str_to_t(str_t) {
+      let val = parse_value(str_t);
+      let t = val[0];
+      let k = 0;
+      if (val[1].toLowerCase() == "s" || val[1].toLowerCase() == "") {
+        k = 1;
+      }
+      else if (val[1].toLowerCase() == "m" || val[1].toLowerCase() == "ms") {
+        k = 1e-3;
+      }
+      else if (val[1].toLowerCase() == "u" || val[1].toLowerCase() == "us") {
+        k = 1e-6;
+      }
+      else if (val[1].toLowerCase() == "n" || val[1].toLowerCase() == "ns") {
+        k = 1e-9;
+      }
+      else if (val[1].toLowerCase() == "p" || val[1].toLowerCase() == "ps") {
+        k = 1e-12;
+      }
+
+      if (k == 0) {
+        throw "error parsing t: " + str_t;
+      }
+
+      t *= k;
+
+      return t;
+    }
+
+    function t_to_str(t) {
+      let units = "s";
+
+      if (t < 1e-12) {
+        return t.toExponential(3) + "s";
+      }
+
+      if (t < 1e-9) {
+        t *= 1e12;
+        units = "ps";
+      }
+      else if (t < 1e-6) {
+        t *= 1e9;
+        units = "ns";
+      }
+      else if (t < 1e-3) {
+        t *= 1e6;
+        units = "us";
+      }
+      else if (t < 1) {
+        t *= 1e3;
+        units = "ms";
+      }
+
+      return strip_zeroes(t.toFixed(3)) + units;
+    }
+
+    // V
+    function str_to_V(str_V) {
+      let val = parse_value(str_V);
+      let V = val[0];
+      let k = 0;
+
+      if (val[1].toLowerCase() == "v" || val[1].toLowerCase() == "") {
+        k = 1;
+      }
+      else if (val[1] == "m" || val[1] == "mv" || val[1] == "mV") {
+        k = 1e-3;
+      }
+      else if (val[1].toLowerCase() == "u" || val[1].toLowerCase() == "uv") {
+        k = 1e-6;
+      }
+      else if (val[1].toLowerCase() == "n" || val[1].toLowerCase() == "nv") {
+        k = 1e-9;
+      }
+      else if (val[1].toLowerCase() == "p" || val[1].toLowerCase() == "pv") {
+        k = 1e-12;
+      }
+      else if (val[1].toLowerCase() == "k" || val[1].toLowerCase() == "kv") {
+        k = 1e3;
+      }
+      else if (val[1] == "M" || val[1] == "Mv" || val[1] == "MV") {
+        k = 1e6;
+      }
+
+      if (k == 0) {
+        throw "error parsing V: " + str_V;
+      }
+
+      V *= k;
+
+      return V;
+    }
+
+    function V_to_str(V) {
+      let units = "V";
+
+      if (V < 1e-12 || V >= 1e9) {
+        return V.toExponential(3) + "V";
+      }
+
+      if (V < 1e-9) {
+        V *= 1e12;
+        units = "pV";
+      }
+      else if (V < 1e-6) {
+        V *= 1e9;
+        units = "nV";
+      }
+      else if (V < 1e-3) {
+        V *= 1e6;
+        units = "uV";
+      }
+      else if (V < 1) {
+        V *= 1e3;
+        units = "mV";
+      }
+      else if (V < 1e3) {
+        units = "V";
+      }
+      else if (V < 1e6) {
+        V /= 1e3;
+        units = "kV";
+      }
+      else {
+        V /= 1e6;
+        units = "MV";
+      }
+
+      return strip_zeroes(V.toFixed(3)) + units;
+    }
+
+    // I
+    function str_to_I(str_I) {
+      let val = parse_value(str_I);
+      let I = val[0];
+      let k = 0;
+
+      if (val[1].toLowerCase() == "a" || val[1].toLowerCase() == "") {
+        k = 1;
+      }
+      else if (val[1].toLowerCase() == "m" || val[1].toLowerCase() == "ma") {
+        k = 1e-3;
+      }
+      else if (val[1].toLowerCase() == "u" || val[1].toLowerCase() == "ua") {
+        k = 1e-6;
+      }
+      else if (val[1].toLowerCase() == "n" || val[1].toLowerCase() == "na") {
+        k = 1e-9;
+      }
+      else if (val[1].toLowerCase() == "p" || val[1].toLowerCase() == "pa") {
+        k = 1e-12;
+      }
+      else if (val[1].toLowerCase() == "f" || val[1].toLowerCase() == "fa") {
+        k = 1e-15;
+      }
+      else if (val[1].toLowerCase() == "k" || val[1].toLowerCase() == "ka") {
+        k = 1e3;
+      }
+
+      if (k == 0) {
+        throw "error parsing I: " + str_I;
+      }
+
+      I *= k;
+
+      return I;
+    }
+
+    function I_to_str(I) {
+      let units = "A";
+
+      if (I < 1e-15 || I >= 1e9) {
+        return I.toExponential(3) + "A";
+      }
+
+      if (I < 1e-12) {
+        I *= 1e15;
+        units = "fA";
+      }
+      else if (I < 1e-9) {
+        I *= 1e12;
+        units = "pA";
+      }
+      else if (I < 1e-6) {
+        I *= 1e9;
+        units = "nA";
+      }
+      else if (I < 1e-3) {
+        I *= 1e6;
+        units = "uA";
+      }
+      else if (I < 1) {
+        I *= 1e3;
+        units = "mA";
+      }
+      else if (I < 1e3) {
+        units = "A";
+      }
+      else if (I < 1e6) {
+        I /= 1e3;
+        units = "kA";
+      }
+      else {
+        I /= 1e6;
+        units = "MA";
+      }
+      return strip_zeroes(I.toFixed(3)) + units;
+    }
+
+    // P
+    function str_to_P(str_P) {
+      let val = parse_value(str_P);
+      let P = val[0];
+      let k = 0;
+
+      if (val[1].toLowerCase() == "w" || val[1].toLowerCase() == "") {
+        k = 1;
+      }
+      else if (val[1] == "m" || val[1] == "mw" || val[1] == "mW") {
+        k = 1e-3;
+      }
+      else if (val[1].toLowerCase() == "u" || val[1].toLowerCase() == "uw") {
+        k = 1e-6;
+      }
+      else if (val[1].toLowerCase() == "n" || val[1].toLowerCase() == "nw") {
+        k = 1e-9;
+      }
+      else if (val[1].toLowerCase() == "p" || val[1].toLowerCase() == "pw") {
+        k = 1e-12;
+      }
+      else if (val[1].toLowerCase() == "k" || val[1].toLowerCase() == "kw") {
+        k = 1e3;
+      }
+      else if (val[1] == "M" || val[1] == "MW" || val[1] == "Mw") {
+        k = 1e6;
+      }
+
+      if (k == 0) {
+        throw "error parsing P: " + str_P;
+      }
+
+      P *= k;
+
+      return P;
+    }
+
+    function P_to_str(P) {
+      let units = "W";
+
+      if (P < 1e-12 || P >= 1e9) {
+        return P.toExponential(3) + "W";
+      }
+
+      if (P < 1e-9) {
+        P *= 1e12;
+        units = "pW";
+      }
+      else if (P < 1e-6) {
+        P *= 1e9;
+        units = "nW";
+      }
+      else if (P < 1e-3) {
+        P *= 1e6;
+        units = "uW";
+      }
+      else if (P < 1) {
+        P *= 1e3;
+        units = "mW";
+      }
+      else if (P < 1e3) {
+        units = "W";
+      }
+      else if (P < 1e6) {
+        P /= 1e3;
+        units = "kW";
+      }
+      else {
+        P /= 1e6;
+        units = "MW";
+      }
+
+      return strip_zeroes(P.toFixed(3)) + units;
+    }
+
+    // Wavelength
+    function str_to_len(str_len) {
+      let val = parse_value(str_len);
+      let len = val[0];
+      let k = 0;
+      if (val[1].toLowerCase() == "m" || val[1].toLowerCase() == "") {
+        k = 1;
+      }
+      else if (val[1].toLowerCase() == "cm") {
+        k = 1e-2;
+      }
+      else if (val[1].toLowerCase() == "mm") {
+        k = 1e-3;
+      }
+      else if (val[1].toLowerCase() == "u" || val[1].toLowerCase() == "um") {
+        k = 1e-6;
+      }
+      else if (val[1].toLowerCase() == "n" || val[1].toLowerCase() == "nm") {
+        k = 1e-9;
+      }
+      else if (val[1].toLowerCase() == "k" || val[1].toLowerCase() == "km") {
+        k = 1e3;
+      }
+
+      if (k == 0) {
+        throw "error parsing wavelength: " + str_len;
+      }
+
+      len *= k;
+
+      return len;
+    }
+
+    function len_to_str(len) {
+      let units = "m";
+
+      if (len < 1e-9) {
+        return len.toExponential(3) + "m";
+      }
+
+      if (len < 1e-6) {
+        len *= 1e9;
+        units = "nm";
+      }
+      else if (len < 1e-3) {
+        len *= 1e6;
+        units = "um";
+      }
+      else if (len < 0.01) {
+        len *= 1e3;
+        units = "mm";
+      }
+      else if (len < 1) {
+        len *= 1e2;
+        units = "cm";
+      }
+      else if (len < 1e3) {
+        units = "m";
+      }
+      else {
+        units = "km";
+        len /= 1e3;
+      }
+
+      return strip_zeroes(len.toFixed(3)) + units;
+    }
+
+
+    ///////////////////////////////////////////////////////
+    function ohms_law() {
+      var str_V = document.getElementById('form-ohm-V').value;
+      var str_R = document.getElementById('form-ohm-R').value;
+      var str_I = document.getElementById('form-ohm-I').value;
+      var str_P = document.getElementById('form-ohm-P').value;
+
+      try {
+        let V = 0;
+        let R = 0;
+        let I = 0;
+        let P = 0;
+        let nparam = 0;
+        if (str_V.length > 0) {
+          V = str_to_V(str_V);
+          ++nparam;
+        }
+        if (str_R.length > 0) {
+          R = str_to_R(str_R);
+          ++nparam;
+        }
+        if (str_I.length > 0) {
+          I = str_to_I(str_I);
+          ++nparam;
+        }
+        if (str_P.length > 0) {
+          P = str_to_P(str_P);
+          ++nparam;
+        }
+
+        if (nparam == 2) {
+          if (V != 0 && R != 0) {
+            I = V / R;
+            str_I = I_to_str(I);
+            document.getElementById('form-ohm-I').value = str_I;
+
+            P = I * V;
+            str_P = P_to_str(P);
+            document.getElementById('form-ohm-P').value = str_P;
+          }
+          else if (V != 0 && I != 0) {
+            R = V / I;
+            str_R = R_to_str(R);
+            document.getElementById('form-ohm-R').value = str_R;
+
+            P = V * I;
+            str_P = P_to_str(P);
+            document.getElementById('form-ohm-P').value = str_P;
+          }
+          else if (I != 0 && R != 0) {
+            V = I * R;
+            str_V = V_to_str(V);
+            document.getElementById('form-ohm-V').value = str_V;
+
+            P = V * I;
+            str_P = P_to_str(P);
+            document.getElementById('form-ohm-P').value = str_P;
+          }
+          else if (P != 0 && R != 0) {
+            V = Math.sqrt(P * R);
+            str_V = V_to_str(V);
+            document.getElementById('form-ohm-V').value = str_V;
+
+            I = V / R;
+            str_I = I_to_str(I);
+            document.getElementById('form-ohm-I').value = str_I;
+          }
+          else if (P != 0 && I != 0) {
+            V = P / I;
+            str_V = V_to_str(V);
+
+            document.getElementById('form-ohm-V').value = str_V;
+
+            R = V / I;
+            str_R = R_to_str(R);
+            document.getElementById('form-ohm-R').value = str_R;
+          }
+          else if (P != 0 && V != 0) {
+            R = V * V / P;
+            str_R = R_to_str(R);
+            document.getElementById('form-ohm-R').value = str_R;
+
+            I = V / R;
+            str_I = I_to_str(I);
+            document.getElementById('form-ohm-I').value = str_I;
+          }
+        }
+
+      }
+      catch (err) {
+        alert(err);
+      }
+
+
+    }
+
+    function calc_Xl() {
+      var str_L = document.getElementById('form-Xl-L').value;
+      var str_freq = document.getElementById('form-Xl-freq').value;
+      var str_R = document.getElementById('form-Xl-Xl').value;
+
+      try {
+        let L = 0;
+        let freq = 0;
+        let R = 0;
+        let nparam = 0;
+        if (str_L.length > 0) {
+          L = str_to_L(str_L);
+          ++nparam;
+        }
+        if (str_freq.length > 0) {
+          freq = str_to_freq(str_freq);
+          ++nparam;
+        }
+        if (str_R.length > 0) {
+          R = str_to_R(str_R);
+          ++nparam;
+        }
+
+        if (nparam == 2) {
+          if (L != 0 && freq != 0) {
+            R = 2 * Math.PI * freq * L;
+            str_R = R_to_str(R);
+            document.getElementById('form-Xl-Xl').value = str_R;
+          }
+          else if (L != 0 && R != 0) {
+            freq = R / (2 * Math.PI * L);
+            str_freq = freq_to_str(freq);
+            if (freq >= 1) {
+              document.getElementById('form-Xl-freq').value = str_freq;
+            }
+          }
+          else {
+            L = R / (2 * Math.PI * freq);
+            str_L = L_to_str(L);
+            document.getElementById('form-Xl-L').value = str_L;
+          }
+        }
+
+      }
+      catch (err) {
+        alert(err);
+      }
+
+    }
+
+    function calc_Xc() {
+      let str_C = document.getElementById('form-Xc-C').value;
+      let str_freq = document.getElementById('form-Xc-freq').value;
+      let str_R = document.getElementById('form-Xc-Xc').value;
+
+      try {
+        let C = 0;
+        let freq = 0;
+        let R = 0;
+        let nparam = 0;
+        if (str_C.length > 0) {
+          C = str_to_C(str_C);
+          ++nparam;
+        }
+        if (str_freq.length > 0) {
+          freq = str_to_freq(str_freq);
+          ++nparam;
+        }
+        if (str_R.length > 0) {
+          R = str_to_R(str_R);
+          ++nparam;
+        }
+
+        if (nparam == 2) {
+          if (C != 0 && freq != 0) {
+            R = 1 / (2 * Math.PI * freq * C);
+            str_R = R_to_str(R);
+            document.getElementById('form-Xc-Xc').value = str_R;
+          }
+          else if (C != 0 && R != 0) {
+            freq = 1 / (2 * Math.PI * R * C);
+            str_freq = freq_to_str(freq);
+            if (freq >= 1) {
+              document.getElementById('form-Xc-freq').value = str_freq;
+            }
+          }
+          else {
+            C = 1 / (2 * Math.PI * freq * R);
+            str_C = C_to_str(C);
+            document.getElementById('form-Xc-C').value = str_C;
+          }
+        }
+
+      }
+      catch (err) {
+        alert(err);
+      }
+
+    }
+
+    function RC_calc_freq(t) {
+      let freq = 1 / (2 * Math.PI * t);
+      let str_freq = freq_to_str(freq);
+      document.getElementById('form-RC-freq').value = str_freq;
+      return freq;
+    }
+
+    function RC_calc_t(R, C) {
+      let t = R * C;
+      let str_t = t_to_str(t);
+      document.getElementById('form-RC-t').value = str_t;
+      return t;
+    }
+
+    function RC_calc_C(freq, R) {
+      let C = 1 / (2 * Math.PI * freq * R);
+      let str_C = C_to_str(C);
+      document.getElementById('form-RC-C').value = str_C;
+      return C;
+    }
+
+    function RC_calc_R(freq, C) {
+      let R = 1 / (2 * Math.PI * freq * C);
+      let str_R = R_to_str(R);
+      document.getElementById('form-RC-R').value = str_R;
+      return R;
+    }
+
+    function calc_cutoff_freq() {
+      let str_R = document.getElementById('form-RC-R').value;
+      let str_C = document.getElementById('form-RC-C').value;
+      let str_freq = document.getElementById('form-RC-freq').value;
+      let str_t = document.getElementById('form-RC-t').value;
+
+      try {
+        let R = 0;
+        let C = 0;
+        let freq = 0;
+        let t = 0;
+        let nparam = 0;
+        if (str_R.length > 0) {
+          R = str_to_R(str_R);
+          ++nparam;
+        }
+        if (str_C.length > 0) {
+          C = str_to_C(str_C);
+          ++nparam;
+        }
+        if (str_freq.length > 0) {
+          freq = str_to_freq(str_freq);
+          ++nparam;
+        }
+        if (str_t.length > 0) {
+          t = str_to_t(str_t);
+          ++nparam;
+        }
+
+        if (nparam == 2 && (C != 0 || R != 0)) {
+          if (R != 0 && C != 0) {
+            t = RC_calc_t(R, C);
+            RC_calc_freq(t);
+          }
+          else if (freq != 0 && R != 0) {
+            C = RC_calc_C(freq, R);
+            RC_calc_t(R, C);
+          }
+          else if (freq != 0 && C != 0) {
+            R = RC_calc_R(freq, C);
+            RC_calc_t(R, C);
+          }
+          else if (t != 0 && R != 0) {
+            freq = RC_calc_freq(t);
+            RC_calc_C(freq, R);
+          }
+          else if (t != 0 && C != 0) {
+            freq = RC_calc_freq(t);
+            RC_calc_R(freq, C);
+          }
+        }
+
+      }
+      catch (err) {
+        alert(err);
+      }
+
+    }
+
+    function time_freq_conv() {
+      let str_t = document.getElementById('form-tf-t').value;
+      let str_f = document.getElementById('form-tf-f').value;
+
+      try {
+        let f = 0;
+        let t = 0;
+        if (str_f.length > 0) {
+          f = str_to_freq(str_f);
+        }
+        if (str_t.length > 0) {
+          t = str_to_t(str_t);
+        }
+
+        if (f != 0 && t == 0) {
+          t = 1 / f;
+          str_t = t_to_str(t);
+          document.getElementById('form-tf-t').value = str_t;
+        }
+        else if (f == 0 && t != 0 && t <= 1) {
+          f = 1 / t;
+          str_f = freq_to_str(f);
+          document.getElementById('form-tf-f').value = str_f;
+        }
+
+      }
+      catch (err) {
+        alert(err);
+      }
+    }
+
+    function freq_wl_conv() {
+      let str_f = document.getElementById('form-fw-f').value;
+      let str_wl = document.getElementById('form-fw-wl').value;
+
+      try {
+        let c = 3e+8;
+        let f = 0;
+        let wl = 0;
+        if (str_f.length > 0) {
+          f = str_to_freq(str_f);
+        }
+        if (str_wl.length > 0) {
+          wl = str_to_len(str_wl);
+        }
+
+        if (f >= 1 && wl == 0) {
+          wl = c / f;
+          str_wl = len_to_str(wl);
+          document.getElementById('form-fw-wl').value = str_wl;
+        }
+        else if (f == 0 && wl != 0) {
+          f = c / wl;
+          if (f >= 1) {
+            str_f = freq_to_str(f);
+            document.getElementById('form-fw-f').value = str_f;
+          }
+        }
+
+      }
+      catch (err) {
+        alert(err);
+      }
+
+    }
+
+    function rlc_calc_Qs(L, R, freq) {
+      let str_Qs = "";
+      Qs = 2 * Math.PI * freq * L / R;
+      if (Qs > 0.0001) {
+        str_Qs = strip_zeroes(Qs.toFixed(3))
+      }
+      else if (Qs > 10e6) {
+        str_Qs = Qs.toExponential(3);
+      }
+      document.getElementById('form-RLC-Qs').value = str_Qs;
+
+    }
+
+    function rlc_calc_Qp(L, R, freq) {
+      Qp = R / (2 * Math.PI * freq * L);
+      let str_Qp = "";
+      if (Qp > 0.0001) {
+        str_Qp = strip_zeroes(Qp.toFixed(3))
+      }
+      else if (Qp > 10e6) {
+        str_Qp = Qp.toExponential(3);
+      }
+      document.getElementById('form-RLC-Qp').value = str_Qp;
+    }
+
+    function calc_Q(L, R, freq, Qs, Qp) {
+      if (L > 1e-15 && freq > 1e-15) {
+        if (R > 0 && Qs == 0 && Qp == 0) {
+          rlc_calc_Qs(L, R, freq);
+          rlc_calc_Qp(L, R, freq);
+        }
+        else if (Qs > 0 && R == 0 && Qp == 0) {
+          R = (2 * Math.PI * freq * L) / Qs;
+          let str_R = R_to_str(R);
+          document.getElementById('form-RLC-R').value = str_R;
+          rlc_calc_Qp(L, R, freq);
+        }
+        else if (Qp > 0 && R == 0 && Qs == 0) {
+          R = Qp * (2 * Math.PI * freq * L);
+          let str_R = R_to_str(R);
+          document.getElementById('form-RLC-R').value = str_R;
+          rlc_calc_Qs(L, R, freq);
+        }
+      }
+    }
+
+    function rlc_calc() {
+      let str_R = document.getElementById('form-RLC-R').value;
+      let str_L = document.getElementById('form-RLC-L').value;
+      let str_C = document.getElementById('form-RLC-C').value;
+      let str_freq = document.getElementById('form-RLC-freq').value;
+      let str_Qs = document.getElementById('form-RLC-Qs').value;
+      let str_Qp = document.getElementById('form-RLC-Qp').value;
+
+      try {
+        let nparam = 0;
+        let R = 0;
+        let L = 0;
+        let C = 0;
+        let freq = 0;
+        let Qs = 0;
+        let Qp = 0;
+
+        if (str_R.length > 0) {
+          R = str_to_R(str_R);
+          ++nparam;
+        }
+
+        if (str_L.length > 0) {
+          L = str_to_L(str_L);
+          ++nparam;
+        }
+
+        if (str_C.length > 0) {
+          C = str_to_C(str_C);
+          ++nparam;
+        }
+
+        if (str_freq.length > 0) {
+          freq = str_to_freq(str_freq);
+          ++nparam;
+        }
+
+        if (str_Qs.length > 0) {
+          Qs = Number.parseFloat(str_Qs);
+          ++nparam;
+        }
+
+        if (str_Qp.length > 0) {
+          Qp = Number.parseFloat(str_Qp);
+          ++nparam;
+        }
+
+        if (nparam == 2 || nparam == 3) {
+          if (L != 0 && C != 0) {
+
+            if (freq == 0) {
+              freq = 1 / (2 * Math.PI * Math.sqrt(L * C));
+              str_freq = freq_to_str(freq);
+              if (freq > 0) {
+                document.getElementById('form-RLC-freq').value = str_freq;
+                calc_Q(L, R, freq, Qs, Qp);
+              }
+            }
+          }
+          else if (C != 0 && freq != 0) {
+            L = 1 / (C * Math.pow(2 * Math.PI * freq, 2));
+            str_L = L_to_str(L);
+            document.getElementById('form-RLC-L').value = str_L;
+            calc_Q(L, R, freq, Qs, Qp);
+          }
+          else if (L != 0 && freq != 0) {
+            C = 1 / (L * Math.pow(2 * Math.PI * freq, 2));
+            str_C = C_to_str(C);
+            document.getElementById('form-RLC-C').value = str_C;
+            calc_Q(L, R, freq, Qs, Qp);
+          }
+          else if (R > 0 && freq > 0 && Qs > 0) {
+            L = Qs * R / (2 * Math.PI * freq);
+            str_L = L_to_str(L);
+            document.getElementById('form-RLC-L').value = str_L;
+            Qp = 1 / Qs;
+            str_Qp = strip_zeroes(Qp.toFixed(3))
+            document.getElementById('form-RLC-Qp').value = str_Qp;
+            C = 1 / (L * Math.pow(2 * Math.PI * freq, 2));
+            str_C = C_to_str(C);
+            document.getElementById('form-RLC-C').value = str_C;
+          }
+          else if (R > 0 && freq > 0 && Qp > 0) {
+            L = R / (Qp * 2 * Math.PI * freq);
+            str_L = L_to_str(L);
+            document.getElementById('form-RLC-L').value = str_L;
+            Qs = 1 / Qp;
+            str_Qs = strip_zeroes(Qs.toFixed(3))
+            document.getElementById('form-RLC-Qs').value = str_Qs;
+            C = 1 / (L * Math.pow(2 * Math.PI * freq, 2));
+            str_C = C_to_str(C);
+            document.getElementById('form-RLC-C').value = str_C;
+          }
+          else if (R > 0 && L > 0 && Qs > 0) {
+            freq = Qs * R / (2 * Math.PI * L);
+            str_freq = freq_to_str(freq);
+            document.getElementById('form-RLC-freq').value = str_freq;
+            Qp = 1 / Qs;
+            str_Qp = strip_zeroes(Qp.toFixed(3))
+            document.getElementById('form-RLC-Qp').value = str_Qp;
+            C = 1 / (L * Math.pow(2 * Math.PI * freq, 2));
+            str_C = C_to_str(C);
+            document.getElementById('form-RLC-C').value = str_C;
+          }
+          else if (R > 0 && L > 0 && Qp > 0) {
+            freq = R / (2 * Math.PI * L * Qp);
+            str_freq = freq_to_str(freq);
+            document.getElementById('form-RLC-freq').value = str_freq;
+            Qs = 1 / Qp;
+            str_Qs = strip_zeroes(Qs.toFixed(3))
+            document.getElementById('form-RLC-Qs').value = str_Qs;
+            C = 1 / (L * Math.pow(2 * Math.PI * freq, 2));
+            str_C = C_to_str(C);
+            document.getElementById('form-RLC-C').value = str_C;
+          }
+
+        }
+
+      }
+      catch (err) {
+        alert(err);
+      }
+    }
+
+    function dbm_calc() {
+      let str_P = document.getElementById('form-dbm-P').value;
+      let str_dbm = document.getElementById('form-dbm-dbm').value;
+      let str_Vrms = document.getElementById('form-dbm-Vrms').value;
+      let str_Vpk = document.getElementById('form-dbm-Vpk').value;
+      let str_Vpp = document.getElementById('form-dbm-Vpp').value;
+
+      let nparam = 0;
+      let nv_param = 0;
+      let Vrms = 0;
+      let Vpk = 0;
+      let Vpp = 0;
+      let P = 0;
+      let dbm = 0;
+
+      try {
+        if (str_P.length > 0) {
+          P = str_to_P(str_P);
+          ++nparam;
+        }
+        if (str_dbm.length > 0) {
+          dbm = Number.parseFloat(str_dbm);
+          ++nparam;
+        }
+        if (str_Vrms.length > 0) {
+          Vrms = str_to_V(str_Vrms);
+          ++nv_param;
+        }
+        if (str_Vpk.length > 0) {
+          Vpk = str_to_V(str_Vpk);
+          ++nv_param;
+        }
+        if (str_Vpp.length > 0) {
+          Vpp = str_to_V(str_Vpp);
+          ++nv_param;
+        }
+
+        if (P > 0 && str_dbm.length == 0 && nv_param == 0) {
+          dbm = 10 * Math.log10 (P * 1000);
+          str_dbm = strip_zeroes(dbm.toFixed(3))
+          document.getElementById('form-dbm-dbm').value = str_dbm;
+          Vrms = Math.sqrt (P * 50);
+          str_Vrms = V_to_str (Vrms);
+          document.getElementById('form-dbm-Vrms').value = str_Vrms;
+          Vpk = Vrms * Math.sqrt(2);
+          str_Vpk = V_to_str (Vpk);
+          document.getElementById('form-dbm-Vpk').value = str_Vpk;
+          Vpp = 2 * Vpk;
+          str_Vpp = V_to_str (Vpp);
+          document.getElementById('form-dbm-Vpp').value = str_Vpp;
+
+        }
+        else if (P == 0 && str_dbm.length > 0 && nv_param == 0) {
+          P = 0.001 * Math.pow (10, dbm/10);
+          str_P = P_to_str (P);
+          document.getElementById('form-dbm-P').value = str_P;
+          Vrms = Math.sqrt (P * 50);
+          str_Vrms = V_to_str (Vrms);
+          document.getElementById('form-dbm-Vrms').value = str_Vrms;
+          Vpk = Vrms * Math.sqrt(2);
+          str_Vpk = V_to_str (Vpk);
+          document.getElementById('form-dbm-Vpk').value = str_Vpk;
+          Vpp = 2 * Vpk;
+          str_Vpp = V_to_str (Vpp);
+          document.getElementById('form-dbm-Vpp').value = str_Vpp;
+        }
+        else if (P == 0 && str_dbm.length == 0 && nv_param == 1 && Vrms != 0) {
+          P = Vrms * Vrms / 50;
+          str_P = P_to_str (P);
+          document.getElementById('form-dbm-P').value = str_P;
+          dbm = 10 * Math.log10 (P * 1000);
+          str_dbm = strip_zeroes(dbm.toFixed(3))
+          document.getElementById('form-dbm-dbm').value = str_dbm;
+          Vpk = Vrms * Math.sqrt(2);
+          str_Vpk = V_to_str (Vpk);
+          document.getElementById('form-dbm-Vpk').value = str_Vpk;
+          Vpp = 2 * Vpk;
+          str_Vpp = V_to_str (Vpp);
+          document.getElementById('form-dbm-Vpp').value = str_Vpp;
+        }
+        else if (P == 0 && str_dbm.length == 0 && nv_param == 1 && Vpk != 0) {
+          Vrms = Vpk / Math.sqrt(2);
+          str_Vrms = V_to_str (Vrms);
+          document.getElementById('form-dbm-Vrms').value = str_Vrms;
+          P = Vrms * Vrms / 50;
+          str_P = P_to_str (P);
+          document.getElementById('form-dbm-P').value = str_P;
+          dbm = 10 * Math.log10 (P * 1000);
+          str_dbm = strip_zeroes(dbm.toFixed(3))
+          document.getElementById('form-dbm-dbm').value = str_dbm;
+          Vpp = 2 * Vpk;
+          str_Vpp = V_to_str (Vpp);
+          document.getElementById('form-dbm-Vpp').value = str_Vpp;
+        }
+        else if (P == 0 && str_dbm.length == 0 && nv_param == 1 && Vpp != 0) {
+          Vpk = Vpp / 2;
+          str_Vpk = V_to_str (Vpk);
+          document.getElementById('form-dbm-Vpk').value = str_Vpk;
+          Vrms = Vpk / Math.sqrt(2);
+          str_Vrms = V_to_str (Vrms);
+          document.getElementById('form-dbm-Vrms').value = str_Vrms;
+          P = Vrms * Vrms / 50;
+          str_P = P_to_str (P);
+          document.getElementById('form-dbm-P').value = str_P;
+          dbm = 10 * Math.log10 (P * 1000);
+          str_dbm = strip_zeroes(dbm.toFixed(3))
+          document.getElementById('form-dbm-dbm').value = str_dbm;
+        }
+
+
+      }
+      catch (err) {
+        alert(err);
+      }
+    }
+
+  </script>
+
+</head>
+
+<body>
+
+  <div class="calc">
+    <p>Ohm's Law</center>
+    <form id="form-ohm">
+      <label for="form-ohm-V">V:</label>
+      <input type="text" id="form-ohm-V">
+      <label for="form-ohm-R">R:</label>
+      <input type="text" id="form-ohm-R">
+      <label for="form-ohm-I">I:</label>
+      <input type="text" id="form-ohm-I">
+      <label for="form-ohm-P">P:</label>
+      <input type="text" id="form-ohm-P">
+      <div></div><button type="button" class="button" id="submit_ohm" onClick="ohms_law()">Submit</button>
+    </form>
+  </div>
+
+  <div class="calc">
+    <p>L Reactance Calculator</center>
+    <form id="form-Xl">
+      <label for="form-Xl-L">L:</label>
+      <input type="text" id="form-Xl-L" name="L">
+      <label for="form-Xl-freq">Freq:</label>
+      <input type="text" id="form-Xl-freq" name="f">
+      <label for="form-Xl-Xl">X<sub>L</sub>:</label>
+      <input type="text" id="form-Xl-Xl" name="Xl">
+      <div></div><button type="button" class="button" id="submit_Xl" onClick="calc_Xl()">Submit</button>
+    </form>
+  </div>
+
+  <div class="calc">
+    <p>C Reactance Calculator</p>
+    <form id="form-Xc">
+      <label for="form-Xc-C">C:</label>
+      <input type="text" id="form-Xc-C" name="C">
+      <label for="form-Xc-freq">Freq:</label>
+      <input type="text" id="form-Xc-freq" name="freq_C">
+      <label for="form-Xc-Xc">X<sub>C</sub>:</label>
+      <input type="text" id="form-Xc-Xc" name="Xc">
+      <label></label>
+      <button type="button" class="button" id="submit_Xc" onClick="calc_Xc()">Submit</button>
+    </form>
+  </div>
+
+  <div class="calc">
+    <p>Cutoff Frequency Calculator</p>
+    <form id="form-RC">
+      <label for="form-RC-R">R:</label>
+      <input type="text" id="form-RC-R">
+      <label for="form-RC-C">C:</label>
+      <input type="text" id="form-RC-C">
+      <label for="form-RC-freq">Freq:</label>
+      <input type="text" id="form-RC-freq">
+      <label for="form-RC-t">Time:</label>
+      <input type="text" id="form-RC-t">
+      <div></div><button type="button" class="button" id="submit_RC" onClick="calc_cutoff_freq()">Submit</button>
+    </form>
+  </div>
+
+  <div class="calc">
+    <p>Time/Frequency Converter</p>
+    <form id="form-tf">
+      <label for="form-tf-t">Time:</label>
+      <input type="text" id="form-tf-t">
+      <label for="form-tf-f">Freq:</label>
+      <input type="text" id="form-tf-f">
+      <div></div><button type="button" class="button" id="submit_TF" onClick="time_freq_conv()">Submit</button>
+    </form>
+  </div>
+
+  <div class="calc">
+    <p>Frequency/Wavelength Converter</p>
+    <form id="form-fw">
+      <label for="form-fw-f">Freq:</label>
+      <input type="text" id="form-fw-f">
+      <label for="form-fw-wl">λ:</label>
+      <input type="text" id="form-fw-wl">
+      <div></div><button type="button" class="button" id="submit_fw" onClick="freq_wl_conv()">Submit</button>
+    </form>
+  </div>
+
+  <div class="calc">
+    <p>RLC Resonance Calculator</p>
+    <form id="form-RLC">
+      <label for="form-RLC-R">R:</label>
+      <input type="text" id="form-RLC-R">
+      <label for="form-RLC-L">L:</label>
+      <input type="text" id="form-RLC-L">
+      <label for="form-RLC-C">C:</label>
+      <input type="text" id="form-RLC-C">
+      <label for="form-RLC-freq">Freq:</label>
+      <input type="text" id="form-RLC-freq">
+      <label for="form-RLC-Qs">Q<sub>s</sub>:</label>
+      <input type="text" id="form-RLC-Qs">
+      <label for="form-RLC-Qp">Q<sub>p</sub>:</label>
+      <input type="text" id="form-RLC-Qp">
+      <div></div><button type="button" class="button" id="submit_rlc" onClick="rlc_calc()">Submit</button>
+    </form>
+  </div>
+
+  <div class="calc">
+    <p>dBm Calculator</p>
+    <form id="form-dbm">
+      <label for="form-dbm-P">P<sub>W(50Ω)</sub>:</label>
+      <input type="text" id="form-dbm-P">
+      <label for="form-dbm-dbm">P<sub>dBm(50Ω)</sub>:</label>
+      <input type="text" id="form-dbm-dbm">
+      <label for="form-dbm-Vrms">V<sub>rms</sub>:</label>
+      <input type="text" id="form-dbm-Vrms">
+      <label for="form-dbm-Vpk">V<sub>pk</sub>:</label>
+      <input type="text" id="form-dbm-Vpk">
+      <label for="form-dbm-Vpp">V<sub>p-p</sub>:</label>
+      <input type="text" id="form-dbm-Vpp">
+      <div></div><button type="button" class="button" id="submit_dbm" onClick="dbm_calc()">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    init();
+  </script>
+
+</body>
+
+</html>
