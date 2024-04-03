@@ -155,6 +155,21 @@
         }
       }
 
+      //form-ripple
+      e = document.getElementById('form-ripple');
+      document.getElementById('form-ripple-f').value = "60";
+      e.onkeydown = function (e) {
+        if (e.keyCode == 13) {
+          ripple_calc();
+        }
+        else if (e.keyCode == 27) {
+          document.getElementById('form-ripple-f').value = "60";
+          document.getElementById('form-ripple-C').value = "";
+          document.getElementById('form-ripple-V').value = "";
+          document.getElementById('form-ripple-I').value = "";
+        }
+      }
+
     }
 
     function parse_value(str) {
@@ -194,6 +209,9 @@
       }
 
       L *= k;
+      if (isNaN(L)) {
+        throw "error parsing L: " + str_L;
+      }
 
       return L;
     }
@@ -242,11 +260,16 @@
         k = 1e-12;
       }
 
+
       if (k == 0) {
         throw "error parsing C: " + str_C;
       }
 
       C *= k;
+
+      if (isNaN(C)) {
+        throw "error parsing C: " + str_C;
+      }
 
       return C;
     }
@@ -266,6 +289,7 @@
         C *= 1e9;
         units = "nF";
       }
+      /*
       else if (C < 1e-3) {
         C *= 1e6;
         units = "uF";
@@ -274,6 +298,11 @@
         C *= 1e3;
         units = "mF";
       }
+      */
+     else if (C < 1) {
+      C *= 1e6;
+        units = "uF";
+     }
 
       return strip_zeroes(C.toFixed(3)) + units;
     }
@@ -304,6 +333,11 @@
       }
 
       f *= k;
+
+      if (isNaN(f)) {
+        throw "error parsing f: " + str_freq;
+      }
+
 
       return f;
     }
@@ -370,6 +404,10 @@
 
       R *= k;
 
+      if (isNaN(R)) {
+        throw "error parsing R: " + str_R;
+      }
+
       return R;
     }
 
@@ -433,6 +471,9 @@
       }
 
       t *= k;
+      if (isNaN(t)) {
+        throw "error parsing t: " + str_t;
+      }
 
       return t;
     }
@@ -497,6 +538,10 @@
       }
 
       V *= k;
+
+      if (isNaN(V)) {
+        throw "error parsing V: " + str_V;
+      }
 
       return V;
     }
@@ -572,6 +617,9 @@
       }
 
       I *= k;
+      if (isNaN(I)) {
+        throw "error parsing I: " + str_I;
+      }
 
       return I;
     }
@@ -651,6 +699,11 @@
 
       P *= k;
 
+      if (isNaN(P)) {
+        throw "error parsing P: " + str_P;
+      }
+
+
       return P;
     }
 
@@ -721,6 +774,11 @@
       }
 
       len *= k;
+
+      if (isNaN(len)) {
+        throw "error parsing len: " + str_len;
+      }
+
 
       return len;
     }
@@ -1395,6 +1453,69 @@
       }
     }
 
+    function ripple_calc() {
+
+      let nparam = 0;
+      let f = 0;
+      let C = 0;
+      let I = 0;
+      let V = 0;
+
+      try {
+        let str_f = document.getElementById('form-ripple-f').value;
+        let str_C = document.getElementById('form-ripple-C').value;
+        let str_I = document.getElementById('form-ripple-I').value;
+        let str_V = document.getElementById('form-ripple-V').value;
+
+        if (str_f.length > 0) {
+          f = str_to_freq(str_f);
+          ++nparam;
+        }        
+        if (str_C.length > 0) {
+          C = str_to_C(str_C);
+          ++nparam;
+        }
+        if (str_I.length > 0) {
+          I = str_to_I(str_I);
+          ++nparam;
+        }
+        if (str_V.length > 0) {
+          V = str_to_V(str_V);
+          ++nparam;
+        }
+
+        if (nparam == 3) {
+          if ( V == 0) {
+            V = I / (4 * f * C);
+            if (V > 10e-8 && V < 1000) {
+              console.log (V);
+              str_V = V_to_str(V);
+              document.getElementById('form-ripple-V').value = str_V;
+            }
+          }
+          else if (I == 0) {
+            I = V * 4 * f * C;
+            if (I > 10e-8 && I < 1000) {
+              str_I = I_to_str(I);
+              document.getElementById('form-ripple-I').value = str_I;
+            }
+          }
+          else if (C == 0) {
+            C = I / ( 4 * f * V);
+            if (C > 10e-15 && C < 10) {
+              str_C = C_to_str(C);
+              document.getElementById('form-ripple-C').value = str_C;
+            }
+          }
+        }
+
+      } 
+      catch (err) {
+        alert(err);
+      }
+
+    }
+
   </script>
 
 </head>
@@ -1515,6 +1636,29 @@
       <div></div><button type="button" class="button" id="submit_dbm" onClick="dbm_calc()">Submit</button>
     </form>
   </div>
+
+  <div class="calc">
+    <p>C ripple Calculator</p>
+
+    <form id="form-ripple">
+
+      <label for="form-ripple-f">Freq:</label>
+      <input type="text" id="form-ripple-f">
+
+      <label for="form-ripple-C">C:</label>
+      <input type="text" id="form-ripple-C">
+
+      <label for="form-ripple-I">I:</label>
+      <input type="text" id="form-ripple-I">
+      
+      <label for="form-ripple-V">V<sub>p-p</sub>:</label>
+      <input type="text" id="form-ripple-V">
+
+      <div></div><button type="button" class="button" id="submit_ripple" onClick="ripple_calc()">Submit</button>
+    </form>
+
+  </div>
+
 
   <script>
     init();
