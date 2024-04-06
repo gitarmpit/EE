@@ -9,18 +9,6 @@
       padding: 0;
     }
 
-    .grid-container {
-      display: grid;
-      grid-template-rows: 500px 500px;
-      grid-gap: 20px;
-    }
-
-    .raw-container {
-      display: grid;
-      grid-template-columns: 250px 250px 250px 250px;
-      grid-gap: 20px;
-    }
-
     .calc {
       border: 10px solid #fff;
       background-color: #dceae4;
@@ -33,7 +21,7 @@
 
     form {
       display: grid;
-      grid-template-columns: 70px 120px;
+      grid-template-columns: 130px 120px;
       border: 10px solid #fff;
       margin: 10px;
       gap: 10px;
@@ -45,6 +33,8 @@
   </style>
 
   <script>
+
+    let precision = 6;
 
     function initKeyHandler(e) {
     }
@@ -170,13 +160,43 @@
         }
       }
 
+      //form-headphone
+      e = document.getElementById('form-headphone');
+      e.onkeydown = function (e) {
+        if (e.keyCode == 13) {
+          headphone_calc();
+        }
+        else if (e.keyCode == 27) {
+          document.getElementById('form-headphone-sensitivity-dbmw').value = "";
+          document.getElementById('form-headphone-sensitivity-dbv').value = "";
+          document.getElementById('form-headphone-R').value = "";
+          document.getElementById('form-headphone-P').value = "";
+          document.getElementById('form-headphone-V').value = "";
+          document.getElementById('form-headphone-I').value = "";
+          document.getElementById('form-headphone-loudness').value = "";
+        }
+      }
+      // form-sound
+      e = document.getElementById('form-sound');
+      e.onkeydown = function (e) {
+        if (e.keyCode == 13) {
+          sound_calc();
+        }
+        else if (e.keyCode == 27) {
+          document.getElementById('form-sound-db').value = "";
+          document.getElementById('form-sound-V').value = "";
+          document.getElementById('form-sound-P').value = "";
+          document.getElementById('form-sound-L').value = "";
+        }
+      }
+
     }
 
     function parse_value(str) {
       let regex = /^([0-9e\-+.]+)([A-Za-z]*)$/;
       str = str.replace(/\s/g, '');
       let res = str.match(regex);
-      if (res.length != 3) {
+      if (res == null || res.length != 3) {
         throw "Error parsing " + str;
       }
       return [res[1], res[2]];
@@ -220,23 +240,23 @@
       let units = "H";
 
       if (L <= 1e-9) {
-        return L.toExponential(3) + "H";
+        return L.toExponential(precision) + "H";
       }
 
-      if (L < 1e-6) {
+      if (L < 1e-6 - 1e-13) {
         L *= 1e9;
         units = "nH";
       }
-      else if (L < 1e-3) {
+      else if (L < 1e-3 - 1e-10) {
         L *= 1e6;
         units = "uH";
       }
-      else if (L < 1) {
+      else if (L < 1 - 1e-7) {
         L *= 1e3;
         units = "mH";
       }
 
-      return strip_zeroes(L.toFixed(3)) + units;
+      return strip_zeroes(L.toFixed(precision)) + units;
     }
 
     // C
@@ -278,23 +298,23 @@
       let units = "F";
 
       if (C <= 1e-12) {
-        return C.toExponential(3) + "F";
+        return C.toExponential(precision) + "F";
       }
 
-      if (C < 1e-9) {
+      if (C < 1e-9 - 1e-16) {
         C *= 1e12;
         units = "pF";
       }
-      else if (C < 1e-6) {
+      else if (C < 1e-6 - 1e-13) {
         C *= 1e9;
         units = "nF";
       }
       /*
-      else if (C < 1e-3) {
+      else if (C < 1e-3 - 1e-10) {
         C *= 1e6;
         units = "uF";
       }
-      else if (C < 1) {
+      else if (C < 1 - 1e - 7) {
         C *= 1e3;
         units = "mF";
       }
@@ -304,7 +324,7 @@
         units = "uF";
      }
 
-      return strip_zeroes(C.toFixed(3)) + units;
+      return strip_zeroes(C.toFixed(precision)) + units;
     }
 
     // Freq
@@ -346,7 +366,7 @@
       let units = "Hz";
 
       if (freq >= 1e15) {
-        return freq.toExponential(3) + "Hz";
+        return freq.toExponential(precision) + "Hz";
       }
 
       if (freq >= 1e12) {
@@ -365,7 +385,7 @@
         freq /= 1e3;
         units = "Khz";
       }
-      return strip_zeroes(freq.toFixed(3)) + units;
+      return strip_zeroes(freq.toFixed(precision)) + units;
     }
 
     // R
@@ -382,7 +402,7 @@
       else if (val[1].toLowerCase() == "g" || val[1].toLowerCase() == "gohm") {
         k = 1e9;
       }
-      else if (val[1] == "M" || val[1] == "Mohm" || val[1] == "MOhm") {
+      else if (val[1] == "M" || val[1] == "Mohm" || val[1] == "MOhm" || val[1].toLowerCase() == "meg") {
         k = 1e6;
       }
       else if (val[1] == "m" || val[1] == "mohm" || val[1] == "mOhm") {
@@ -415,25 +435,25 @@
       let units = "";
 
       if (R >= 1e12 || R < 1e-9) {
-        return R.toExponential(3);
+        return R.toExponential(precision);
       }
 
-      if (R < 1e-6) {
+      if (R < 1e-6 - 1e-13) {
         R *= 1e9;
         units = "n";
       }
-      else if (R < 1e-3) {
+      else if (R < 1e-3 - 1e-10) {
         R *= 1e6;
         units = "u";
       }
-      else if (R < 1e3) {
+      else if (R < 1e3 - 1e-4) {
         units = "";
       }
-      else if (R < 1e6) {
+      else if (R < 1e6 - 1e-1) {
         R /= 1e3;
         units = "k";
       }
-      else if (R < 1e9) {
+      else if (R < 1e9 - 100) {
         R /= 1e6;
         units = "M";
       }
@@ -442,7 +462,7 @@
         units = "G";
       }
 
-      return strip_zeroes(R.toFixed(3)) + units;
+      return strip_zeroes(R.toFixed(precision)) + units;
     }
 
     // Time
@@ -482,7 +502,7 @@
       let units = "s";
 
       if (t < 1e-12) {
-        return t.toExponential(3) + "s";
+        return t.toExponential(precision) + "s";
       }
 
       if (t < 1e-9) {
@@ -502,7 +522,7 @@
         units = "ms";
       }
 
-      return strip_zeroes(t.toFixed(3)) + units;
+      return strip_zeroes(t.toFixed(precision)) + units;
     }
 
     // V
@@ -550,26 +570,26 @@
       let units = "V";
 
       if (V < 1e-12 || V >= 1e9) {
-        return V.toExponential(3) + "V";
+        return V.toExponential(precision) + "V";
       }
 
-      if (V < 1e-9) {
+      if (V < 1e-9 -  1e-16) {
         V *= 1e12;
         units = "pV";
       }
-      else if (V < 1e-6) {
+      else if (V < 1e-6 -  1e-13) {
         V *= 1e9;
         units = "nV";
       }
-      else if (V < 1e-3) {
+      else if (V < 1e-3 -  1e-10) {
         V *= 1e6;
         units = "uV";
       }
-      else if (V < 1) {
+      else if (V < 1 - 1e-7) {
         V *= 1e3;
         units = "mV";
       }
-      else if (V < 1e3) {
+      else if (V < 1e3 - 1e-4) {
         units = "V";
       }
       else if (V < 1e6) {
@@ -581,7 +601,7 @@
         units = "MV";
       }
 
-      return strip_zeroes(V.toFixed(3)) + units;
+      return strip_zeroes(V.toFixed(precision)) + units;
     }
 
     // I
@@ -628,30 +648,30 @@
       let units = "A";
 
       if (I < 1e-15 || I >= 1e9) {
-        return I.toExponential(3) + "A";
+        return I.toExponential(precision) + "A";
       }
 
       if (I < 1e-12) {
         I *= 1e15;
         units = "fA";
       }
-      else if (I < 1e-9) {
+      else if (I < 1e-9 - 1e-16) {
         I *= 1e12;
         units = "pA";
       }
-      else if (I < 1e-6) {
+      else if (I < 1e-6 - 1e-13) {
         I *= 1e9;
         units = "nA";
       }
-      else if (I < 1e-3) {
+      else if (I < 1e-3 - 1e-10) {
         I *= 1e6;
         units = "uA";
       }
-      else if (I < 1) {
+      else if (I < 1 - 1e-7) {
         I *= 1e3;
         units = "mA";
       }
-      else if (I < 1e3) {
+      else if (I < 1e3 - 1e-4) {
         units = "A";
       }
       else if (I < 1e6) {
@@ -662,7 +682,7 @@
         I /= 1e6;
         units = "MA";
       }
-      return strip_zeroes(I.toFixed(3)) + units;
+      return strip_zeroes(I.toFixed(precision)) + units;
     }
 
     // P
@@ -711,26 +731,26 @@
       let units = "W";
 
       if (P < 1e-12 || P >= 1e9) {
-        return P.toExponential(3) + "W";
+        return P.toExponential(precision) + "W";
       }
 
-      if (P < 1e-9) {
+      if (P < 1e-9 - 1e-16) {
         P *= 1e12;
         units = "pW";
       }
-      else if (P < 1e-6) {
+      else if (P < 1e-6 - 1e-13) {
         P *= 1e9;
         units = "nW";
       }
-      else if (P < 1e-3) {
+      else if (P < 1e-3 - 1e-10) {
         P *= 1e6;
         units = "uW";
       }
-      else if (P < 1) {
+      else if (P < 1 - 1e-7) {
         P *= 1e3;
         units = "mW";
       }
-      else if (P < 1e3) {
+      else if (P < 1e3 - 1e-4) {
         units = "W";
       }
       else if (P < 1e6) {
@@ -742,7 +762,7 @@
         units = "MW";
       }
 
-      return strip_zeroes(P.toFixed(3)) + units;
+      return strip_zeroes(P.toFixed(precision)) + units;
     }
 
     // Wavelength
@@ -787,7 +807,7 @@
       let units = "m";
 
       if (len < 1e-9) {
-        return len.toExponential(3) + "m";
+        return len.toExponential(precision) + "m";
       }
 
       if (len < 1e-6) {
@@ -814,7 +834,7 @@
         len /= 1e3;
       }
 
-      return strip_zeroes(len.toFixed(3)) + units;
+      return strip_zeroes(len.toFixed(precision)) + units;
     }
 
 
@@ -908,7 +928,7 @@
 
       }
       catch (err) {
-        alert(err);
+        reportError(err);
       }
 
 
@@ -959,7 +979,7 @@
 
       }
       catch (err) {
-        alert(err);
+        reportError(err);
       }
 
     }
@@ -1009,7 +1029,7 @@
 
       }
       catch (err) {
-        alert(err);
+        reportError(err);
       }
 
     }
@@ -1096,7 +1116,7 @@
 
       }
       catch (err) {
-        alert(err);
+        reportError(err);
       }
 
     }
@@ -1128,7 +1148,7 @@
 
       }
       catch (err) {
-        alert(err);
+        reportError(err);
       }
     }
 
@@ -1162,7 +1182,7 @@
 
       }
       catch (err) {
-        alert(err);
+        reportError(err)
       }
 
     }
@@ -1171,10 +1191,10 @@
       let str_Qs = "";
       Qs = 2 * Math.PI * freq * L / R;
       if (Qs > 0.0001) {
-        str_Qs = strip_zeroes(Qs.toFixed(3))
+        str_Qs = strip_zeroes(Qs.toFixed(precision))
       }
       else if (Qs > 10e6) {
-        str_Qs = Qs.toExponential(3);
+        str_Qs = Qs.toExponential(precision);
       }
       document.getElementById('form-RLC-Qs').value = str_Qs;
 
@@ -1184,10 +1204,10 @@
       Qp = R / (2 * Math.PI * freq * L);
       let str_Qp = "";
       if (Qp > 0.0001) {
-        str_Qp = strip_zeroes(Qp.toFixed(3))
+        str_Qp = strip_zeroes(Qp.toFixed(precision))
       }
       else if (Qp > 10e6) {
-        str_Qp = Qp.toExponential(3);
+        str_Qp = Qp.toExponential(precision);
       }
       document.getElementById('form-RLC-Qp').value = str_Qp;
     }
@@ -1289,7 +1309,7 @@
             str_L = L_to_str(L);
             document.getElementById('form-RLC-L').value = str_L;
             Qp = 1 / Qs;
-            str_Qp = strip_zeroes(Qp.toFixed(3))
+            str_Qp = strip_zeroes(Qp.toFixed(precision))
             document.getElementById('form-RLC-Qp').value = str_Qp;
             C = 1 / (L * Math.pow(2 * Math.PI * freq, 2));
             str_C = C_to_str(C);
@@ -1300,7 +1320,7 @@
             str_L = L_to_str(L);
             document.getElementById('form-RLC-L').value = str_L;
             Qs = 1 / Qp;
-            str_Qs = strip_zeroes(Qs.toFixed(3))
+            str_Qs = strip_zeroes(Qs.toFixed(precision))
             document.getElementById('form-RLC-Qs').value = str_Qs;
             C = 1 / (L * Math.pow(2 * Math.PI * freq, 2));
             str_C = C_to_str(C);
@@ -1311,7 +1331,7 @@
             str_freq = freq_to_str(freq);
             document.getElementById('form-RLC-freq').value = str_freq;
             Qp = 1 / Qs;
-            str_Qp = strip_zeroes(Qp.toFixed(3))
+            str_Qp = strip_zeroes(Qp.toFixed(precision))
             document.getElementById('form-RLC-Qp').value = str_Qp;
             C = 1 / (L * Math.pow(2 * Math.PI * freq, 2));
             str_C = C_to_str(C);
@@ -1322,7 +1342,7 @@
             str_freq = freq_to_str(freq);
             document.getElementById('form-RLC-freq').value = str_freq;
             Qs = 1 / Qp;
-            str_Qs = strip_zeroes(Qs.toFixed(3))
+            str_Qs = strip_zeroes(Qs.toFixed(precision))
             document.getElementById('form-RLC-Qs').value = str_Qs;
             C = 1 / (L * Math.pow(2 * Math.PI * freq, 2));
             str_C = C_to_str(C);
@@ -1333,7 +1353,7 @@
 
       }
       catch (err) {
-        alert(err);
+        reportError(err)
       }
     }
 
@@ -1376,7 +1396,7 @@
 
         if (P > 0 && str_dbm.length == 0 && nv_param == 0) {
           dbm = 10 * Math.log10 (P * 1000);
-          str_dbm = strip_zeroes(dbm.toFixed(3))
+          str_dbm = strip_zeroes(dbm.toFixed(precision))
           document.getElementById('form-dbm-dbm').value = str_dbm;
           Vrms = Math.sqrt (P * 50);
           str_Vrms = V_to_str (Vrms);
@@ -1408,7 +1428,7 @@
           str_P = P_to_str (P);
           document.getElementById('form-dbm-P').value = str_P;
           dbm = 10 * Math.log10 (P * 1000);
-          str_dbm = strip_zeroes(dbm.toFixed(3))
+          str_dbm = strip_zeroes(dbm.toFixed(precision))
           document.getElementById('form-dbm-dbm').value = str_dbm;
           Vpk = Vrms * Math.sqrt(2);
           str_Vpk = V_to_str (Vpk);
@@ -1425,7 +1445,7 @@
           str_P = P_to_str (P);
           document.getElementById('form-dbm-P').value = str_P;
           dbm = 10 * Math.log10 (P * 1000);
-          str_dbm = strip_zeroes(dbm.toFixed(3))
+          str_dbm = strip_zeroes(dbm.toFixed(precision))
           document.getElementById('form-dbm-dbm').value = str_dbm;
           Vpp = 2 * Vpk;
           str_Vpp = V_to_str (Vpp);
@@ -1442,14 +1462,14 @@
           str_P = P_to_str (P);
           document.getElementById('form-dbm-P').value = str_P;
           dbm = 10 * Math.log10 (P * 1000);
-          str_dbm = strip_zeroes(dbm.toFixed(3))
+          str_dbm = strip_zeroes(dbm.toFixed(precision))
           document.getElementById('form-dbm-dbm').value = str_dbm;
         }
 
 
       }
       catch (err) {
-        alert(err);
+        reportError(err);
       }
     }
 
@@ -1488,7 +1508,6 @@
           if ( V == 0) {
             V = I / (4 * f * C);
             if (V > 10e-8 && V < 1000) {
-              console.log (V);
               str_V = V_to_str(V);
               document.getElementById('form-ripple-V').value = str_V;
             }
@@ -1496,6 +1515,7 @@
           else if (I == 0) {
             I = V * 4 * f * C;
             if (I > 10e-8 && I < 1000) {
+              console.log (I);
               str_I = I_to_str(I);
               document.getElementById('form-ripple-I').value = str_I;
             }
@@ -1507,6 +1527,175 @@
               document.getElementById('form-ripple-C').value = str_C;
             }
           }
+        }
+
+      } 
+      catch (err) {
+        reportError(err)
+      }
+
+    }
+
+    function headphone_calc() {
+      let dbmw = 0;
+      let dbv = 0;
+      let R = 0;
+      let I = 0;
+      let V = 0;
+      let P = 0;
+      let L_db = 0;
+      let n_ohm = 0;
+
+      try {
+        let str_Sdbmw = document.getElementById('form-headphone-sensitivity-dbmw').value;
+        let str_Sdbv = document.getElementById('form-headphone-sensitivity-dbv').value;
+        let str_I = document.getElementById('form-headphone-I').value;
+        let str_R = document.getElementById('form-headphone-R').value;
+        let str_V = document.getElementById('form-headphone-V').value;
+        let str_P = document.getElementById('form-headphone-P').value;
+        let str_L_db = document.getElementById('form-headphone-loudness').value;
+
+        if (str_Sdbmw.length > 0) {
+          dbmw = Number.parseFloat(str_Sdbmw);
+        }        
+        if (str_Sdbv.length > 0) {
+          dbv = Number.parseFloat(str_Sdbv);
+        }
+        if (str_I.length > 0) {
+          I = str_to_I(str_I);
+          ++n_ohm;
+        }
+        if (str_V.length > 0) {
+          V = str_to_V(str_V);
+          ++n_ohm;
+        }
+        if (str_P.length > 0) {
+          P = str_to_P(str_P);
+          ++n_ohm;
+        }
+        if (str_R.length > 0) {
+          R = str_to_R(str_R);
+          ++n_ohm;
+        }
+
+        if (str_L_db.length > 0) {
+          L_db = Number.parseFloat(str_L_db);
+        }
+
+        if (dbmw != 0 && R != 0) {
+          dbv = dbmw - 10 * Math.log10 ( R / 1000);      
+          document.getElementById('form-headphone-sensitivity-dbv').value = dbv.toFixed(3);
+        }
+        else if (dbv != 0 && R != 0) {
+          dbmw = dbv + 10 * Math.log10 ( R / 1000);      
+          document.getElementById('form-headphone-sensitivity-dbmw').value = dbmw.toFixed(3);
+        }
+       
+        if (L_db != 0 && P == 0 && dbmw != 0 && R != 0) {
+          P = Math.pow(10, (L_db - dbmw) / 10) / 1000;
+          str_P = P_to_str (P);
+          document.getElementById('form-headphone-P').value = str_P;
+          ++n_ohm;
+        }
+
+        if (n_ohm == 2) {
+          if (V != 0 && R != 0) {
+            I = V / R;
+            str_I = I_to_str(I);
+            document.getElementById('form-headphone-I').value = str_I;
+
+            P = I * V;
+            str_P = P_to_str(P);
+            document.getElementById('form-headphone-P').value = str_P;
+          }
+          else if (V != 0 && I != 0) {
+            R = V / I;
+            str_R = R_to_str(R);
+            document.getElementById('form-headphone-R').value = str_R;
+
+            P = V * I;
+            str_P = P_to_str(P);
+            document.getElementById('form-headphone-P').value = str_P;
+          }
+          else if (I != 0 && R != 0) {
+            V = I * R;
+            str_V = V_to_str(V);
+            document.getElementById('form-headphone-V').value = str_V;
+
+            P = V * I;
+            str_P = P_to_str(P);
+            document.getElementById('form-headphone-P').value = str_P;
+          }
+          else if (P != 0 && R != 0) {
+            V = Math.sqrt(P * R);
+            str_V = V_to_str(V);
+            document.getElementById('form-headphone-V').value = str_V;
+
+            I = V / R;
+            str_I = I_to_str(I);
+            document.getElementById('form-headphone-I').value = str_I;
+          }
+          else if (P != 0 && I != 0) {
+            V = P / I;
+            str_V = V_to_str(V);
+
+            document.getElementById('form-headphone-V').value = str_V;
+
+            R = V / I;
+            str_R = R_to_str(R);
+            document.getElementById('form-headphone-R').value = str_R;
+          }
+          else if (P != 0 && V != 0) {
+            R = V * V / P;
+            str_R = R_to_str(R);
+            document.getElementById('form-headphone-R').value = str_R;
+
+            I = V / R;
+            str_I = I_to_str(I);
+            document.getElementById('form-headphone-I').value = str_I;
+          }
+
+        }
+
+        
+        if (L_db == 0 && P != 0 && dbmw != 0) {
+          L_db = dbmw + 10 * Math.log10 (P*1000);
+          str_L_db = L_db.toFixed(3);
+          document.getElementById('form-headphone-loudness').value = str_L_db;
+        }
+
+      } 
+      catch (err) {
+        alert(err);
+      }
+    }
+
+    function sound_calc() {
+      let db = 0;
+      let V = 0;
+      let P = 0;
+      let L = 0;
+
+      try {
+        let str_db = document.getElementById('form-sound-db').value;
+        let str_V = document.getElementById('form-sound-V').value;
+        let str_P = document.getElementById('form-sound-P').value;
+        let str_L = document.getElementById('form-sound-L').value;
+
+        if (str_db.length > 0) {
+          db = Number.parseFloat(str_db);
+        }        
+        else if (str_V.length > 0) {
+          V = Number.parseFloat(str_V);
+          db = 20 * Math.log10 (V);
+          str_db = db.toFixed(3);
+          document.getElementById('form-sound-db').value = str_db;
+        }
+        else if (str_P.length > 0) {
+          V = Number.parseFloat(str_P);
+        }
+        else if (str_L.length > 0) {
+          L = Number.parseFloat(str_L);
         }
 
       } 
@@ -1638,7 +1827,7 @@
   </div>
 
   <div class="calc">
-    <p>C ripple Calculator</p>
+    <p>LPS Filter Capacitor Ripple Calculator</p>
 
     <form id="form-ripple">
 
@@ -1659,7 +1848,59 @@
 
   </div>
 
+  <div class="calc">
+    <p>Headphone Power Calculator</p>
 
+    <form id="form-headphone">
+
+      <label for="form-headphone-sensitivity-dbmw">Sensitivity: dB/mW</label>
+      <input type="text" id="form-headphone-sensitivity-dbmw">
+
+      <label for="form-headphone-sensitivity-dbv">Sensitivity: dB/V</label>
+      <input type="text" id="form-headphone-sensitivity-dbv">
+
+      <label for="form-headphone-R">Impedance:</label>
+      <input type="text" id="form-headphone-R">
+
+      <label for="form-headphone-loudness">Loudness, dB:</label>
+      <input type="text" id="form-headphone-loudness">
+
+      <label for="form-headphone-P">Power:</label>
+      <input type="text" id="form-headphone-P">
+
+      <label for="form-headphone-V">Voltage:</label>
+      <input type="text" id="form-headphone-V">
+
+      <label for="form-headphone-I">Current:</label>
+      <input type="text" id="form-headphone-I">
+
+      <div></div><button type="button" class="button" id="submit_headphone" onClick="headphone_calc()">Submit</button>
+    </form>
+
+  </div>
+
+  <div class="calc">
+    <p>Sound Gain Factor: dB/Power/Loudness</p>
+
+    <form id="form-sound">
+
+      <label for="form-sound-db">dB:</label>
+      <input type="text" id="form-sound-db">
+
+      <label for="form-sound-V">Voltage gain:</label>
+      <input type="text" id="form-sound-V">
+
+      <label for="form-sound-P">Power gain:</label>
+      <input type="text" id="form-sound-P">
+
+      <label for="form-sound-L">Loudness gain:</label>
+      <input type="text" id="form-sound-L">
+
+      <div></div><button type="button" class="button" id="submit_sound" onClick="sound_calc()">Submit</button>
+    </form>
+
+  </div>
+ 
   <script>
     init();
   </script>
