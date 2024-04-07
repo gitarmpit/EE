@@ -241,12 +241,15 @@
 
     function float_to_string(val, precision) {
       console.log(val);
-      if (val > 0.0000001 && val < 1000000) {
+      if (val == 0) {
+        return "0";
+      }
+      else if (val > 0.0000001 && val < 1000000) {
         if (val > 0.001) {
           return strip_zeroes(val.toFixed(precision));
         }
         else {
-          return strip_zeroes(val.toFixed(precision));
+          return strip_zeroes(val.toFixed(6));
         }
       }      
       else {
@@ -300,7 +303,7 @@
       }
 
       L *= k;
-      if (isNaN(L)) {
+      if (isNaN(L) || !isFinite(L)) {
         throw "error parsing L: " + str_L;
       }
 
@@ -310,15 +313,15 @@
     function L_to_str(L) {
       let units = "H";
 
-      if (!isFinite(L) || isNaN(L)) {
+      if (L == 0 || !isFinite(L) || isNaN(L)) {
         throw "error parsing L: " + L;
       }
 
-      if (L <= 1e-9) {
+      else if (L <= 1e-9 || L > 1e6) {
         return L.toExponential(precision) + "H";
       }
 
-      if (L < 1e-6 - 1e-13) {
+      else if (L < 1e-6 - 1e-13) {
         L *= 1e9;
         units = "nH";
       }
@@ -362,7 +365,7 @@
 
       C *= k;
 
-      if (isNaN(C)) {
+      if (isNaN(C) || !isFinite(C)) {
         throw "error parsing C: " + str_C;
       }
 
@@ -372,15 +375,14 @@
     function C_to_str(C) {
       let units = "F";
 
-      if (!isFinite(C) || isNaN(C)) {
+      if (C == 0 || !isFinite(C) || isNaN(C)) {
         throw "error parsing C: " + C;
       }
 
-      if (C <= 1e-12) {
+      else if (C <= 1e-12 && C > 10e6) {
         return C.toExponential(precision) + "F";
       }
-
-      if (C < 1e-9 - 1e-16) {
+      else if (C < 1e-9 - 1e-16) {
         C *= 1e12;
         units = "pF";
       }
@@ -433,7 +435,7 @@
 
       f *= k;
 
-      if (isNaN(f)) {
+      if (isNaN(f) || !isFinite(f)) {
         throw "error parsing f: " + str_freq;
       }
 
@@ -444,11 +446,11 @@
     function freq_to_str(freq) {
       let units = "Hz";
 
-      if (!isFinite(freq) || isNaN(freq)) {
+      if (freq == 0 || !isFinite(freq) || isNaN(freq)) {
         throw "error parsing I: " + freq;
       }
 
-      if (freq >= 1e15) {
+      else if (freq < 1e-3 || freq >= 1e15) {
         return freq.toExponential(precision) + "Hz";
       }
 
@@ -468,7 +470,7 @@
         freq /= 1e3;
         units = "Khz";
       }
-      return strip_zeroes(freq.toFixed(precision)) + units;
+      return float_to_string (freq, precision) + units;
     }
 
     // R
@@ -507,7 +509,7 @@
 
       R *= k;
 
-      if (isNaN(R)) {
+      if (isNaN(R) || !isFinite(R)) {
         throw "error parsing R: " + str_R;
       }
 
@@ -517,15 +519,14 @@
     function R_to_str(R) {
       let units = "";
 
-      if (!isFinite(R) || isNaN(R)) {
+      if (R == 0 || !isFinite(R) || isNaN(R)) {
         throw "error parsing R: " + R;
       }
 
-      if (R >= 1e12 || R < 1e-9) {
-        return R.toExponential(precision);
+      else if (R >= 1e12 || R < 1e-9) {
+        return R.toExponential(precision) + "";
       }
-
-      if (R < 1e-6 - 1e-13) {
+      else if (R < 1e-6 - 1e-13) {
         R *= 1e9;
         units = "n";
       }
@@ -549,7 +550,7 @@
         units = "G";
       }
 
-      return strip_zeroes(R.toFixed(precision)) + units;
+      return float_to_string (R, precision) + units;
     }
 
     // Time
@@ -578,7 +579,7 @@
       }
 
       t *= k;
-      if (isNaN(t)) {
+      if (isNaN(t) || !isFinite(t)) {
         throw "error parsing t: " + str_t;
       }
 
@@ -588,15 +589,14 @@
     function t_to_str(t) {
       let units = "s";
 
-      if (!isFinite(t) || isNaN(t)) {
+      if (t == 0 || !isFinite(t) || isNaN(t)) {
         throw "error parsing t: " + t;
       }
-     
-      if (t < 1e-12) {
+
+      else if (t < 1e-12) {
         return t.toExponential(precision) + "s";
       }
-
-      if (t < 1e-9) {
+      else if (t < 1e-9) {
         t *= 1e12;
         units = "ps";
       }
@@ -613,7 +613,7 @@
         units = "ms";
       }
 
-      return strip_zeroes(t.toFixed(precision)) + units;
+      return float_to_string (t, precision) + units;
     }
 
     // V
@@ -650,7 +650,7 @@
 
       V *= k;
 
-      if (isNaN(V)) {
+      if (isNaN(V) || !isFinite(V)) {
         throw "error parsing V: " + str_V;
       }
 
@@ -660,15 +660,15 @@
     function V_to_str(V) {
       let units = "V";
 
-      if (!isFinite(V) || isNaN(V)) {
+      if (V == 0 || !isFinite(V) || isNaN(V)) {
         throw "error parsing V: " + V;
       }
 
-      if (V < 1e-12 || V >= 1e9) {
+      else if (V < 1e-12 || V >= 1e9) {
         return V.toExponential(precision) + "V";
       }
 
-      if (V < 1e-9 - 1e-16) {
+      else if (V < 1e-9 - 1e-16) {
         V *= 1e12;
         units = "pV";
       }
@@ -696,7 +696,7 @@
         units = "MV";
       }
 
-      return strip_zeroes(V.toFixed(precision)) + units;
+      return float_to_string (V, precision) + units;
     }
 
     // I
@@ -732,7 +732,7 @@
       }
 
       I *= k;
-      if (isNaN(I)) {
+      if (isNaN(I) || !isFinite(I)) {
         throw "error parsing I: " + str_I;
       }
 
@@ -742,15 +742,15 @@
     function I_to_str(I) {
       let units = "A";
 
-      if (!isFinite(I) || isNaN(I)) {
+      if (I == 0 || !isFinite(I) || isNaN(I)) {
         throw "error parsing I: " + I;
       }
 
-      if (I < 1e-15 || I >= 1e9) {
+      else if (I < 1e-15 || I >= 1e9) {
         return I.toExponential(precision) + "A";
       }
 
-      if (I < 1e-12) {
+      else if (I < 1e-12) {
         I *= 1e15;
         units = "fA";
       }
@@ -781,7 +781,8 @@
         I /= 1e6;
         units = "MA";
       }
-      return strip_zeroes(I.toFixed(precision)) + units;
+
+      return float_to_string (I, precision) + units;
     }
 
     // P
@@ -818,7 +819,7 @@
 
       P *= k;
 
-      if (isNaN(P)) {
+      if (isNaN(P) || !isFinite(P)) {
         throw "error parsing P: " + str_P;
       }
 
@@ -829,15 +830,15 @@
     function P_to_str(P) {
       let units = "W";
 
-      if (!isFinite(P) || isNaN(P)) {
+      if (P == 0 || !isFinite(P) || isNaN(P)) {
         throw "error parsing P: " + P;
       }
 
-      if (P < 1e-12 || P >= 1e9) {
+      else if (P < 1e-12 || P >= 1e9) {
         return P.toExponential(precision) + "W";
       }
 
-      if (P < 1e-9 - 1e-16) {
+      else if (P < 1e-9 - 1e-16) {
         P *= 1e12;
         units = "pW";
       }
@@ -865,7 +866,7 @@
         units = "MW";
       }
 
-      return strip_zeroes(P.toFixed(precision)) + units;
+      return float_to_string (P, precision) + units;
     }
 
     // Length
@@ -910,7 +911,7 @@
 
       len *= k;
 
-      if (isNaN(len)) {
+      if (isNaN(len) || !isFinite(len)) {
         throw "error parsing length: " + str_len;
       }
 
@@ -921,15 +922,15 @@
     function len_to_str(len) {
       let units = "m";
 
-      if (!isFinite(len) || isNaN(len)) {
+      if (len == 0 || !isFinite(len) || isNaN(len)) {
         throw "error parsing len: " + len;
       }
 
-      if (len < 1e-9) {
+      else if (len < 1e-9 || len > 1e9) {
         return len.toExponential(precision) + "m";
       }
 
-      if (len < 1e-6) {
+      else if (len < 1e-6) {
         len *= 1e9;
         units = "nm";
       }
@@ -953,7 +954,7 @@
         len /= 1e3;
       }
 
-      return strip_zeroes(len.toFixed(precision)) + units;
+      return float_to_string (len, precision) + units;
     }
 
 
@@ -1134,9 +1135,7 @@
           else if (C != 0 && R != 0) {
             freq = 1 / (2 * Math.PI * R * C);
             str_freq = freq_to_str(freq);
-            if (freq >= 1) {
-              document.getElementById('form-Xc-freq').value = str_freq;
-            }
+            document.getElementById('form-Xc-freq').value = str_freq;
           }
           else {
             C = 1 / (2 * Math.PI * freq * R);
