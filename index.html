@@ -34,7 +34,7 @@
 
   <script>
 
-    let precision = 3;
+    let precision = 6;
     let tc_default_Zo = 50;
     let Vc = 3 * Math.pow(10, 8);
 
@@ -317,7 +317,7 @@
         throw "error parsing L: " + L;
       }
 
-      else if (L <= 1e-9 || L > 1e6) {
+      else if (L < (1e-9 - 1e-16) || L > 1e6) {
         return L.toExponential(precision) + "H";
       }
 
@@ -637,6 +637,9 @@
       else if (val[1].toLowerCase() == "p" || val[1].toLowerCase() == "pv") {
         k = 1e-12;
       }
+      else if (val[1].toLowerCase() == "f" || val[1].toLowerCase() == "fv") {
+        k = 1e-15;
+      }
       else if (val[1].toLowerCase() == "k" || val[1].toLowerCase() == "kv") {
         k = 1e3;
       }
@@ -664,10 +667,14 @@
         throw "error parsing V: " + V;
       }
 
-      else if (V < 1e-12 || V >= 1e9) {
+      else if (V < 1e-15 || V >= 1e9) {
         return V.toExponential(precision) + "V";
       }
 
+      else if (V < 1e-12) {
+        V *= 1e15;
+        units = "fV";
+      }
       else if (V < 1e-9 - 1e-16) {
         V *= 1e12;
         units = "pV";
@@ -1085,9 +1092,7 @@
           else if (L != 0 && R != 0) {
             freq = R / (2 * Math.PI * L);
             str_freq = freq_to_str(freq);
-            if (freq >= 1) {
-              document.getElementById('form-Xl-freq').value = str_freq;
-            }
+            document.getElementById('form-Xl-freq').value = str_freq;
           }
           else {
             L = R / (2 * Math.PI * freq);
