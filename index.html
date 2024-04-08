@@ -37,11 +37,34 @@
     let precision = 6;
     let tc_default_Zo = 50;
     let Vc = 3 * Math.pow(10, 8);
+    let GThr = 0;
+    let MThr = 0;
+    let kThr = 0;
+    let baseThr = 0;
+    let mThr = 0;
+    let uThr = 0;
+    let nThr = 0;
+    let pThr = 0;
+    let fThr = 0;
 
     function initKeyHandler(e) {
     }
 
+    function set_threshold(m) {
+      return m * (1 - Math.pow(10, -(precision+1)));
+    }
+
     function init() {
+
+      GThr = set_threshold(1e12);
+      MThr = set_threshold(1e9);
+      kThr = set_threshold(1e6);
+      baseThr = set_threshold(1e3);
+      mThr = set_threshold(1);
+      uThr = set_threshold(1e-3);
+      nThr = set_threshold(1e-6);
+      pThr = set_threshold(1e-9);
+      fThr = set_threshold(1e-12);
 
       let e = document.getElementById('form-ohm');
       e.onkeydown = function (e) {
@@ -240,7 +263,6 @@
     }
 
     function float_to_string(val, precision) {
-      console.log(val);
       if (val == 0) {
         return "0";
       }
@@ -317,19 +339,19 @@
         throw "error parsing L: " + L;
       }
 
-      else if (L < (1e-9 - 1e-16) || L > 1e6) {
+      else if (L < pThr || L > baseThr) {
         return L.toExponential(precision) + "H";
       }
 
-      else if (L < 1e-6 - 1e-13) {
+      else if (L < nThr) {
         L *= 1e9;
         units = "nH";
       }
-      else if (L < 1e-3 - 1e-10) {
+      else if (L < uThr) {
         L *= 1e6;
         units = "uH";
       }
-      else if (L < 1 - 1e-7) {
+      else if (L < mThr) {
         L *= 1e3;
         units = "mH";
       }
@@ -379,14 +401,14 @@
         throw "error parsing C: " + C;
       }
 
-      else if (C <= 1e-12 && C > 10e6) {
+      else if (C < fThr ||  C > baseThr) {
         return C.toExponential(precision) + "F";
       }
-      else if (C < 1e-9 - 1e-16) {
+      else if (C < pThr) {
         C *= 1e12;
         units = "pF";
       }
-      else if (C < 1e-6 - 1e-13) {
+      else if (C < nThr) {
         C *= 1e9;
         units = "nF";
       }
@@ -395,12 +417,12 @@
         C *= 1e6;
         units = "uF";
       }
-      else if (C < 1 - 1e - 7) {
+      else if (C < 1 - 1e-7) {
         C *= 1e3;
         units = "mF";
       }
       */
-      else if (C < 1) {
+      else if (C < mThr) {
         C *= 1e6;
         units = "uF";
       }
@@ -447,29 +469,32 @@
       let units = "Hz";
 
       if (freq == 0 || !isFinite(freq) || isNaN(freq)) {
-        throw "error parsing I: " + freq;
+        throw "error parsing freq: " + freq;
       }
 
-      else if (freq < 1e-3 || freq >= 1e15) {
+      else if (freq < uThr || freq > 1e15) {
         return freq.toExponential(precision) + "Hz";
       }
-
-      if (freq >= 1e12) {
-        freq /= 1e12;
-        units = "THz";
+      else if (freq < baseThr) {
+        units = "Hz";
       }
-      else if (freq >= 1e9) {
-        freq /= 1e9;
-        units = "GHz";
+      else if (freq < kThr) {
+        freq /= 1e3;
+        units = "kHz";
       }
-      else if (freq >= 1e6) {
+      else if (freq < MThr) {
         freq /= 1e6;
         units = "MHz";
       }
-      else if (freq >= 1e3) {
-        freq /= 1e3;
-        units = "Khz";
+      else if (freq < GThr) {
+        freq /= 1e9;
+        units = "GHz";
       }
+      else {
+        freq /= 1e12;
+        units = "THz";
+      }
+
       return float_to_string (freq, precision) + units;
     }
 
@@ -523,25 +548,25 @@
         throw "error parsing R: " + R;
       }
 
-      else if (R >= 1e12 || R < 1e-9) {
+      else if (R > GThr || R < pThr) {
         return R.toExponential(precision) + "";
       }
-      else if (R < 1e-6 - 1e-13) {
+      else if (R < nThr) {
         R *= 1e9;
         units = "n";
       }
-      else if (R < 1e-3 - 1e-10) {
+      else if (R < uThr) {
         R *= 1e6;
         units = "u";
       }
-      else if (R < 1e3 - 1e-4) {
+      else if (R < baseThr) {
         units = "";
       }
-      else if (R < 1e6 - 1e-1) {
+      else if (R < kThr) {
         R /= 1e3;
         units = "k";
       }
-      else if (R < 1e9 - 100) {
+      else if (R < MThr) {
         R /= 1e6;
         units = "M";
       }
@@ -593,22 +618,22 @@
         throw "error parsing t: " + t;
       }
 
-      else if (t < 1e-12) {
+      else if (t < fThr || t > kThr) {
         return t.toExponential(precision) + "s";
       }
-      else if (t < 1e-9) {
+      else if (t < pThr) {
         t *= 1e12;
         units = "ps";
       }
-      else if (t < 1e-6) {
+      else if (t < nThr) {
         t *= 1e9;
         units = "ns";
       }
-      else if (t < 1e-3) {
+      else if (t < uThr) {
         t *= 1e6;
         units = "us";
       }
-      else if (t < 1) {
+      else if (t < mThr) {
         t *= 1e3;
         units = "ms";
       }
@@ -667,31 +692,31 @@
         throw "error parsing V: " + V;
       }
 
-      else if (V < 1e-15 || V >= 1e9) {
+      else if (V < 1e-15 || V > MThr) {
         return V.toExponential(precision) + "V";
       }
 
-      else if (V < 1e-12) {
+      else if (V < fThr) {
         V *= 1e15;
         units = "fV";
       }
-      else if (V < 1e-9 - 1e-16) {
+      else if (V < pThr) {
         V *= 1e12;
         units = "pV";
       }
-      else if (V < 1e-6 - 1e-13) {
+      else if (V < nThr) {
         V *= 1e9;
         units = "nV";
       }
-      else if (V < 1e-3 - 1e-10) {
+      else if (V < uThr) {
         V *= 1e6;
         units = "uV";
       }
-      else if (V < 1 - 1e-7) {
+      else if (V < mThr) {
         V *= 1e3;
         units = "mV";
       }
-      else if (V < 1e3 - 1e-4) {
+      else if (V < baseThr) {
         units = "V";
       }
       else if (V < 1e6) {
@@ -753,34 +778,34 @@
         throw "error parsing I: " + I;
       }
 
-      else if (I < 1e-15 || I >= 1e9) {
+      else if (I < 1e-15 || I > MThr) {
         return I.toExponential(precision) + "A";
       }
 
-      else if (I < 1e-12) {
+      else if (I < fThr) {
         I *= 1e15;
         units = "fA";
       }
-      else if (I < 1e-9 - 1e-16) {
+      else if (I < pThr) {
         I *= 1e12;
         units = "pA";
       }
-      else if (I < 1e-6 - 1e-13) {
+      else if (I < nThr) {
         I *= 1e9;
         units = "nA";
       }
-      else if (I < 1e-3 - 1e-10) {
+      else if (I < uThr) {
         I *= 1e6;
         units = "uA";
       }
-      else if (I < 1 - 1e-7) {
+      else if (I < mThr) {
         I *= 1e3;
         units = "mA";
       }
-      else if (I < 1e3 - 1e-4) {
+      else if (I < baseThr) {
         units = "A";
       }
-      else if (I < 1e6) {
+      else if (I < kThr) {
         I /= 1e3;
         units = "kA";
       }
@@ -841,30 +866,30 @@
         throw "error parsing P: " + P;
       }
 
-      else if (P < 1e-12 || P >= 1e9) {
+      else if (P < fThr || P > MThr) {
         return P.toExponential(precision) + "W";
       }
 
-      else if (P < 1e-9 - 1e-16) {
+      else if (P < pThr) {
         P *= 1e12;
         units = "pW";
       }
-      else if (P < 1e-6 - 1e-13) {
+      else if (P < nThr) {
         P *= 1e9;
         units = "nW";
       }
-      else if (P < 1e-3 - 1e-10) {
+      else if (P < uThr) {
         P *= 1e6;
         units = "uW";
       }
-      else if (P < 1 - 1e-7) {
+      else if (P < mThr) {
         P *= 1e3;
         units = "mW";
       }
-      else if (P < 1e3 - 1e-4) {
+      else if (P < baseThr) {
         units = "W";
       }
-      else if (P < 1e6) {
+      else if (P < kThr) {
         P /= 1e3;
         units = "kW";
       }
