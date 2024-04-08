@@ -51,7 +51,7 @@
     }
 
     function set_threshold(m) {
-      return m * (1 - Math.pow(10, -(precision+1)));
+      return m * (1 - Math.pow(10, -(precision + 1)));
     }
 
     function init() {
@@ -238,7 +238,7 @@
       alert(err);
     }
 
-    function parse_float (str, negativeAllowed) {
+    function parse_float(str, negativeAllowed) {
       if ((negativeAllowed == null || negativeAllowed === false) && str.charAt(0) == '-') {
         throw "Error parsing " + str;
       }
@@ -247,10 +247,10 @@
       if (res == null || res.length != 1) {
         throw "Error parsing " + str;
       }
-      return Number.parseFloat (res[0]);
+      return Number.parseFloat(res[0]);
     }
 
-    function parse_int (str) {
+    function parse_int(str) {
       if (str.charAt(0) == '-') {
         throw "Error parsing " + str;
       }
@@ -259,7 +259,7 @@
       if (res == null || res.length != 1) {
         throw "Error parsing " + str;
       }
-      return Number.parseInt (res[0]);
+      return Number.parseInt(res[0]);
     }
 
     function float_to_string(val, precision) {
@@ -273,7 +273,7 @@
         else {
           return strip_zeroes(val.toFixed(6));
         }
-      }      
+      }
       else {
         return val.toExponential(3);
       }
@@ -294,7 +294,7 @@
     }
 
     function strip_zeroes(s) {
-      if (!s.includes ("e")) {
+      if (!s.includes("e")) {
         return s.replace(/\.*0+$/, '');
       }
       else {
@@ -356,7 +356,7 @@
         units = "mH";
       }
 
-      return float_to_string (L, precision) + units;
+      return float_to_string(L, precision) + units;
     }
 
     // C
@@ -401,7 +401,7 @@
         throw "error parsing C: " + C;
       }
 
-      else if (C < fThr ||  C > baseThr) {
+      else if (C < fThr || C > baseThr) {
         return C.toExponential(precision) + "F";
       }
       else if (C < pThr) {
@@ -427,7 +427,7 @@
         units = "uF";
       }
 
-      return float_to_string (C, precision) + units;
+      return float_to_string(C, precision) + units;
     }
 
     // Freq
@@ -495,7 +495,7 @@
         units = "THz";
       }
 
-      return float_to_string (freq, precision) + units;
+      return float_to_string(freq, precision) + units;
     }
 
     // R
@@ -575,7 +575,7 @@
         units = "G";
       }
 
-      return float_to_string (R, precision) + units;
+      return float_to_string(R, precision) + units;
     }
 
     // Time
@@ -638,7 +638,7 @@
         units = "ms";
       }
 
-      return float_to_string (t, precision) + units;
+      return float_to_string(t, precision) + units;
     }
 
     // V
@@ -728,7 +728,7 @@
         units = "MV";
       }
 
-      return float_to_string (V, precision) + units;
+      return float_to_string(V, precision) + units;
     }
 
     // I
@@ -814,7 +814,7 @@
         units = "MA";
       }
 
-      return float_to_string (I, precision) + units;
+      return float_to_string(I, precision) + units;
     }
 
     // P
@@ -898,7 +898,7 @@
         units = "MW";
       }
 
-      return float_to_string (P, precision) + units;
+      return float_to_string(P, precision) + units;
     }
 
     // Length
@@ -986,7 +986,7 @@
         len /= 1e3;
       }
 
-      return float_to_string (len, precision) + units;
+      return float_to_string(len, precision) + units;
     }
 
 
@@ -1920,7 +1920,7 @@
       document.getElementById('form-tl-t').value = str_t;
 
       VF = 100 / (Vc * t0);
-      document.getElementById('form-tl-VF').value = strip_zeroes(VF.toFixed(3));
+      document.getElementById('form-tl-VF').value = float_to_string (VF, 3);
     }
 
     function tl_calc(target) {
@@ -1952,7 +1952,7 @@
           t = str_to_t(str_t);
         }
         if (str_VF.length > 0) {
-          VF = Number.parseFloat(str_VF);
+          VF = parse_float(str_VF);
         }
 
         if (str_len.length > 0) {
@@ -1976,6 +1976,22 @@
         if (target == "form-tl-VF") {
           C = 0;
           L = 0;
+          t = 0;
+        }
+        else if (target == "form-tl-C") {
+          L = 0;
+          t = 0;
+          VF = 0;
+        }
+        else if (target == "form-tl-L") {
+          C = 0;
+          t = 0;
+          VF = 0;
+        }
+        else if (target == "form-tl-t") {
+          C = 0;
+          L = 0;
+          VF = 0;
         }
 
         if (C != 0) {
@@ -2004,6 +2020,7 @@
         else if (VF > 0) {
           if (VF > 100) {
             VF = 100;
+            document.getElementById('form-tl-VF').value = "100";
           }
           let t0 = 100 / (VF * Vc);
           t = t0 * len;
@@ -2017,11 +2034,24 @@
           document.getElementById('form-tl-L').value = str_L;
         }
         else if (t > 0) {
-          if (t < 1/Vc) {
-            t = 1/Vc;
-            str_t = t_to_str (t);
-            document.getElementById('form-tl-t').value = str_t;
+          let t0 = t / len;
+          if (t0 < 1 / Vc) {
+            t0 = 1 / Vc;
+            t = t0 * len;
           }
+
+          str_t = t_to_str(t);
+          document.getElementById('form-tl-t').value = str_t;
+          VF = 100 / (Vc * t0);
+          document.getElementById('form-tl-VF').value = float_to_string (VF, 3);
+
+          C = t0 / Zo;
+          L = t0 * Zo;
+          str_C = C_to_str(C);
+          str_L = L_to_str(L);
+          document.getElementById('form-tl-C').value = str_C;
+          document.getElementById('form-tl-L').value = str_L;
+
         }
       }
       catch (err) {
@@ -2054,7 +2084,7 @@
     <p>L Reactance Calculator</center>
     <form id="form-Xl">
       <label for="form-Xl-L">L:</label>
-      <input type="text" id="form-Xl-L" name="L"  maxlength="12">
+      <input type="text" id="form-Xl-L" name="L" maxlength="12">
       <label for="form-Xl-freq">Freq:</label>
       <input type="text" id="form-Xl-freq" name="f" maxlength="12">
       <label for="form-Xl-Xl">X<sub>L</sub>:</label>
@@ -2069,9 +2099,9 @@
       <label for="form-Xc-C">C:</label>
       <input type="text" id="form-Xc-C" name="C" maxlength="12">
       <label for="form-Xc-freq">Freq:</label>
-      <input type="text" id="form-Xc-freq" name="freq_C"  maxlength="12">
+      <input type="text" id="form-Xc-freq" name="freq_C" maxlength="12">
       <label for="form-Xc-Xc">X<sub>C</sub>:</label>
-      <input type="text" id="form-Xc-Xc" name="Xc"  maxlength="12">
+      <input type="text" id="form-Xc-Xc" name="Xc" maxlength="12">
       <div></div><button type="button" class="button" id="submit_Xc" onClick="calc_Xc()">Submit</button>
     </form>
   </div>
@@ -2208,10 +2238,10 @@
     <form id="form-sound">
 
       <label for="form-sound-db">dB:</label>
-      <input type="text"  id="form-sound-db" maxlength="12">
+      <input type="text" id="form-sound-db" maxlength="12">
 
       <label for="form-sound-P">Power gain:</label>
-      <input type="text" maxlength = "10" id="form-sound-P">
+      <input type="text" maxlength="10" id="form-sound-P">
 
       <label for="form-sound-V">Voltage gain:</label>
       <input type="text" id="form-sound-V" maxlength="12">
