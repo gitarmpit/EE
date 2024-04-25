@@ -392,11 +392,9 @@ function float_to_string(val, prec) {
   else if (Math.abs(val) > 0.0000001 && val < Math.abs(1000000)) {
     if (Math.abs(val) > 0.001) {
       return strip_zeroes(val.toFixed(prec));
-      //return (val.toFixed(precision));
     }
     else {
       return strip_zeroes(val.toFixed(6));
-      //return (val.toFixed(6));
     }
   }
   else {
@@ -420,7 +418,6 @@ function parse_value(str) {
 
 function strip_zeroes(s) {
   if (!s.includes("e")) {
-    //return s.replace(/\.[1-9]0+$/, '');
     return s.replace(/(-?\d*\.\d*?)0+$/, '$1').replace(/\.$/, '');
   }
   else {
@@ -2000,7 +1997,7 @@ function headphone_calc() {
       str_L_db = float_to_string (L_db, 3);
       document.getElementById('form-headphone-loudness').value = str_L_db;
     }
-    else if (P != 0 && dbmw == 0 && dbv == 0) {
+    else if (P != 0 && dbmw == 0 && dbv == 0 && L_db != 0) {
       dbmw = L_db - 10 * Math.log10(P * 1000);
       str_Sdbmw = float_to_string (dbmw, 3);
       document.getElementById('form-headphone-sensitivity-dbmw').value = float_to_string (dbmw, 3);
@@ -2045,10 +2042,6 @@ function sound_calc(target) {
     }
     if (str_L.length > 0) {
       L = parse_float(str_L);
-      //if (L > 1024) {
-      //  L = 1024;
-      //  document.getElementById('form-sound-L').value = strip_zeroes(L.toFixed(1));
-      //}
     }
 
     if (target == "form-sound-L-db" && str_db.length > 0) {
@@ -2174,27 +2167,6 @@ function tl_calc(target) {
     let Cmin = 1 / (Vc * Zo);
     let Lmin = Zo / Vc;
 
-    if (target == "form-tl-VF" && VF != 0) {
-      C = 0;
-      L = 0;
-      t = 0;
-    }
-    else if (target == "form-tl-C" && C != 0) {
-      L = 0;
-      t = 0;
-      VF = 0;
-    }
-    else if (target == "form-tl-L" && L != 0) {
-      C = 0;
-      t = 0;
-      VF = 0;
-    }
-    else if (target == "form-tl-t" && t != 0) {
-      C = 0;
-      L = 0;
-      VF = 0;
-    }
-
     if (C != 0) {
       if (C < Cmin) {
         C = Cmin;
@@ -2204,8 +2176,17 @@ function tl_calc(target) {
       let L = Zo * Zo * C;
       let str_L = L_to_str(L);
       document.getElementById('form-tl-L').value = str_L;
-
-      tl_calc_t_VF(C, L, len);
+      if (t == 0) {
+        tl_calc_t_VF(C, L, len);
+      }
+      else {
+        let t0 = Math.sqrt(L * C);
+        len = t / t0;
+        str_len = len_to_str(len);        
+        document.getElementById('form-tl-len').value = str_len;
+        VF = 100 / (Vc * t0);
+        document.getElementById('form-tl-VF').value = float_to_string(VF, 3);
+      }
     }
     else if (L != 0) {
       if (L < Lmin) {
@@ -2216,7 +2197,17 @@ function tl_calc(target) {
       C = L / Zo / Zo;
       str_C = C_to_str(C);
       document.getElementById('form-tl-C').value = str_C;
-      tl_calc_t_VF(C, L, len);
+      if (t == 0) {
+        tl_calc_t_VF(C, L, len);
+      }
+      else {
+        let t0 = Math.sqrt(L * C);
+        len = t / t0;
+        str_len = len_to_str(len);        
+        document.getElementById('form-tl-len').value = str_len;
+        VF = 100 / (Vc * t0);
+        document.getElementById('form-tl-VF').value = float_to_string(VF, 3);
+      }
     }
     else if (VF > 0) {
       if (VF > 100) {
@@ -2224,9 +2215,17 @@ function tl_calc(target) {
         document.getElementById('form-tl-VF').value = "100";
       }
       let t0 = 100 / (VF * Vc);
-      t = t0 * len;
-      str_t = t_to_str(t);
-      document.getElementById('form-tl-t').value = str_t;
+      if (t == 0) {
+        t = t0 * len;
+        str_t = t_to_str(t);
+        document.getElementById('form-tl-t').value = str_t;
+      }
+      else {
+        len = t / t0;
+        str_len = len_to_str(len);        
+        document.getElementById('form-tl-len').value = str_len;
+      }
+
       C = t0 / Zo;
       L = t0 * Zo;
       str_C = C_to_str(C);
