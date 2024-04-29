@@ -14,9 +14,34 @@ let fThr = 0;
 let currentFormId = null;
 let deviceHeight = 0;
 
-function init() {
-  deviceHeight = window.innerHeight;
+function setLgHeight2() {
+  if (isNarrowScreen() && currentFormId == null) {
+    let lg = document.getElementById('lg');
+    const h = window.innerHeight - lg.offsetTop - 50;
+    lg.style.height = h + "px";
 
+  }
+
+}
+function setLgHeight() {
+
+  let lg = document.getElementById('lg');
+  const h = window.innerHeight - lg.offsetTop - 20;
+  lg.style.height = h + "px";
+
+  document.getElementById('list-container').style.height = window.innerHeight - 20 + "px";
+  document.getElementById('right-container').style.height = window.innerHeight - 20 + "px";
+
+}
+
+function init() {
+  currentFormId = null;
+  setLgHeight();
+  window.addEventListener('resize', () => {
+    setLgHeight();
+  });
+
+  deviceHeight = window.innerHeight;
   GThr = set_threshold(1e12);
   MThr = set_threshold(1e9);
   kThr = set_threshold(1e6);
@@ -26,6 +51,16 @@ function init() {
   nThr = set_threshold(1e-6);
   pThr = set_threshold(1e-9);
   fThr = set_threshold(1e-12);
+
+  window.addEventListener('orientationchange', () => {
+    //alert ("h: " + window.innerHeight + ", w: " + window.innerWidth);
+    if (window.innerWidth < 500) {
+      window.document.body.style.display = 'none';
+    }
+    else {
+      window.document.body.style.display = '';
+    }
+  });
 
   let e = document.getElementById('form-ohm');
   e.onkeydown = function (e) {
@@ -155,7 +190,18 @@ function init() {
     }
   }
 
-  if (isMobileDevice()) {
+  // form-vdiv
+  e = document.getElementById('form-vdiv');
+  e.onkeydown = function (e) {
+    if (e.keyCode == 13) {
+      vdiv_calc();
+    }
+    else if (e.keyCode == 27) {
+      vdiv_clear();
+    }
+  }
+
+  if (isNarrowScreen()) {
     var label = document.getElementById('label-tl-C');
     label.textContent = 'C per u.l.:';
     label = document.getElementById('label-tl-L');
@@ -175,7 +221,7 @@ function init() {
       }
 
     });
-    
+
   }
 
 }
@@ -270,14 +316,22 @@ function tl_clear() {
   document.getElementById('form-tl-VF').value = "";
 }
 
+function vdiv_clear() {
+  document.getElementById('form-vdiv-vin').value = "";
+  document.getElementById('form-vdiv-vout').value = "";
+  document.getElementById('form-vdiv-R1').value = "";
+  document.getElementById('form-vdiv-R2').value = "";
+}
+
+
 function showForm(formId, title) {
   currentFormId = formId;
 
-  if (isMobileDevice()) {
+  if (isNarrowScreen()) {
     document.getElementById("list-container").style.display = 'none';
     document.getElementById("form-container").style.display = 'block';
     document.getElementById("right-container").style.display = 'block';
-    if (title == null){
+    if (title == null) {
       title = event.target.textContent;
     }
     document.getElementById("form-title-p").textContent = title;
@@ -286,6 +340,15 @@ function showForm(formId, title) {
   }
   else {
     document.getElementById("form-title-h3").textContent = event.target.textContent;
+    let margin = window.innerWidth - 1100;
+    if (margin < 5) {
+      margin = 5;
+    }
+    if (margin > 200) {
+      margin = 200;
+    }
+    document.getElementById(formId).style.marginLeft = margin + "px";
+    document.getElementById(formId).style.marginRight = margin + "px";
   }
 
   var forms = document.querySelectorAll('form');
@@ -305,6 +368,7 @@ function goBack() {
   document.getElementById("form-container").style.display = 'none';
   document.getElementById("right-container").style.display = 'none';
   document.body.style.overflow = '';
+  currentFormId = null;
 }
 
 function getMaxWidth() {
@@ -312,7 +376,7 @@ function getMaxWidth() {
   return rootStyles.getPropertyValue('--max-width');
 }
 
-function isMobileDevice() {
+function isNarrowScreen() {
   // Check if the media query matches the features of a mobile device
   //const maxWidth = getMaxWidth();
   //const mediaQuery = window.matchMedia(`(max-width: ${maxWidth}px)`); 
@@ -325,7 +389,7 @@ function isMobileDevice() {
 function reportError(err) {
   //alert(err);
   console.log(currentFormId);
-  if (isMobileDevice()) {
+  if (isNarrowScreen()) {
 
     var fc = document.getElementById("form-container");
     if (fc != null) {
@@ -1676,7 +1740,7 @@ function dbm_calc(target) {
       ++nparam;
     }
     if (str_dbm.length > 0) {
-      dbm = parse_float (str_dbm, true);
+      dbm = parse_float(str_dbm, true);
       ++nparam;
     }
     if (str_Vrms.length > 0) {
@@ -1847,7 +1911,7 @@ function ripple_calc() {
         document.getElementById('form-ripple-C').value = str_C;
       }
       else if (f == 0) {
-        f = I  / (C * 4 * V);
+        f = I / (C * 4 * V);
         str_f = freq_to_str(f);
         document.getElementById('form-ripple-f').value = str_f;
       }
@@ -1914,7 +1978,7 @@ function headphone_calc() {
 
     if (dbmw != 0 && R != 0) {
       dbv = dbmw - 10 * Math.log10(R / 1000);
-      document.getElementById('form-headphone-sensitivity-dbv').value = float_to_string (dbv, 3);
+      document.getElementById('form-headphone-sensitivity-dbv').value = float_to_string(dbv, 3);
     }
     else if (dbv != 0 && R != 0) {
       dbmw = dbv + 10 * Math.log10(R / 1000);
@@ -1994,17 +2058,17 @@ function headphone_calc() {
 
     if (L_db == 0 && P != 0 && dbmw != 0) {
       L_db = dbmw + 10 * Math.log10(P * 1000);
-      str_L_db = float_to_string (L_db, 3);
+      str_L_db = float_to_string(L_db, 3);
       document.getElementById('form-headphone-loudness').value = str_L_db;
     }
     else if (P != 0 && dbmw == 0 && dbv == 0 && L_db != 0) {
       dbmw = L_db - 10 * Math.log10(P * 1000);
-      str_Sdbmw = float_to_string (dbmw, 3);
-      document.getElementById('form-headphone-sensitivity-dbmw').value = float_to_string (dbmw, 3);
+      str_Sdbmw = float_to_string(dbmw, 3);
+      document.getElementById('form-headphone-sensitivity-dbmw').value = float_to_string(dbmw, 3);
       dbv = dbmw - 10 * Math.log10(R / 1000);
-      document.getElementById('form-headphone-sensitivity-dbv').value = float_to_string (dbv, 3);
+      document.getElementById('form-headphone-sensitivity-dbv').value = float_to_string(dbv, 3);
     }
-    
+
   }
   catch (err) {
     reportError(err);
@@ -2071,7 +2135,7 @@ function sound_calc(target) {
     }
     else if (V > 0) {
       db = 20 * Math.log10(V);
-      str_db = float_to_string (db, precision);
+      str_db = float_to_string(db, precision);
       document.getElementById('form-sound-db').value = str_db;
       P = Math.pow(10, db / 10);
       document.getElementById('form-sound-P').value = float_to_string(P, precision);
@@ -2080,7 +2144,7 @@ function sound_calc(target) {
     }
     else if (P > 0) {
       db = 10 * Math.log10(P);
-      str_db = float_to_string (db, precision);
+      str_db = float_to_string(db, precision);
       document.getElementById('form-sound-db').value = str_db;
       V = Math.pow(10, db / 20);
       document.getElementById('form-sound-V').value = float_to_string(V, precision);
@@ -2089,7 +2153,7 @@ function sound_calc(target) {
     }
     else if (L > 0) {
       db = 10 * Math.log2(L);
-      str_db = float_to_string (db, precision);
+      str_db = float_to_string(db, precision);
       document.getElementById('form-sound-db').value = str_db;
       V = Math.pow(10, db / 20);
       document.getElementById('form-sound-V').value = float_to_string(V, precision);
@@ -2182,7 +2246,7 @@ function tl_calc(target) {
       else {
         let t0 = Math.sqrt(L * C);
         len = t / t0;
-        str_len = len_to_str(len);        
+        str_len = len_to_str(len);
         document.getElementById('form-tl-len').value = str_len;
         VF = 100 / (Vc * t0);
         document.getElementById('form-tl-VF').value = float_to_string(VF, 3);
@@ -2203,7 +2267,7 @@ function tl_calc(target) {
       else {
         let t0 = Math.sqrt(L * C);
         len = t / t0;
-        str_len = len_to_str(len);        
+        str_len = len_to_str(len);
         document.getElementById('form-tl-len').value = str_len;
         VF = 100 / (Vc * t0);
         document.getElementById('form-tl-VF').value = float_to_string(VF, 3);
@@ -2222,7 +2286,7 @@ function tl_calc(target) {
       }
       else {
         len = t / t0;
-        str_len = len_to_str(len);        
+        str_len = len_to_str(len);
         document.getElementById('form-tl-len').value = str_len;
       }
 
@@ -2260,5 +2324,9 @@ function tl_calc(target) {
   catch (err) {
     reportError(err);
   }
+}
+
+function vdiv_calc() {
+
 }
 
