@@ -9,7 +9,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">  
   <link href="pc.css" rel="stylesheet">  
   <link href="mobile.css" rel="stylesheet">  
-  <script type="text/javascript" src="ee-calc.min.js"></script>
+  <script type="text/javascript" src="ee-calc.js"></script>
 </head>
 
 <body>
@@ -20,6 +20,10 @@
       <ul id="lg" class="list-group list-group-flush">
         <li class="list-group-item list-group-item-action" onclick="showForm('form-ohm')">Ohm's Law</li>
         <li class="list-group-item list-group-item-action" onclick="showForm('form-vdiv', 'Voltage Divider')">Voltage Divider Calculator</li>
+        <li class="list-group-item list-group-item-action" onclick="showForm('form-battery', 'Battery Life')">Battery Life Calculator</li>
+        <li class="list-group-item list-group-item-action" onclick="showForm('form-wres', 'Wire Resistance')">Wire Resistance Calculator</li>
+        <li class="list-group-item list-group-item-action" onclick="showForm('form-vdrop', 'Voltage Drop')">Voltage Drop Calculator</li>
+        <li class="list-group-item list-group-item-action" onclick="showForm('form-555', '555 Calculator')">555 Calculator</li>
         <li class="list-group-item list-group-item-action" onclick="showForm('form-Xl', 'L Reactance')">L Reactance
           Calculator</li>
         <li class="list-group-item list-group-item-action" onclick="showForm('form-Xc', 'C Reactance')">C Reactance
@@ -262,11 +266,120 @@
           <label for="form-vdiv-R2">R<sub>2</sub>:</label>
           <input type="text" class="form-control" id="form-vdiv-R2" maxlength="12">
 
+          <label for="form-vdiv-I">I:</label>
+          <input type="text" class="form-control" id="form-vdiv-I" readonly>
+
+          <label for="form-vdiv-P-R1">P<sub>R1</sub>:</label>
+          <input type="text" class="form-control" id="form-vdiv-P-R1" readonly>
+
+          <label for="form-vdiv-P-R2">P<sub>R2</sub>:</label>
+          <input type="text" class="form-control" id="form-vdiv-P-R2" readonly>
+
           <div><button type="button" class="btn btn-secondary" onClick="vdiv_clear()">Clear</button></div>
           <button type="button" class="btn btn-primary" id="submit_vdiv"  onClick="vdiv_calc(null)">Submit</button>
 
         </form>
-       
+
+        <form class="form-grid" id="form-battery">
+
+          <label for="form-battery-mAh">Capacity, mAh:</label>
+          <input type="number" class="form-control" id="form-battery-mAh" step="1" maxlength="6">
+
+          <label for="form-battery-I">Current:</label>
+          <input type="text" class="form-control" id="form-battery-I" maxlength="12">
+
+          <label for="form-battery-y">Years:</label>
+          <input type="number" class="form-control" id="form-battery-y" step="1" maxlength="4">
+
+          <label for="form-battery-m">Months:</label>
+          <input type="number" class="form-control" id="form-battery-m" step="1" maxlength="2">
+
+          <label for="form-battery-d">Days:</label>
+          <input type="number" class="form-control" id="form-battery-d" step="1" maxlength="3">
+
+          <label for="form-battery-h">Hours:</label>
+          <input type="number" class="form-control" id="form-battery-h" step="1" maxlength="2">
+
+          <div><button type="button" class="btn btn-secondary" onClick="battery_clear()">Clear</button></div>
+          <button type="button" class="btn btn-primary" id="submit_battery"  onClick="battery_calc()">Submit</button>
+
+        </form>
+        
+        <form class="form-grid" id="form-wres">
+
+          <label for="form-wres-AWG">AWG:</label>
+          <input type="number" class="form-control" id="form-wres-AWG" step="1" maxlength="6">
+
+          <label for="form-wres-d">Diameter:</label>
+          <input type="text" class="form-control" id="form-wres-d" maxlength="12">
+
+          <label for="form-wres-len">Length:</label>
+          <input type="text" class="form-control" id="form-wres-len" maxlength="12">
+
+          <label for="form-wres-t">Temperature, C:</label>
+          <input type="number" class="form-control" id="form-wres-t" maxlength="12" value="25">
+
+          <label for="form-wres-R">Resistance:</label>
+          <input type="text" class="form-control" id="form-wres-R" maxlength="12">
+
+          <div><button type="button" class="btn btn-secondary" onClick="wres_clear()">Clear</button></div>
+          <button type="button" class="btn btn-primary" id="submit_wres"  onClick="wres_calc()">Submit</button>
+
+        </form>
+
+        <form class="form-grid" id="form-vdrop">
+
+          <label for="form-vdrop-AWG">AWG:</label>
+          <input type="number" class="form-control" id="form-vdrop-AWG" step="1" maxlength="6">
+
+          <label for="form-vdrop-d">Diameter:</label>
+          <input type="text" class="form-control" id="form-vdrop-d" maxlength="12">
+
+          <label for="form-vdrop-len">Length:</label>
+          <input type="text" class="form-control" id="form-vdrop-len" maxlength="12">
+
+          <label for="form-vdrop-t">Temperature, C:</label>
+          <input type="number" class="form-control" id="form-vdrop-t" maxlength="12" value="25">
+
+          <label for="form-vdrop-I">I:</label>
+          <input type="text" class="form-control" id="form-vdrop-I" maxlength="12">
+
+          <label for="form-vdrop-V">V<sub>drop</sub>:</label>
+          <input type="text" class="form-control" id="form-vdrop-V" maxlength="12">
+
+          <div><button type="button" class="btn btn-secondary" onClick="vdrop_clear()">Clear</button></div>
+          <button type="button" class="btn btn-primary" id="submit_vdrop"  onClick="vdrop_calc()">Submit</button>
+
+        </form>
+
+        <form class="form-grid" id="form-555">
+
+          <label for="form-555-R1">R<sub>1</sub>:</label>
+          <input type="text" class="form-control" id="form-555-R1"  maxlength="6">
+
+          <label for="form-555-R2">R<sub>2</sub>:</label>
+          <input type="text" class="form-control" id="form-555-R2"  maxlength="6">
+
+          <label for="form-555-C">C:</label>
+          <input type="text" class="form-control" id="form-555-C"  maxlength="6">
+
+          <label for="form-555-dc">Duty Cycle, %:</label>
+          <input type="number" class="form-control" id="form-555-dc"  maxlength="6">
+
+          <label for="form-555-th">t<sub>high</sub>:</label>
+          <input type="string" class="form-control" id="form-555-th"  maxlength="6">
+
+          <label for="form-555-tl">t<sub>low</sub>:</label>
+          <input type="string" class="form-control" id="form-555-tl"  maxlength="6">
+
+          <label for="form-555-f">Frequency:</label>
+          <input type="string" class="form-control" id="form-555-f"  maxlength="6">
+
+          <div><button type="button" class="btn btn-secondary" onClick="clear_555()">Clear</button></div>
+          <button type="button" class="btn btn-primary" id="submit_555"  onClick="calc_555()">Submit</button>
+
+        </form>
+
       </div>
 
 
