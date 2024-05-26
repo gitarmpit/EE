@@ -119,6 +119,23 @@ svg {
   column-gap: 20px;
 }
 
+.form-grid-item-full {
+  grid-column: span 2; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-grid-item-full div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.radio {
+  padding: 10px;
+}
+
 #form-fw, #form-tf {
   row-gap: 40px;
 }

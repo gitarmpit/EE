@@ -18,6 +18,11 @@ const ro_cu_25C = 1.712e-8
 let max_AWG = 40;
 let max_wire_d = 0.1;
 let min_DC = 50.05;
+const E6 = [1.0, 1.5, 2.2, 3.3, 4.7, 6.8];
+const E12 = [1, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2];
+const E24 = [1, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2, 2.2, 2.4, 2.7, 3, 3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1];
+let E_array = [];
+let l2 = Math.log(2);
 
 function setLgHeight2() {
   if (isNarrowScreen() && currentFormId == null) {
@@ -39,12 +44,57 @@ function setLgHeight() {
 
 }
 
+function setRadioValue(value) {
+  const radios = document.querySelectorAll('input[name="e"]');
+  radios.forEach(radio => {
+      if (radio.id === value) {
+          radio.checked = true;
+      }
+  });
+}
+
+/*
+function getRadioValue() {
+  const selectedRadio = document.querySelector('input[name="options"]:checked');
+  if (selectedRadio) {
+      return selectedRadio.id;
+  } else {
+      return "";
+  }
+}
+*/
+
+function getEValue(value, array) {
+
+  if (array == null) {
+    array = E_array;
+  }
+
+  const magnitude = Math.pow(10, Math.floor(Math.log10(value)));
+  const normalizedValue = value / magnitude;
+
+  let closest = array[0];
+  let minDifference = Math.abs(normalizedValue - array[0]);
+
+  for (let i = 1; i < array.length; i++) {
+    const difference = Math.abs(normalizedValue - array[i]);
+    if (difference < minDifference) {
+      closest = array[i];
+      minDifference = difference;
+    }
+  }
+
+  return closest * magnitude;
+}
+
+
 function init() {
   currentFormId = null;
   setLgHeight();
   window.addEventListener('resize', () => {
     setLgHeight();
   });
+
 
   deviceHeight = window.innerHeight;
   GThr = set_threshold(1e12);
@@ -57,6 +107,8 @@ function init() {
   pThr = set_threshold(1e-9);
   fThr = set_threshold(1e-12);
 
+  setRadioValue("e-exact");
+
   window.addEventListener('orientationchange', () => {
     //alert ("h: " + window.innerHeight + ", w: " + window.innerWidth);
     if (window.innerWidth < 500) {
@@ -65,6 +117,24 @@ function init() {
     else {
       window.document.body.style.display = '';
     }
+  });
+
+  document.querySelectorAll('input[name="e"]').forEach(radio => {
+    radio.addEventListener('change', function (e) {
+      const value = e.target.id;
+      if (value == "e-e6") {
+        E_array = E6;
+      }
+      else if (value == "e-e12") {
+        E_array = E12;
+      }
+      else if (value == "e-e24") {
+        E_array = E24;
+      }
+      else {
+        E_array = [];
+      }
+    });
   });
 
   let e = document.getElementById('form-ohm');
@@ -316,6 +386,10 @@ function init() {
 
 }
 
+function round_off_c(C) {
+  return Math.pow(10, Math.ceil(Math.log10(C) - 0));
+}
+
 function process_555_f() {
   let s_f = document.getElementById('form-555-f').value;
   let s_dc = document.getElementById('form-555-dc').value;
@@ -336,7 +410,7 @@ function process_555_f() {
       document.getElementById('form-555-f').value = s_f;
 
       if (s_dc.length == 0) {
-        dc = min_DC;
+        dc = 50.5;
         document.getElementById('form-555-dc').value = dc;
       }
       else {
@@ -365,7 +439,7 @@ function process_555_f() {
   }
   */
 
-  
+
   if (s_f.length == 0 && s_th.length > 0 && s_tl.length > 0) {
     let th = str_to_t(s_th);
     let tl = str_to_t(s_tl);
@@ -373,7 +447,7 @@ function process_555_f() {
     let s_f = freq_to_str(f);
     document.getElementById('form-555-f').value = s_f;
   }
-  
+
 }
 
 function process_555_dc() {
@@ -407,9 +481,7 @@ function process_555_dc() {
       let th = str_to_t(s_th);
       let tl = str_to_t(s_tl);
       let t100 = th + tl;
-      console.log("t1oo:" + t100);
       th = t100 * dc / 100;
-      console.log("th:" + th);
       tl = t100 - th;
       s_th = t_to_str(th);
       s_tl = t_to_str(tl);
@@ -432,7 +504,6 @@ function process_555_dc() {
       let th = str_to_t(s_th);
       let tl = str_to_t(s_tl);
       let dc = th / (th + tl) * 100;
-      console.log(dc);
       document.getElementById('form-555-dc').value = float_to_string(dc);
     }
 
@@ -465,17 +536,16 @@ function process_555_th() {
     if (th > 0 && s_tl.length > 0) {
 
       let tl = str_to_t(s_tl);
-      if (th > tl) {
-        let f = 1 / (th + tl);
-        let s_f = freq_to_str(f);
-        document.getElementById('form-555-f').value = s_f;
+      if (tl >= th) {
+        th = tl * 1.0205;
+        document.getElementById('form-555-th').value = t_to_str(th);
+      }
+      let f = 1 / (th + tl);
+      let s_f = freq_to_str(f);
+      document.getElementById('form-555-f').value = s_f;
 
-        let dc = th / (th + tl) * 100;
-        document.getElementById('form-555-dc').value = float_to_string(dc);
-      }
-      else {
-        s_th = '';
-      }
+      let dc = th / (th + tl) * 100;
+      document.getElementById('form-555-dc').value = float_to_string(dc);
     }
     else if (th > 0 && s_dc > 0) {
       let dc = string_to_float(s_dc);
@@ -521,17 +591,16 @@ function process_555_tl() {
     if (s_th.length > 0 && tl > 0) {
 
       let th = str_to_t(s_th);
-      if (th > tl) {
-        let f = 1 / (th + tl);
-        let s_f = freq_to_str(f);
-        document.getElementById('form-555-f').value = s_f;
+      if (th <= tl) {
+        tl = th * 0.98;
+        document.getElementById('form-555-tl').value = t_to_str(tl);
+      }
+      let f = 1 / (th + tl);
+      let s_f = freq_to_str(f);
+      document.getElementById('form-555-f').value = s_f;
 
-        let dc = th / (th + tl) * 100;
-        document.getElementById('form-555-dc').value = float_to_string(dc);
-      }
-      else {
-        s_tl = '';
-      }
+      let dc = th / (th + tl) * 100;
+      document.getElementById('form-555-dc').value = float_to_string(dc);
     }
     else if (tl > 0 && s_dc > 0) {
       let dc = string_to_float(s_dc);
@@ -2876,6 +2945,10 @@ function vdiv_calc() {
       ++cnt;
     }
 
+    if (Vin != 0 && Vout != 0 && Vout >= Vin) {
+      throw "invalid input";
+    }
+
     if (cnt == 2 && R1 != 0 && R2 != 0) {
       cnt = 3
       Vin = 1
@@ -2883,26 +2956,26 @@ function vdiv_calc() {
     }
     else if (cnt == 2 && Vin != 0 && Vout != 0) {
       cnt = 3
-      R1 = 1000
-      document.getElementById('form-vdiv-R1').value = R_to_str(R1);
+      R2 = 1000
+      document.getElementById('form-vdiv-R2').value = R_to_str(R2);
     }
 
     if (cnt == 3) {
 
       if (Vin != 0 && R1 != 0 && R2 != 0) {
-        Vout = Vin * R1 / (R1 + R2);
+        Vout = Vin * R2 / (R1 + R2);
         document.getElementById('form-vdiv-vout').value = V_to_str(Vout);
       }
       else if (Vout != 0 && R1 != 0 && R2 != 0) {
-        Vin = Vout / R1 * (R1 + R2);
+        Vin = Vout * (R1 + R2) / R2;
         document.getElementById('form-vdiv-vin').value = V_to_str(Vin);
       }
       else if (Vin != 0 && R1 != 0 && Vout != 0) {
-        R2 = R1 * (Vin / Vout - 1);
+        R2 = R1 / (Vin / Vout - 1);
         document.getElementById('form-vdiv-R2').value = R_to_str(R2);
       }
       else if (Vin != 0 && R2 != 0 && Vout != 0) {
-        R1 = R2 / (Vin / Vout - 1);
+        R1 = R2 * (Vin / Vout - 1);
         document.getElementById('form-vdiv-R1').value = R_to_str(R1);
       }
       else {
@@ -3248,6 +3321,70 @@ function vdrop_calc() {
   }
 }
 
+
+function roundC(C) {
+  let unit = 1e-12;
+  if (C >= 1e-6) {
+    unit = 1e-6;
+  } else if (C >= 1e-9) {
+    unit = 1e-9;
+  }
+
+  let val = C / unit;
+  let oom = Math.pow(10, Math.floor(Math.log10(val)));
+  let converted = Math.round(val / oom) * oom;
+  return converted * unit;
+}
+
+function th_tl_to_dc(th, tl) {
+  return th / (th + tl) * 100;
+}
+
+function calc_555_timing(R1, R2, C) {
+  let th = l2 * (R1 + R2) * C;
+  let tl = l2 * R2 * C;
+  let dc = th_tl_to_dc(th, tl);
+  let f = 1 / (th + tl);
+  let str_f = freq_to_str(f);
+  let str_th = t_to_str(th);
+  let str_tl = t_to_str(tl);
+  let str_dc = float_to_string(dc);
+  document.getElementById('form-555-th').value = str_th;
+  document.getElementById('form-555-tl').value = str_tl;
+  document.getElementById('form-555-f').value = str_f;
+  document.getElementById('form-555-dc').value = str_dc;
+}
+
+function calc_555_set_R1(R1) {
+  const str_R1 = R_to_str(R1);
+  document.getElementById('form-555-R1').value = str_R1;
+}
+
+function calc_555_set_R2(R2) {
+  const str_R2 = R_to_str(R2);
+  document.getElementById('form-555-R2').value = str_R2;
+}
+
+function calc_555_set_C(C) {
+  const str_C = C_to_str(C);
+  document.getElementById('form-555-C').value = str_C;
+}
+
+function calc_555_R1_R2_from_th_tl_C(th, tl, C) {
+  let r2c = tl / l2;
+  let r1c = th / l2 - r2c;
+  if (C == 0) {
+    C = (1e-5 / f) / 1.5;
+    if (C < 1e-10) {
+      C = 1e-10;
+    }
+  }
+
+  R1 = r1c / C;
+  R2 = r2c / C;
+  return [R1, R2, C];
+}
+
 function calc_555(target) {
 
   let R1 = 0;
@@ -3258,9 +3395,13 @@ function calc_555(target) {
   let th = 0;
   let tl = 0;
   let t_cnt = 0;
-  let l2 = Math.log(2);
+  let timing_set = false;
 
   try {
+
+    let str_R1 = document.getElementById('form-555-R1').value;
+    let str_R2 = document.getElementById('form-555-R2').value;
+    let str_C = document.getElementById('form-555-C').value;
 
     if (target == 'form-555-th') {
       process_555_th();
@@ -3275,9 +3416,6 @@ function calc_555(target) {
       process_555_f();
     }
 
-    let str_R1 = document.getElementById('form-555-R1').value;
-    let str_R2 = document.getElementById('form-555-R2').value;
-    let str_C = document.getElementById('form-555-C').value;
     let str_dc = document.getElementById('form-555-dc').value;
     let str_f = document.getElementById('form-555-f').value;
     let str_th = document.getElementById('form-555-th').value;
@@ -3319,78 +3457,81 @@ function calc_555(target) {
 
     if (str_f.length > 0) {
       f = str_to_freq(str_f);
-      if (f < 1) {
-        f = 1;
-        document.getElementById('form-555-f').value = 1;
-      }
       ++t_cnt;
     }
 
-    if (R1 != 0 && R2 != 0 && C != 0 && t_cnt == 0) {
-      th = l2 * (R1 + R2) * C;
-      tl = l2 * R2 * C;
-      f = 1 / (th + tl);
-      dc = th / (th + tl) * 100;
-      str_f = freq_to_str(f);
-      str_dc = float_to_string(dc);
-      str_th = t_to_str(th);
-      str_tl = t_to_str(tl);
-      document.getElementById('form-555-th').value = str_th;
-      document.getElementById('form-555-tl').value = str_tl;
-      document.getElementById('form-555-f').value = str_f;
-      document.getElementById('form-555-dc').value = str_dc;
+    if (t_cnt == 4) {
+      timing_set = true;
     }
-    else if (th != 0 & tl != 0 && R1 == 0 && R2 == 0) {
-      let r2c = tl / l2;
-      let r1c = th / l2 - r2c;
-      console.log("r2c: " + r2c);
-      console.log("r1c: " + r1c);
-      if (C == 0) {
-        C = 1e-5 / f;
-        if (C < 2e-10) {
-          C = 2e-10;
-        }
-        str_C = C_to_str(C); 
-        document.getElementById('form-555-C').value = str_C;
+
+    if ((target == 'form-555-R1' || target == 'form-555-R2' || target == 'form-555-C') && R1 != 0 && R2 != 0 && C != 0) {
+      timing_set = false;
+    }
+
+    if (R1 != 0 && R2 != 0 && C != 0 && !timing_set) {
+      calc_555_timing (R1, R2, C);
+    }
+    else if (timing_set && R1 == 0 && R2 == 0) {
+      
+      let [R1, R2, C] = calc_555_R1_R2_from_th_tl_C(th, tl, C);
+
+      if (E_array.length) {
+        console.log(E_array.length);
+        console.log ("old C:" + C_to_str (C));
+        console.log ("old R1:" + R_to_str (R1));
+        console.log ("old R2:" + R_to_str (R2));
+
+        R1 = getEValue (R1);
+        R2 = getEValue (R2);
+        C = r2c / R2;
+        console.log ("corrected old C:" + C_to_str (C));
+        C = getEValue (C);
+
+        console.log ("new C:" + C_to_str (C));
+        console.log ("new R1:" + R_to_str (R1));
+        console.log ("new R2:" + R_to_str (R2));
+
+        calc_555_timing (R1, R2, C);
       }
-      if (C != 0) {
-        R2 = r2c / C;
-        str_R2 = R_to_str(R2);
-        R1 = r1c / C;
-        str_R1 = R_to_str(R1);
-        document.getElementById('form-555-R1').value = str_R1;
-        document.getElementById('form-555-R2').value = str_R2;
+      else {
+        C = getEValue(C, E6);
       }
 
-    }
-    else if (th != 0 & tl != 0 && C != 0 && R1 != 0 && R2 == 0) {
+      calc_555_set_R1(R1);
+      calc_555_set_R2(R2);
+      calc_555_set_C(C);
 
-      console.log("R1:" + R1);
+    }
+    else if (timing_set && C != 0 && R1 != 0 && R2 == 0) {
+
       R2 = tl / l2 / C;
-      th = l2 * (R1 + R2) * C;
-      f = 1 / (th + tl);
-      dc = th / (th + tl) * 100;
-      str_f = freq_to_str(f);
-      str_dc = float_to_string (dc);
-      str_R2 = R_to_str(R2);
-      str_th = t_to_str(th);
-      document.getElementById('form-555-R2').value = str_R2;
-      document.getElementById('form-555-th').value = str_th;
-      document.getElementById('form-555-f').value = str_f;
-      document.getElementById('form-555-dc').value = str_dc;
+      if (E_array.length) {
+        R2 = getEValue(R2);
+        calc_555_set_R2(R2);
+      }
+
+      calc_555_timing(R1, R2, C);
+
     }
-    else if (th != 0 & tl != 0 && C != 0 && R1 == 0 && R2 != 0) {
-      let r2c = tl / l2;
-      let r1c = th / l2 - r2c;
-      R1 = r1c / C;
-      str_R1 = R_to_str(R1);
-      document.getElementById('form-555-R1').value = str_R1;
+    else if (timing_set && C != 0 && R1 == 0 && R2 != 0) {
+
+      tl = l2 * R2 * C;
+      R1 = th / l2 / C - R2;
+      if (E_array.length) {
+        R1 = getEValue(R1);
+        calc_555_set_R1(R1);
+      }
+
+      calc_555_timing(R1, R2, C);
     }
-    else if (th != 0 & tl != 0 && C == 0 && R1 != 0 && R2 != 0) {
+    else if (timing_set && C == 0 && R1 != 0 && R2 != 0) {
       let r2c = tl / l2;
       C = r2c / R2;
-      str_C = C_to_str(C);
-      document.getElementById('form-555-C').value = str_C;
+      if (E_array.length) {
+        C = getEValue(C);
+        calc_555_timing (R1, R2, C);
+      }
+      calc_555_set_C(C);
     }
     else {
       throw "invalid parameters";

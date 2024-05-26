@@ -6,24 +6,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EE Calculators</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">  
-  <link href="pc.css" rel="stylesheet">  
-  <link href="mobile.css" rel="stylesheet">  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="pc.css" rel="stylesheet">
+  <link href="mobile.css" rel="stylesheet">
   <script type="text/javascript" src="ee-calc.js"></script>
 </head>
 
 <body>
 
   <div class="main-container">
-    <div  id="list-container">
+    <div id="list-container">
       <h3 id="h3" class="text-center">EE calculators</h3>
       <ul id="lg" class="list-group list-group-flush">
         <li class="list-group-item list-group-item-action" onclick="showForm('form-ohm')">Ohm's Law</li>
-        <li class="list-group-item list-group-item-action" onclick="showForm('form-vdiv', 'Voltage Divider')">Voltage Divider Calculator</li>
-        <li class="list-group-item list-group-item-action" onclick="showForm('form-battery', 'Battery Life')">Battery Life Calculator</li>
-        <li class="list-group-item list-group-item-action" onclick="showForm('form-wres', 'Wire Resistance')">Wire Resistance Calculator</li>
-        <li class="list-group-item list-group-item-action" onclick="showForm('form-vdrop', 'Voltage Drop')">Voltage Drop Calculator</li>
-        <li class="list-group-item list-group-item-action" onclick="showForm('form-555', '555 Calculator')">555 Calculator</li>
+        <li class="list-group-item list-group-item-action" onclick="showForm('form-vdiv', 'Voltage Divider')">Voltage
+          Divider Calculator</li>
+        <li class="list-group-item list-group-item-action" onclick="showForm('form-battery', 'Battery Life')">Battery
+          Life Calculator</li>
+        <li class="list-group-item list-group-item-action" onclick="showForm('form-wres', 'Wire Resistance')">Wire
+          Resistance Calculator</li>
+        <li class="list-group-item list-group-item-action" onclick="showForm('form-vdrop', 'Voltage Drop')">Voltage Drop
+          Calculator</li>
+        <li class="list-group-item list-group-item-action" onclick="showForm('form-555', '555 Calculator')">555
+          Calculator</li>
         <li class="list-group-item list-group-item-action" onclick="showForm('form-Xl', 'L Reactance')">L Reactance
           Calculator</li>
         <li class="list-group-item list-group-item-action" onclick="showForm('form-Xc', 'C Reactance')">C Reactance
@@ -38,9 +43,10 @@
         <li class="list-group-item list-group-item-action" onclick="showForm('form-RLC', 'RLC Resonance')">RLC
           Resonance Calculator</li>
         <li class="list-group-item list-group-item-action" onclick="showForm('form-dbm')">dBm
-          Calculator  
+          Calculator
         </li>
-        <li class="list-group-item list-group-item-action" onclick="showForm('form-ripple', 'Filter Capacitor Ripple')">LPS
+        <li class="list-group-item list-group-item-action" onclick="showForm('form-ripple', 'Filter Capacitor Ripple')">
+          LPS
           Filter Capacitor Ripple Calculator</li>
         <li class="list-group-item list-group-item-action" onclick="showForm('form-headphone', 'Headphone Power')">
           Headphone Power Calculator</li>
@@ -58,8 +64,10 @@
     <div id="right-container">
 
       <div id="goback-header" onclick="goBack()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
-          <path stroke="#007bff" stroke-width="0.4" fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left"
+          viewBox="0 0 16 16">
+          <path stroke="#007bff" stroke-width="0.4" fill-rule="evenodd"
+            d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0" />
         </svg>
         <div id="goBackText">Back</div>
         <div id="form-title-p" class="text-center"></div>
@@ -117,20 +125,20 @@
         </form>
 
         <form class="form-grid" id="form-tf">
-            <label for="form-tf-t">Time:</label>
-            <input type="text" class="form-control" id="form-tf-t" maxlength="12">
-            <label for="form-tf-f">Freq:</label>
-            <input type="text" class="form-control" id="form-tf-f" maxlength="12">
-            <div><button type="button" class="btn btn-secondary" onClick="tf_clear()">Clear</button></div>
-            <button type="button" class="btn btn-primary" onClick="time_freq_conv()">Submit</button>
+          <label for="form-tf-t">Time:</label>
+          <input type="text" class="form-control" id="form-tf-t" maxlength="12">
+          <label for="form-tf-f">Freq:</label>
+          <input type="text" class="form-control" id="form-tf-f" maxlength="12">
+          <div><button type="button" class="btn btn-secondary" onClick="tf_clear()">Clear</button></div>
+          <button type="button" class="btn btn-primary" onClick="time_freq_conv()">Submit</button>
         </form>
 
         <form class="form-grid" id="form-fw">
-            <label for="form-fw-f">Freq:</label>
-            <input type="text" class="form-control" id="form-fw-f" maxlength="12">
-            <label for="form-fw-wl">λ:</label>
-            <input type="text" class="form-control" id="form-fw-wl" maxlength="12">
-            <div><button type="button" class="btn btn-secondary" onClick="fw_clear()">Clear</button></div>
+          <label for="form-fw-f">Freq:</label>
+          <input type="text" class="form-control" id="form-fw-f" maxlength="12">
+          <label for="form-fw-wl">λ:</label>
+          <input type="text" class="form-control" id="form-fw-wl" maxlength="12">
+          <div><button type="button" class="btn btn-secondary" onClick="fw_clear()">Clear</button></div>
           <button type="button" class="btn btn-primary" onClick="freq_wl_conv()">Submit</button>
         </form>
 
@@ -204,8 +212,7 @@
           <input type="text" class="form-control" id="form-headphone-I" maxlength="12">
 
           <div><button type="button" class="btn btn-secondary" onClick="headphone_clear()">Clear</button></div>
-          <button type="button" class="btn btn-primary" id="submit_headphone"
-            onClick="headphone_calc()">Submit</button>
+          <button type="button" class="btn btn-primary" id="submit_headphone" onClick="headphone_calc()">Submit</button>
         </form>
 
         <form class="form-grid" id="form-sound">
@@ -223,8 +230,7 @@
           <input type="number" class="form-control" id="form-sound-L" maxlength="12">
 
           <div><button type="button" class="btn btn-secondary" onClick="sound_clear()">Clear</button></div>
-          <button type="button" class="btn btn-primary" id="submit_sound"
-            onClick="sound_calc(null)">Submit</button>
+          <button type="button" class="btn btn-primary" id="submit_sound" onClick="sound_calc(null)">Submit</button>
         </form>
 
         <form class="form-grid" id="form-tl">
@@ -247,8 +253,7 @@
           <label for="form-tl-len">Length:</label>
           <input type="text" class="form-control" id="form-tl-len" maxlength="12">
           <div><button type="button" class="btn btn-secondary" onClick="tl_clear()">Clear</button></div>
-          <button type="button" class="btn btn-primary" id="submit_tl"
-            onClick="tl_calc(null)">Submit</button>
+          <button type="button" class="btn btn-primary" id="submit_tl" onClick="tl_calc(null)">Submit</button>
 
         </form>
 
@@ -276,7 +281,7 @@
           <input type="text" class="form-control" id="form-vdiv-P-R2" readonly>
 
           <div><button type="button" class="btn btn-secondary" onClick="vdiv_clear()">Clear</button></div>
-          <button type="button" class="btn btn-primary" id="submit_vdiv"  onClick="vdiv_calc(null)">Submit</button>
+          <button type="button" class="btn btn-primary" id="submit_vdiv" onClick="vdiv_calc(null)">Submit</button>
 
         </form>
 
@@ -301,10 +306,10 @@
           <input type="number" class="form-control" id="form-battery-h" step="1" maxlength="2">
 
           <div><button type="button" class="btn btn-secondary" onClick="battery_clear()">Clear</button></div>
-          <button type="button" class="btn btn-primary" id="submit_battery"  onClick="battery_calc()">Submit</button>
+          <button type="button" class="btn btn-primary" id="submit_battery" onClick="battery_calc()">Submit</button>
 
         </form>
-        
+
         <form class="form-grid" id="form-wres">
 
           <label for="form-wres-AWG">AWG:</label>
@@ -323,7 +328,7 @@
           <input type="text" class="form-control" id="form-wres-R" maxlength="12">
 
           <div><button type="button" class="btn btn-secondary" onClick="wres_clear()">Clear</button></div>
-          <button type="button" class="btn btn-primary" id="submit_wres"  onClick="wres_calc()">Submit</button>
+          <button type="button" class="btn btn-primary" id="submit_wres" onClick="wres_calc()">Submit</button>
 
         </form>
 
@@ -348,35 +353,54 @@
           <input type="text" class="form-control" id="form-vdrop-V" maxlength="12">
 
           <div><button type="button" class="btn btn-secondary" onClick="vdrop_clear()">Clear</button></div>
-          <button type="button" class="btn btn-primary" id="submit_vdrop"  onClick="vdrop_calc()">Submit</button>
+          <button type="button" class="btn btn-primary" id="submit_vdrop" onClick="vdrop_calc()">Submit</button>
 
         </form>
 
         <form class="form-grid" id="form-555">
 
           <label for="form-555-R1">R<sub>1</sub>:</label>
-          <input type="text" class="form-control" id="form-555-R1"  maxlength="6">
+          <input type="text" class="form-control" id="form-555-R1" maxlength="6">
 
           <label for="form-555-R2">R<sub>2</sub>:</label>
-          <input type="text" class="form-control" id="form-555-R2"  maxlength="6">
+          <input type="text" class="form-control" id="form-555-R2" maxlength="6">
 
           <label for="form-555-C">C:</label>
-          <input type="text" class="form-control" id="form-555-C"  maxlength="6">
+          <input type="text" class="form-control" id="form-555-C" maxlength="6">
 
           <label for="form-555-dc">Duty Cycle, %:</label>
-          <input type="number" class="form-control" id="form-555-dc"  maxlength="6">
+          <input type="number" class="form-control" id="form-555-dc" maxlength="6">
 
           <label for="form-555-th">t<sub>high</sub>:</label>
-          <input type="string" class="form-control" id="form-555-th"  maxlength="6">
+          <input type="string" class="form-control" id="form-555-th" maxlength="6">
 
           <label for="form-555-tl">t<sub>low</sub>:</label>
-          <input type="string" class="form-control" id="form-555-tl"  maxlength="6">
+          <input type="string" class="form-control" id="form-555-tl" maxlength="6">
 
           <label for="form-555-f">Frequency:</label>
-          <input type="string" class="form-control" id="form-555-f"  maxlength="6">
+          <input type="string" class="form-control" id="form-555-f" maxlength="6">
 
           <div><button type="button" class="btn btn-secondary" onClick="clear_555()">Clear</button></div>
-          <button type="button" class="btn btn-primary" id="submit_555"  onClick="calc_555()">Submit</button>
+          <button type="button" class="btn btn-primary" id="submit_555" onClick="calc_555()">Submit</button>
+
+          <div class="form-grid-item-full">
+            <div>
+              <input type="radio" id="e-exact" name="e" />
+              <label class="radio" for="e-exact">Exact</label>
+            </div>
+            <div>
+              <input type="radio" id="e-e6" name="e"/>
+              <label class="radio" for="e-e6">E6</label>
+            </div>
+            <div>
+              <input type="radio" id="e-e12" name="e"/>
+              <label class="radio" for="e-e12">E12</label>
+            </div>
+            <div>
+              <input type="radio" id="e-e24" name="e"/>
+              <label class="radio" for="e-e24">E24</label>
+            </div>
+          </div>
 
         </form>
 
