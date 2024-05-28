@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EE Calculators</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.min.css"> 
+  <script src="bundle.js"></script>
+</head>
+
+<body>
+
+  <div class="main-container">
+    <div id="list-container">
+      <h3 id="h3" class="text-center">EE calculators</h3>
+      <ul id="lg" class="list-group list-group-flush">
+{{{li}}}        
+      </ul>
+
+    </div>
+
+    <div id="right-container">
+
+      <div id="goback-header" onclick="goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left"
+          viewBox="0 0 16 16">
+          <path stroke="#007bff" stroke-width="0.4" fill-rule="evenodd"
+            d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0" />
+        </svg>
+        <div id="goBackText">Back</div>
+        <div id="form-title-p" class="text-center"></div>
+      </div>
+      <div id="form-container">
+
+        <h3 id="form-title-h3" class="text-center"></h3>
+       
+{{{forms}}}
+
+      </div>
+
+    </div>
+
+
+  </div>
+
+  <script>
+    init();
+  </script>
+
+</body>
+
+</html>
