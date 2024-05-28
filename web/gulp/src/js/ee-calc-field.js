@@ -1,5 +1,3 @@
-// ee-calc-field.js start
-
 class EE_Calc_Field {
 
   #elementId = '';
@@ -16,10 +14,6 @@ class EE_Calc_Field {
     return this.#getElementById().value === '';
   }
   
-  // Set a string value directly without any conversions
-  setStringValue(str) {
-    this.#getElementById().value = str;
-  }
 
   // Verbatim value from the field
   getStringValue() {
@@ -35,7 +29,10 @@ class EE_Calc_Field {
   // Convert a string representation to a numeric value
   // "1mA" => 0.001
   getValue() {
-    return this._toValue(this.#getElementById().value);
+    if (!this.empty()) {
+      return this._toValue(this.#getElementById().value);
+    }
+    return 0;
   }
 
   #getElementById() {
@@ -50,6 +47,15 @@ class EE_Calc_Field {
 
   _toValue(str) {
     return null;
+  }
+}
+
+class EE_Calc_Int extends EE_Calc_Field {
+  _toString(value) {
+    return value.toString();
+  }
+  _toValue(str) {
+    return string_to_int (str);
   }
 }
 
@@ -98,6 +104,50 @@ class EE_Calc_P extends EE_Calc_Field {
   }
 }
 
-// e-calc-field.js  end
+class EE_Calc_C extends EE_Calc_Field {
+  _toString(value) {
+    return C_to_str(value);
+  }
+  _toValue(str) {
+    return str_to_C (str);
+  }
+}
+
+class EE_Calc_L extends EE_Calc_Field {
+  _toString(value) {
+    return L_to_str(value);
+  }
+  _toValue(str) {
+    return str_to_L (str);
+  }
+}
+
+class EE_Calc_Freq extends EE_Calc_Field {
+  _toString(value) {
+    return freq_to_str(value);
+  }
+  _toValue(str) {
+    return str_to_freq (str);
+  }
+}
+
+class EE_Calc_Time extends EE_Calc_Field {
+  _toString(value) {
+    return t_to_str(value);
+  }
+  _toValue(str) {
+    return str_to_t (str);
+  }
+}
+
+class EE_Calc_Len extends EE_Calc_Field {
+  _toString(value) {
+    return len_to_str(value);
+  }
+  _toValue(str) {
+    return str_to_len (str);
+  }
+}
+
 
 

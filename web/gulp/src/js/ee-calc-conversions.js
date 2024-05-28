@@ -377,44 +377,6 @@ function R_to_str(R) {
   return float_to_string(R, precision) + units;
 }
 
-/*
-function R_to_str(R) {
-  let units = "";
- 
-  if (R == 0 || !isFinite(R) || isNaN(R)) {
-    throw "error parsing R: " + R;
-  }
- 
-  else if (R > GThr || R < pThr) {
-    return R.toExponential(precision) + "";
-  }
-  else if (R < nThr) {
-    R *= 1e9;
-    units = "n";
-  }
-  else if (R < uThr) {
-    R *= 1e6;
-    units = "u";
-  }
-  else if (R < baseThr) {
-    units = "";
-  }
-  else if (R < kThr) {
-    R /= 1e3;
-    units = "k";
-  }
-  else if (R < MThr) {
-    R /= 1e6;
-    units = "M";
-  }
-  else {
-    R /= 1e9;
-    units = "G";
-  }
- 
-  return float_to_string(R, precision) + units;
-}
-*/
 // Time
 function str_to_t(str_t) {
   let val = parse_value(str_t);

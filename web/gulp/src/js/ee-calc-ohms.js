@@ -24,7 +24,7 @@ class EE_Ohms_Law extends EE_Calc {
     this.P_field.clear();
   }
 
-  calc() {
+  calc(targetId) {
     try {
       let V = 0;
       let R = 0;
@@ -106,6 +106,3 @@ class EE_Ohms_Law extends EE_Calc {
 
 
 }
-
-// e-calc-ohms.js end
-

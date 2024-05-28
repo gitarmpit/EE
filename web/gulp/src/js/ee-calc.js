@@ -11,7 +11,7 @@ class EE_Calc {
     let e = document.getElementById(this.form_name);
     e.onkeydown = (e) => {
       if (e.keyCode == 13) {
-        this.calc();
+        this.calc(e.target.id);
       }
       else if (e.keyCode == 27) {
         this.clear();
@@ -19,15 +19,54 @@ class EE_Calc {
     }
 
   }
+  calc(targetId) {
+
+  }
   clear() {
   }
 }
 
-let ohmsLaw = null;
-
-let calc_array = [];
 let currentFormId = null;
 let deviceHeight = 0;
+
+let calc_array = [];
+
+let ohmsLaw = null;
+let vdiv = null;
+let Xl  = null;
+let Xc  = null;
+let RC  = null;
+let tf  = null;
+let fw  = null;
+let RLC = null;
+
+function init_calcs() {
+  // instantiate calcs
+  ohmsLaw = new EE_Ohms_Law();
+  calc_array.push (ohmsLaw);
+ 
+  vdiv = new EE_Vdiv();
+  calc_array.push (vdiv);
+ 
+  Xl = new EE_Xl();
+  calc_array.push(Xl);
+
+  Xc = new EE_Xc();
+  calc_array.push(Xc);
+
+  RC = new EE_RC_Cutoff_Freq();
+  calc_array.push(RC);
+
+  tf = new EE_tf();
+  calc_array.push(tf);
+
+  fw = new EE_fw();
+  calc_array.push(fw);
+
+  RLC = new EE_RLC();
+  calc_array.push(RLC);
+
+}
 
 function setLgHeight2() {
   if (isNarrowScreen() && currentFormId == null) {
@@ -86,9 +125,8 @@ function init() {
 
   init_conversions();
 
-  // instantiate calcs
-  ohmsLaw = new EE_Ohms_Law();
-  calc_array.push (ohmsLaw);
+  init_calcs();
+
   clear_all();
 }
 
