@@ -1,0 +1,27 @@
+        <form class="form-grid" id="form-vdiv">
+
+          <label for="form-vdiv-Vin">V<sub>in</sub>:</label>
+          <input type="text" class="form-control" id="form-vdiv-Vin" maxlength="12">
+
+          <label for="form-vdiv-Vout">V<sub>out</sub>:</label>
+          <input type="text" class="form-control" id="form-vdiv-Vout" maxlength="12">
+
+          <label for="form-vdiv-R1">R<sub>1</sub>:</label>
+          <input type="text" class="form-control" id="form-vdiv-R1" maxlength="12">
+
+          <label for="form-vdiv-R2">R<sub>2</sub>:</label>
+          <input type="text" class="form-control" id="form-vdiv-R2" maxlength="12">
+
+          <label for="form-vdiv-I">I:</label>
+          <input type="text" class="form-control" id="form-vdiv-I" readonly>
+
+          <label for="form-vdiv-P-R1">P<sub>R1</sub>:</label>
+          <input type="text" class="form-control" id="form-vdiv-P-R1" readonly>
+
+          <label for="form-vdiv-P-R2">P<sub>R2</sub>:</label>
+          <input type="text" class="form-control" id="form-vdiv-P-R2" readonly>
+
+          <div><button type="button" class="btn btn-secondary" onClick="vdiv.clear()">Clear</button></div>
+          <button type="button" class="btn btn-primary" id="submit_vdiv" onClick="vdiv.calc()">Submit</button>
+
+        </form>
