@@ -2,8 +2,13 @@ class EE_Calc_Field {
 
   #elementId = '';
 
-  constructor(elementId) {
+  _precision = null;
+
+  constructor(elementId, precision) {
     this.#elementId = elementId;
+    if (precision != null) {
+      this._precision = precision;
+    }
   }
 
   clear() {
@@ -18,6 +23,10 @@ class EE_Calc_Field {
   // Verbatim value from the field
   getStringValue() {
     return this.#getElementById().value;
+  }
+
+  setStringValue(str) {
+    this.#getElementById().value = str;
   }
 
   // Convert numeric value to string followed by units
@@ -60,11 +69,21 @@ class EE_Calc_Int extends EE_Calc_Field {
 }
 
 class EE_Calc_Float extends EE_Calc_Field {
+
+  #negativeAllowed;
+
+  constructor(elementId, precision, negativeAllowed) {
+    super (elementId, precision);
+    if (negativeAllowed == null) {
+      negativeAllowed = false;
+    }
+    this.#negativeAllowed = negativeAllowed;
+  }
   _toString(value) {
-    return float_to_string(value);
+    return float_to_string(value, this._precision);
   }
   _toValue(str) {
-    return string_to_float (str);
+    return string_to_float (str, this.#negativeAllowed);
   }
 }
 

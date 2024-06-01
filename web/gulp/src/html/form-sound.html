@@ -1,0 +1,18 @@
+        <form class="form-grid" id="form-sound">
+
+          <label for="form-sound-db">dB:</label>
+          <input type="number" class="form-control" id="form-sound-db" maxlength="12">
+
+          <label for="form-sound-P">Power gain:</label>
+          <input type="number" class="form-control" maxlength="10" id="form-sound-P">
+
+          <label for="form-sound-V">Voltage gain:</label>
+          <input type="number" class="form-control" id="form-sound-V" maxlength="12">
+
+          <label for="form-sound-L">Loudness gain:</label>
+          <input type="number" class="form-control" id="form-sound-L" maxlength="12">
+
+          <div><button type="button" class="btn btn-secondary" onClick="sound.clear()">Clear</button></div>
+          <button type="button" class="btn btn-primary" id="submit_sound" onClick="sound.calc()">Submit</button>
+        </form>
+

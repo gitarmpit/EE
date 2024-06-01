@@ -1,0 +1,25 @@
+        <form class="form-grid" id="form-battery">
+
+          <label for="form-battery-mAh">Capacity, mAh:</label>
+          <input type="number" class="form-control" id="form-battery-mAh" step="1" maxlength="6">
+
+          <label for="form-battery-I">Current:</label>
+          <input type="text" class="form-control" id="form-battery-I" maxlength="12">
+
+          <label for="form-battery-y">Years:</label>
+          <input type="number" class="form-control" id="form-battery-y" step="1" maxlength="4">
+
+          <label for="form-battery-m">Months:</label>
+          <input type="number" class="form-control" id="form-battery-m" step="1" maxlength="2">
+
+          <label for="form-battery-d">Days:</label>
+          <input type="number" class="form-control" id="form-battery-d" step="1" maxlength="3">
+
+          <label for="form-battery-h">Hours:</label>
+          <input type="number" class="form-control" id="form-battery-h" step="1" maxlength="2">
+
+          <div><button type="button" class="btn btn-secondary" onClick="bat.clear()">Clear</button></div>
+          <button type="button" class="btn btn-primary" id="submit_battery" onClick="bat.calc()">Submit</button>
+
+        </form>
+

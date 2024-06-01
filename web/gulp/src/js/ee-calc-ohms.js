@@ -1,6 +1,3 @@
-// e-calc-ohms.js start
-
-
 class EE_Ohms_Law extends EE_Calc {
 
   V_field = null;

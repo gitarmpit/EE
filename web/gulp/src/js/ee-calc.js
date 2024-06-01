@@ -39,6 +39,14 @@ let RC  = null;
 let tf  = null;
 let fw  = null;
 let RLC = null;
+let dbm = null;
+let ripple = null;
+let headphone = null;
+let sound = null;
+let tl = null;
+let bat = null;
+let wres = null;
+let vdrop = null;
 
 function init_calcs() {
   // instantiate calcs
@@ -65,6 +73,30 @@ function init_calcs() {
 
   RLC = new EE_RLC();
   calc_array.push(RLC);
+
+  dbm = new EE_dbm();
+  calc_array.push(dbm);
+
+  ripple = new EE_ripple();
+  calc_array.push(ripple);
+
+  headphone = new EE_Headphone();
+  calc_array.push(headphone);
+
+  sound = new EE_Sound();
+  calc_array.push(sound);
+
+  tl = new EE_tl();
+  calc_array.push(tl);
+
+  bat = new EE_Battery();
+  calc_array.push(bat);
+
+  wres = new EE_WireRes();
+  calc_array.push(wres);
+
+  vdrop = new EE_Vdrop();
+  calc_array.push(vdrop);
 
 }
 

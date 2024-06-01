@@ -1,0 +1,25 @@
+        <form class="form-grid" id="form-vdrop">
+
+          <label for="form-vdrop-AWG">AWG:</label>
+          <input type="number" class="form-control" id="form-vdrop-AWG" step="1" maxlength="6">
+
+          <label for="form-vdrop-d">Diameter:</label>
+          <input type="text" class="form-control" id="form-vdrop-d" maxlength="12">
+
+          <label for="form-vdrop-len">Length:</label>
+          <input type="text" class="form-control" id="form-vdrop-len" maxlength="12">
+
+          <label for="form-vdrop-t">Temperature, C:</label>
+          <input type="number" class="form-control" id="form-vdrop-t" maxlength="12" value="25">
+
+          <label for="form-vdrop-I">I:</label>
+          <input type="text" class="form-control" id="form-vdrop-I" maxlength="12">
+
+          <label for="form-vdrop-V">V<sub>drop</sub>:</label>
+          <input type="text" class="form-control" id="form-vdrop-V" maxlength="12">
+
+          <div><button type="button" class="btn btn-secondary" onClick="vdrop.clear()">Clear</button></div>
+          <button type="button" class="btn btn-primary" id="submit_vdrop" onClick="vdrop.calc()">Submit</button>
+
+        </form>
+

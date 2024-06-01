@@ -1,0 +1,27 @@
+        <form class="form-grid" id="form-headphone">
+
+          <label id="label-dbmw" for="form-headphone-sensitivity-dbmw">Sensitivity, dB/mW:</label>
+          <input type="number" class="form-control" id="form-headphone-sensitivity-dbmw" maxlength="12">
+
+          <label id="label-dbv" for="form-headphone-sensitivity-dbv">Sensitivity, dB/V:</label>
+          <input type="number" class="form-control" id="form-headphone-sensitivity-dbv" maxlength="12">
+
+          <label for="form-headphone-R">Ω:</label>
+          <input type="text" class="form-control" id="form-headphone-R" maxlength="12">
+
+          <label for="form-headphone-loudness">Loudness, dB:</label>
+          <input type="number" class="form-control" id="form-headphone-loudness" maxlength="12">
+
+          <label for="form-headphone-P">Power:</label>
+          <input type="text" class="form-control" id="form-headphone-P" maxlength="12">
+
+          <label for="form-headphone-V">Voltage:</label>
+          <input type="text" class="form-control" id="form-headphone-V" maxlength="12">
+
+          <label for="form-headphone-I">Current:</label>
+          <input type="text" class="form-control" id="form-headphone-I" maxlength="12">
+
+          <div><button type="button" class="btn btn-secondary" onClick="headphone.clear()">Clear</button></div>
+          <button type="button" class="btn btn-primary" id="submit_headphone" onClick="headphone.calc()">Submit</button>
+        </form>
+

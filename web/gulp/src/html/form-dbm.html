@@ -1,0 +1,22 @@
+        <form class="form-grid" id="form-dbm">
+
+          <label for="form-dbm-P">P<sub>W(50Ω)</sub>:</label>
+          <input class="form-control" type="text" id="form-dbm-P" maxlength="12">
+
+          <label for="form-dbm-dbm">P<sub>dBm(50Ω)</sub>:</label>
+          <input class="form-control" type="number" id="form-dbm-dbm" maxlength="12">
+
+          <label for="form-dbm-Vrms">V<sub>rms</sub>:</label>
+          <input class="form-control" type="text" id="form-dbm-Vrms" maxlength="12">
+
+          <label for="form-dbm-Vpk">V<sub>pk</sub>:</label>
+          <input class="form-control" type="text" id="form-dbm-Vpk" maxlength="12">
+
+          <label for="form-dbm-Vpp">V<sub>p-p</sub>:</label>
+          <input class="form-control" type="text" id="form-dbm-Vpp" maxlength="12">
+
+          <div><button type="button" class="btn btn-secondary" onClick="dbm.clear()">Clear</button></div>
+          <button type="button" class="btn btn-primary" onClick="dbm.calc()">Submit</button>
+
+        </form>
+

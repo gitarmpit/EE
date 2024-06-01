@@ -1,0 +1,46 @@
+        <form class="form-grid" id="form-555">
+
+          <label for="form-555-R1">R<sub>1</sub>:</label>
+          <input type="text" class="form-control" id="form-555-R1" maxlength="6">
+
+          <label for="form-555-R2">R<sub>2</sub>:</label>
+          <input type="text" class="form-control" id="form-555-R2" maxlength="6">
+
+          <label for="form-555-C">C:</label>
+          <input type="text" class="form-control" id="form-555-C" maxlength="6">
+
+          <label for="form-555-dc">Duty Cycle, %:</label>
+          <input type="number" class="form-control" id="form-555-dc" maxlength="6">
+
+          <label for="form-555-th">t<sub>high</sub>:</label>
+          <input type="string" class="form-control" id="form-555-th" maxlength="6">
+
+          <label for="form-555-tl">t<sub>low</sub>:</label>
+          <input type="string" class="form-control" id="form-555-tl" maxlength="6">
+
+          <label for="form-555-f">Frequency:</label>
+          <input type="string" class="form-control" id="form-555-f" maxlength="6">
+
+          <div><button type="button" class="btn btn-secondary" onClick="clear_555()">Clear</button></div>
+          <button type="button" class="btn btn-primary" id="submit_555" onClick="calc_555()">Submit</button>
+
+          <div class="form-grid-item-full">
+            <div>
+              <input type="radio" id="e-exact" name="e" />
+              <label class="radio" for="e-exact">Exact</label>
+            </div>
+            <div>
+              <input type="radio" id="e-e6" name="e"/>
+              <label class="radio" for="e-e6">E6</label>
+            </div>
+            <div>
+              <input type="radio" id="e-e12" name="e"/>
+              <label class="radio" for="e-e12">E12</label>
+            </div>
+            <div>
+              <input type="radio" id="e-e24" name="e"/>
+              <label class="radio" for="e-e24">E24</label>
+            </div>
+          </div>
+
+        </form>

@@ -1,0 +1,21 @@
+        <form class="form-grid" id="form-wres">
+
+          <label for="form-wres-AWG">AWG:</label>
+          <input type="number" class="form-control" id="form-wres-AWG" step="1" maxlength="6">
+
+          <label for="form-wres-d">Diameter:</label>
+          <input type="text" class="form-control" id="form-wres-d" maxlength="12">
+
+          <label for="form-wres-len">Length:</label>
+          <input type="text" class="form-control" id="form-wres-len" maxlength="12">
+
+          <label for="form-wres-t">Temperature, C:</label>
+          <input type="number" class="form-control" id="form-wres-t" maxlength="12" value="25">
+
+          <label for="form-wres-R">Resistance:</label>
+          <input type="text" class="form-control" id="form-wres-R" maxlength="12">
+
+          <div><button type="button" class="btn btn-secondary" onClick="wres.clear()">Clear</button></div>
+          <button type="button" class="btn btn-primary" id="submit_wres" onClick="wres.calc()">Submit</button>
+
+        </form>
