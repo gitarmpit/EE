@@ -794,7 +794,6 @@ const SECONDS_IN_A_DAY = 24 * SECONDS_IN_AN_HOUR;
 const SECONDS_IN_A_MONTH = 30 * SECONDS_IN_A_DAY;
 const SECONDS_IN_A_YEAR = 365 * SECONDS_IN_A_DAY;
 
-
 function YMDH_to_Seconds(years, months, days, hours) {
 
   return (years * SECONDS_IN_A_YEAR) +
@@ -820,5 +819,15 @@ function seconds_to_YMDH(seconds) {
   return [years, months, days, hours];
 }
 
+function seconds_to_HM(seconds) {
+  const hours = Math.floor(seconds / SECONDS_IN_AN_HOUR);
+  const remainingSeconds = seconds % SECONDS_IN_AN_HOUR;
+  const minutes = Math.floor(remainingSeconds / SECONDS_IN_A_MINUTE);
+  return [hours, minutes];
+}
+
+function HM_to_Seconds(hours, minutes) {
+  return (hours * SECONDS_IN_AN_HOUR) + (minutes * SECONDS_IN_A_MINUTE);
+}
 // Conversions end
 

@@ -45,8 +45,10 @@ let headphone = null;
 let sound = null;
 let tl = null;
 let bat = null;
+let bat2 = null;
 let wres = null;
 let vdrop = null;
+let c555 = null;
 
 function init_calcs() {
   // instantiate calcs
@@ -92,11 +94,17 @@ function init_calcs() {
   bat = new EE_Battery();
   calc_array.push(bat);
 
+  bat2 = new EE_Battery2();
+  calc_array.push(bat2);
+
   wres = new EE_WireRes();
   calc_array.push(wres);
 
   vdrop = new EE_Vdrop();
   calc_array.push(vdrop);
+
+  c555 = new EE_555();
+  calc_array.push(c555);
 
 }
 

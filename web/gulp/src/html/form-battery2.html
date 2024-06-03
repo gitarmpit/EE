@@ -1,0 +1,25 @@
+        <form class="form-grid" id="form-battery2">
+
+          <label for="form-battery2-Ah">Capacity, Ah:</label>
+          <input type="number" class="form-control" id="form-battery2-Ah" step="1" maxlength="6">
+
+          <label for="form-battery2-I">Current:</label>
+          <input type="text" class="form-control" id="form-battery2-I" maxlength="12">
+
+          <label for="form-battery2-V">Voltage:</label>
+          <input type="text" class="form-control" id="form-battery2-V" step="1" maxlength="6">
+
+          <label for="form-battery2-P">Power:</label>
+          <input type="text" class="form-control" id="form-battery2-P" step="1" maxlength="6">
+
+          <label for="form-battery2-h">Hours:</label>
+          <input type="number" class="form-control" id="form-battery2-h" step="1" maxlength="2">
+
+          <label for="form-battery2-min">Minutes:</label>
+          <input type="number" class="form-control" id="form-battery2-min" step="1" maxlength="2">
+
+          <div><button type="button" class="btn btn-secondary" onClick="bat2.clear()">Clear</button></div>
+          <button type="button" class="btn btn-primary" id="submit_battery" onClick="bat2.calc()">Submit</button>
+
+        </form>
+

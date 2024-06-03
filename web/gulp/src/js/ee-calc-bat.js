@@ -66,7 +66,6 @@ class EE_Battery extends EE_Calc {
         h = this.h.getValue();
         dur_set = true;
       }
-
       if (mAh > 0 && I > 0 && !dur_set) {
         let amp_sec = mAh * 3.6;
         let dur_sec = amp_sec / I;
@@ -98,6 +97,5 @@ class EE_Battery extends EE_Calc {
     }
     
   }
-
 
 }
