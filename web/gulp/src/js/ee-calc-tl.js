@@ -6,8 +6,8 @@ class EE_tl extends EE_Calc {
   t = null;
   VF = null;
   len = null;
-  #Zo_default = 50;
-  #Vc = 3 * Math.pow(10, 8);
+  Zo_default = 50;
+  Vc = 3 * Math.pow(10, 8);
 
   constructor() {
     super("form-tl");
@@ -22,7 +22,7 @@ class EE_tl extends EE_Calc {
   }
 
   clear() {
-    this.Zo.setValue (this.#Zo_default);
+    this.Zo.setValue (this.Zo_default);
     this.C.clear();
     this.L.clear();
     this.t.clear();
@@ -30,12 +30,12 @@ class EE_tl extends EE_Calc {
     this.len.clear();
   }
 
-  #calc_t_VF(C, L, len) {
+  calc_t_VF(C, L, len) {
     let t0 = Math.sqrt(L * C);
     let t = t0 * len;
     this.t.setValue(t);
   
-    let VF = 100 / (this.#Vc * t0);
+    let VF = 100 / (this.Vc * t0);
     this.VF.setValue(VF);
   }
   
@@ -73,14 +73,14 @@ class EE_tl extends EE_Calc {
       }
 
       if (Zo == 0) {
-        console.log (this.#Zo_default);
+        console.log (this.Zo_default);
         this.Zo.setValue (Zo);
       }
   
-      this.#Zo_default = Zo;
+      this.Zo_default = Zo;
   
-      let Cmin = 1 / (this.#Vc * Zo);
-      let Lmin = Zo / this.#Vc;
+      let Cmin = 1 / (this.Vc * Zo);
+      let Lmin = Zo / this.Vc;
   
       if (C != 0) {
         if (C < Cmin) {
@@ -92,14 +92,14 @@ class EE_tl extends EE_Calc {
         this.L.setValue(L);
 
         if (t == 0) {
-          this.#calc_t_VF(C, L, len);
+          this.calc_t_VF(C, L, len);
         }
         else {
           let t0 = Math.sqrt(L * C);
           len = t / t0;
           this.len.setValue(len);
 
-          VF = 100 / (this.#Vc * t0);
+          VF = 100 / (this.Vc * t0);
           this.VF.setValue(VF);
         }
       }
@@ -113,13 +113,13 @@ class EE_tl extends EE_Calc {
         this.C.setValue(C);
 
         if (t == 0) {
-          this.#calc_t_VF(C, L, len);
+          this.calc_t_VF(C, L, len);
         }
         else {
           let t0 = Math.sqrt(L * C);
           len = t / t0;
           this.len.setValue(len);
-          VF = 100 / (this.#Vc * t0);
+          VF = 100 / (this.Vc * t0);
           this.VF.setValue(VF);
         }
       }
@@ -128,7 +128,7 @@ class EE_tl extends EE_Calc {
           VF = 100;
           this.VF.setValue(VF);
         }
-        let t0 = 100 / (VF * this.#Vc);
+        let t0 = 100 / (VF * this.Vc);
         if (t == 0) {
           t = t0 * len;
           this.t.setValue(t);
@@ -146,14 +146,14 @@ class EE_tl extends EE_Calc {
       }
       else if (t > 0) {
         let t0 = t / len;
-        if (t0 < 1 / this.#Vc) {
-          t0 = 1 / this.#Vc;
+        if (t0 < 1 / this.Vc) {
+          t0 = 1 / this.Vc;
           t = t0 * len;
         }
   
         this.t.setValue(t);
 
-        VF = 100 / (this.#Vc * t0);
+        VF = 100 / (this.Vc * t0);
         this.VF.setValue(VF);
   
         C = t0 / Zo;

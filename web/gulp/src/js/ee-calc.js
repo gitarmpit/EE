@@ -49,6 +49,7 @@ let bat2 = null;
 let wres = null;
 let vdrop = null;
 let c555 = null;
+let wpar = null;
 
 function init_calcs() {
   // instantiate calcs
@@ -105,6 +106,9 @@ function init_calcs() {
 
   c555 = new EE_555();
   calc_array.push(c555);
+
+  wpar = new EE_Wpar();
+  calc_array.push(wpar);
 
 }
 

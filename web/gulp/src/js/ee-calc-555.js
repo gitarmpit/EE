@@ -49,7 +49,7 @@ class EE_555 extends EE_Calc {
   tl = 0;
   f = 0;
 
-  #min_DC = 50.05;
+  min_DC = 50.05;
 
   constructor() {
     super("form-555");
@@ -64,23 +64,23 @@ class EE_555 extends EE_Calc {
     this.init();
     let e = document.getElementById(this.form_name + "-dc");
     e.onblur = () => {
-      this.#process_555_dc();
+      this.process_555_dc();
     }
   
     e = document.getElementById(this.form_name + "-f");
     e.onblur = () => {
-      this.#process_555_f();
+      this.process_555_f();
     }
   
   
     e = document.getElementById(this.form_name + "-th");
     e.onblur = () => {
-      this.#process_555_th();
+      this.process_555_th();
     }
   
     e = document.getElementById(this.form_name + "-tl");
     e.onblur = () => {
-      this.#process_555_tl();
+      this.process_555_tl();
     }
 
     document.querySelectorAll('input[name="e"]').forEach(radio => {
@@ -118,10 +118,10 @@ class EE_555 extends EE_Calc {
     this.th_field.clear();
     this.tl_field.clear();
     this.f_field.clear();
-    this.#clear_tmp();
+    this.clear_tmp();
   }
 
-  #clear_tmp() {
+  clear_tmp() {
     this.R1 = 0;
     this.R2 = 0;
     this.C = 0;
@@ -131,8 +131,8 @@ class EE_555 extends EE_Calc {
     this.f = 0;
   }
 
-  #process_555_f() {
-    this.#clear_tmp();
+  process_555_f() {
+    this.clear_tmp();
     try {
       
       if (!this.f_field.empty()) {
@@ -173,16 +173,16 @@ class EE_555 extends EE_Calc {
   
   }
   
-  #process_555_dc() {
+  process_555_dc() {
 
-    this.#clear_tmp();
+    this.clear_tmp();
 
     try {
 
       if (!this.dc_field.empty()) {
         this.dc = this.dc_field.getValue();
-        if (this.dc < this.#min_DC) {
-          this.dc = this.#min_DC;
+        if (this.dc < this.min_DC) {
+          this.dc = this.min_DC;
           this.dc_field.setValue(this.dc);
         }
         else if (this.dc > 99) {
@@ -208,10 +208,10 @@ class EE_555 extends EE_Calc {
     if (this.dc > 0) {
         
       if (this.th > 0 && this.tl == 0) {
-        this.#set_tl_f_from_dc_th ();
+        this.set_tl_f_from_dc_th ();
       }
       else if (this.th == 0 && this.tl > 0) {
-        this.#set_th_f_from_dc_tl ();
+        this.set_th_f_from_dc_tl ();
       }
       else if (this.th > 0 && this.tl > 0) {
         let t100 = this.th +this.tl;
@@ -230,7 +230,7 @@ class EE_555 extends EE_Calc {
   
   }
   
-  #set_tl_f_from_dc_th () {
+  set_tl_f_from_dc_th () {
     let t100 = this.th * 100 / this.dc;
     this.tl = t100 - this.th;
     this.tl_field.setValue(this.tl);
@@ -238,7 +238,7 @@ class EE_555 extends EE_Calc {
     this.f_field.setValue(this.f);
   }
 
-  #set_th_f_from_dc_tl () {
+  set_th_f_from_dc_tl () {
     let t100 = this.tl * 100 / (100 - this.dc);
     this.th = t100 - this.tl;
     this.th_field.setValue(this.th);
@@ -246,16 +246,16 @@ class EE_555 extends EE_Calc {
     this.f_field.setValue(this.f);
   }
 
-  #set_f_dc_from_th_tl () {
+  set_f_dc_from_th_tl () {
     this.f = 1 / (this.th + this.tl);
     this.f_field.setValue(this.f);
     this.dc = this.th / (this.th + this.tl) * 100;
     this.dc_field.setValue(this.dc);
   }
 
-  #process_555_th() {
+  process_555_th() {
 
-    this.#clear_tmp();
+    this.clear_tmp();
 
     try {
   
@@ -287,10 +287,10 @@ class EE_555 extends EE_Calc {
         this.th_field.setValue(this.th);
       }
 
-      this.#set_f_dc_from_th_tl();
+      this.set_f_dc_from_th_tl();
     } 
     else if (this.th > 0 && this.tl == 0 && this.dc > 0) {
-      this.#set_tl_f_from_dc_th ();
+      this.set_tl_f_from_dc_th ();
     }
     else if (this.th == 0 && this.tl > 0 && this.f > 0) {
       let t100 = 1 / this.f;
@@ -300,9 +300,9 @@ class EE_555 extends EE_Calc {
   
   }
   
-  #process_555_tl() {
+  process_555_tl() {
 
-    this.#clear_tmp();
+    this.clear_tmp();
 
     try {
       
@@ -334,10 +334,10 @@ class EE_555 extends EE_Calc {
         this.tl_field.setValue(this.tl);
       }
 
-      this.#set_f_dc_from_th_tl();
+      this.set_f_dc_from_th_tl();
     }
     else if (this.th == 0 && this.tl > 0 && this.dc > 0) {
-      this.#set_th_f_from_dc_tl();
+      this.set_th_f_from_dc_tl();
     }
     else if (this.th > 0 && this.tl == 0 && this.f > 0 ) {
       let t100 = 1 / this.f;
@@ -345,13 +345,13 @@ class EE_555 extends EE_Calc {
       this.tl_field.setValue(this.tl);
     }
     else if (this.tl == 0 && this.f == 0 && this.th > 0 && this.dc > 0) {
-      this.#set_tl_f_from_dc_th();
+      this.set_tl_f_from_dc_th();
     }
 
   }
   
   
-  #calc_555_timing() {
+  calc_555_timing() {
   
     this.th = l2 * (this.R1 + this.R2) * this.C;
     this.tl = l2 * this.R2 * this.C;
@@ -364,7 +364,7 @@ class EE_555 extends EE_Calc {
     this.dc_field.setValue (this.dc);
   }
   
-  #calc_R1_R2() {
+  calc_R1_R2() {
     let r2c = this.tl / l2;
     let r1c = this.th / l2 - r2c;
     if (this.C == 0) {
@@ -384,21 +384,21 @@ class EE_555 extends EE_Calc {
     let t_cnt = 0;
     let timing_set = false;
   
-    this.#clear_tmp();
+    this.clear_tmp();
 
     try {
   
       if (targetId == this.form_name + "-th") {
-        this.#process_555_th();
+        this.process_555_th();
       }
       else if (targetId == this.form_name + "-tl") {
-        this.#process_555_tl();
+        this.process_555_tl();
       }
       else if (targetId == this.form_name + "-dc") {
-        this.#process_555_dc();
+        this.process_555_dc();
       }
       else if (targetId == this.form_name + "-f") {
-        this.#process_555_f();
+        this.process_555_f();
       }
   
       if (!this.R1_field.empty()) {
@@ -450,11 +450,11 @@ class EE_555 extends EE_Calc {
       }
   
       if (this.R1 != 0 && this.R2 != 0 && this.C != 0 && !timing_set) {
-        this.#calc_555_timing ();
+        this.calc_555_timing ();
       }
       else if (timing_set && this.R1 == 0 && this.R2 == 0) {
         
-        this.#calc_R1_R2();
+        this.calc_R1_R2();
   
         if (E_array.length) {
           console.log(E_array.length);
@@ -480,7 +480,7 @@ class EE_555 extends EE_Calc {
           // this.C = getEValue(this.C, E6);
         }
   
-        this.#calc_555_timing ();
+        this.calc_555_timing ();
 
         this.R1_field.setValue(this.R1);
         this.R2_field.setValue(this.R2);
@@ -499,7 +499,7 @@ class EE_555 extends EE_Calc {
         if (E_array.length) {
           this.R2 = getEValue(this.R2);
         }
-        this.#calc_555_timing();
+        this.calc_555_timing();
 
         this.R2_field.setValue(this.R2);
       }
@@ -526,7 +526,7 @@ class EE_555 extends EE_Calc {
         if (E_array.length) {
           this.R1 = getEValue(this.R1);
         }
-        this.#calc_555_timing();
+        this.calc_555_timing();
         this.R1_field.setValue(this.R1);
   
       }
@@ -544,7 +544,7 @@ class EE_555 extends EE_Calc {
         if (E_array.length) {
           this.C = getEValue(this.C);
         }
-        this.#calc_555_timing ();
+        this.calc_555_timing ();
         this.C_field.setValue(this.C);
       }
       else {

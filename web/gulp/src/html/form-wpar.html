@@ -1,0 +1,21 @@
+        <form class="form-grid" id="form-wpar">
+
+          <label for="form-wpar-AWG">Single wire AWG:</label>
+          <input type="number" class="form-control" id="form-wpar-AWG" step="1" maxlength="6">
+
+          <label for="form-wpar-d">Single wire diameter:</label>
+          <input type="text" class="form-control" id="form-wpar-d" maxlength="12">
+
+          <label for="form-wpar-n">Number of parallel wires:</label>
+          <input type="text" class="form-control" id="form-wpar-n" maxlength="12">
+
+          <label for="form-wpar-total-AWG">Combined AWG:</label>
+          <input type="number" class="form-control" id="form-wpar-total-AWG" maxlength="12" value="25">
+
+          <label for="form-wpar-total-d">Combined diameter:</label>
+          <input type="text" class="form-control" id="form-wpar-total-d" maxlength="12">
+
+          <div><button type="button" class="btn btn-secondary" onClick="wpar.clear()">Clear</button></div>
+          <button type="button" class="btn btn-primary" id="submit_wres" onClick="wpar.calc()">Submit</button>
+
+        </form>

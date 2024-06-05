@@ -40,7 +40,7 @@ gulp.task('html', async function() {
 gulp.task('scripts', function() {
     return gulp.src('src/js/*.js')
         .pipe(order([
-            'ee-calc.js ',
+            'ee-calc.js',
 	    'ee-calc-conversions.js',
             'ee-calc-field.js' 
         ]))
@@ -53,6 +53,10 @@ gulp.task('scripts', function() {
 
 gulp.task('styles', function() {
     return gulp.src('src/css/*.css')
+        .pipe(order([
+            'pc.css',
+            'mobile.css' 
+        ]))
         .pipe(concat('styles.css'))
         .pipe(cleanCSS())
         .pipe(rename('styles.min.css'))

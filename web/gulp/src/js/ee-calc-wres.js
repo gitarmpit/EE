@@ -47,16 +47,24 @@ function wire_process_d(d_field, AWG_field) {
 
 }
 
+function AWG_to_d(AWG) {
+  return Math.pow(Math.E, (2.1104 - 0.11594 * AWG));
+}
+
 function set_d_from_AWG(AWG, d_field) {
-  let d = Math.pow(Math.E, (2.1104 - 0.11594 * AWG));
+  let d = AWG_to_d(AWG);
   let str_d = float_to_string(d, 3) + "mm";
-  d_field.setStringValue (str_d);
+  d_field.setStringValue(str_d);
   return d;
 }
 
-function set_AWG_from_d(d, AWG_field) {
+function d_to_AWG(d) {
   let AWG = (2.1104 - Math.log(d * 1000)) / 0.11594;
-  AWG = Math.round(AWG);
+  return Math.round(AWG);
+}
+
+function set_AWG_from_d(d, AWG_field) {
+  AWG = d_to_AWG(d);
   if (AWG >= 0 && AWG <= max_AWG) {
     AWG_field.setValue(AWG);
   }
@@ -90,19 +98,19 @@ class EE_WireRes extends EE_Calc {
     e.onblur = () => {
       wire_process_AWG(this.AWG, this.d);
     }
-  
+
     e = document.getElementById(this.form_name + "-d");
     e.onblur = () => {
       wire_process_d(this.d, this.AWG);
     }
-  
+
   }
 
   clear() {
     this.AWG.clear();
     this.d.clear();
     this.len.clear();
-    this.t.setValue (25);
+    this.t.setValue(25);
     this.R.clear();
   }
 
@@ -184,7 +192,7 @@ class EE_WireRes extends EE_Calc {
         if (t < -150 || t > 250) {
           throw "invalid range";
         }
-        this.t.setValue (t);
+        this.t.setValue(t);
       }
       else {
         throw "invalid parameters";
@@ -220,19 +228,19 @@ class EE_Vdrop extends EE_Calc {
     e.onblur = () => {
       wire_process_AWG(this.AWG, this.d);
     }
-  
+
     e = document.getElementById(this.form_name + "-d");
     e.onblur = () => {
       wire_process_d(this.d, this.AWG);
     }
-  
+
   }
 
   clear() {
     this.AWG.clear();
     this.d.clear();
     this.len.clear();
-    this.t.setValue (25);
+    this.t.setValue(25);
     this.V.clear();
     this.I.clear();
   }
@@ -316,7 +324,7 @@ class EE_Vdrop extends EE_Calc {
         d = Math.sqrt(4 * A / Math.PI);
         let str_d = float_to_string(d * 1000) + "mm";
         this.d.setStringValue(str_d);
-        set_AWG_from_d (d, this.AWG);
+        set_AWG_from_d(d, this.AWG);
       }
       else if (d != 0 && len != 0 && I != 0 && t == 0 && V != 0) {
         R = V / I;
@@ -325,7 +333,7 @@ class EE_Vdrop extends EE_Calc {
         if (t < -150 || t > 250) {
           throw "invalid range";
         }
-        this.t.setValue (t);
+        this.t.setValue(t);
       }
       else if (d != 0 && len != 0 && I == 0 && t != 0 && V != 0) {
         R = ro * len / A;
@@ -341,4 +349,141 @@ class EE_Vdrop extends EE_Calc {
     }
   }
 
+}
+
+// Calculates how many parallel wires to combine to get the same gauge
+class EE_Wpar extends EE_Calc {
+
+  AWG = null;
+  d = null;
+  AWG_total = null;
+  d_total = null;
+  nWires = null;
+
+  constructor() {
+    super("form-wpar");
+    this.AWG = new EE_Calc_Int(this.form_name + "-AWG");
+    this.d = new EE_Calc_Len(this.form_name + "-d");
+    this.AWG_total = new EE_Calc_Int(this.form_name + "-total-AWG");
+    this.d_total = new EE_Calc_Len(this.form_name + "-total-d");
+    this.nWires = new EE_Calc_Int(this.form_name + "-n");
+
+    this.init();
+    let e = document.getElementById(this.form_name + "-AWG");
+    e.onblur = () => {
+      wire_process_AWG(this.AWG, this.d);
+    }
+
+    e = document.getElementById(this.form_name + "-d");
+    e.onblur = () => {
+      wire_process_d(this.d, this.AWG);
+    }
+
+    e = document.getElementById(this.form_name + "-total-AWG");
+    e.onblur = () => {
+      wire_process_AWG(this.AWG_total, this.d_total);
+    }
+
+    e = document.getElementById(this.form_name + "-total-d");
+    e.onblur = () => {
+      wire_process_d(this.d_total, this.AWG_total);
+    }
+
+  }
+
+  clear() {
+    this.AWG.clear();
+    this.d.clear();
+    this.AWG_total.clear();
+    this.d_total.clear();
+    this.nWires.clear();
+  }
+
+  nwires_to_combined_AWG(nWires, A) {
+    let A_total = A * nWires;
+    console.log ("A: " + (A*1000000).toFixed(2) + ", A_total: " + (A_total*1000000).toFixed(2));
+    let d_total = Math.sqrt(4 * A_total / Math.PI);
+    this.AWG_total.setValue(d_to_AWG(d_total));
+    let str_d = float_to_string(d_total * 1000, 3) + "mm";
+    this.d_total.setStringValue(str_d);
+  }
+
+  calc(targetId) {
+    try {
+      let AWG = -1;
+      let d = 0;
+      let AWG_total = -1;
+      let d_total = 0;
+      let nWires = 0;
+      let A = 0;
+      let A_total = 0;
+    
+      if (!this.AWG.empty()) {
+        AWG = this.AWG.getValue();
+        if (AWG > max_AWG) {
+          AWG = max_AWG;
+          this.AWG.setValue(AWG);
+        }
+      }
+
+      if (!this.d.empty()) {
+        d = this.d.getValue();
+        if (d > max_wire_d) {
+          d = max_wire_d;
+          this.d.setStringValue("100mm");
+        }
+        A = Math.PI * d * d / 4;
+      }
+
+      if (!this.AWG_total.empty()) {
+        AWG_total = this.AWG_total.getValue();
+        if (AWG_total > max_AWG) {
+          AWG_total = max_AWG;
+          this.AWG_total.setValue(AWG_total);
+        }
+      }
+
+      if (!this.d_total.empty()) {
+        d_total = this.d_total.getValue();
+        if (d_total > max_wire_d) {
+          d_total = max_wire_d;
+          this.d_total.setStringValue("100mm");
+        }
+        A_total = Math.PI * d_total * d_total / 4;
+      }
+
+      if (!this.nWires.empty()) {
+        nWires = this.nWires.getValue();
+      }
+
+ 
+      if (d != 0 && d_total != 0 && nWires == 0) {
+        console.log ("A: " + (A*1000000).toFixed(2) + ", A_total: " + (A_total*1000000).toFixed(2));
+        console.log ("A_total / A : " + A_total / A);
+         nWires = Math.ceil ((A_total / A).toFixed(1));
+         console.log("nwires: " + nWires);
+         this.nWires.setValue(nWires);
+         this.nwires_to_combined_AWG(nWires, A);
+      }
+      else if (d != 0 && d_total == 0 && nWires != 0) {
+        console.log("nwires: " + nWires);
+        this.nwires_to_combined_AWG(nWires, A);
+      }
+      else if (d == 0 && d_total != 0 && nWires != 0) {
+        console.log("nwires: " + nWires);
+        let A = A_total / nWires;
+        console.log ("A: " + (A*1000000).toFixed(2) + ", A_total: " + (A_total*1000000).toFixed(2));
+        let d = Math.sqrt(4 * A / Math.PI);
+        this.AWG.setValue(d_to_AWG(d));
+        let str_d = float_to_string(d*1000, 3) + "mm";
+        this.d.setStringValue(str_d);
+      }
+      else {
+        throw "invalid input";
+      }
+    }
+    catch (err) {
+      reportError(err);
+    }
+  }
 }
