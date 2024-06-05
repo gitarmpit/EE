@@ -137,7 +137,6 @@ class EE_dbm extends EE_Calc {
   
     }
     catch (err) {
-      console.log(err);
       reportError(err);
     }
   }

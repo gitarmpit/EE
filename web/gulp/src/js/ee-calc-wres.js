@@ -401,7 +401,6 @@ class EE_Wpar extends EE_Calc {
 
   nwires_to_combined_AWG(nWires, A) {
     let A_total = A * nWires;
-    console.log ("A: " + (A*1000000).toFixed(2) + ", A_total: " + (A_total*1000000).toFixed(2));
     let d_total = Math.sqrt(4 * A_total / Math.PI);
     this.AWG_total.setValue(d_to_AWG(d_total));
     let str_d = float_to_string(d_total * 1000, 3) + "mm";
@@ -458,21 +457,15 @@ class EE_Wpar extends EE_Calc {
 
  
       if (d != 0 && d_total != 0 && nWires == 0) {
-        console.log ("A: " + (A*1000000).toFixed(2) + ", A_total: " + (A_total*1000000).toFixed(2));
-        console.log ("A_total / A : " + A_total / A);
          nWires = Math.ceil ((A_total / A).toFixed(1));
-         console.log("nwires: " + nWires);
          this.nWires.setValue(nWires);
          this.nwires_to_combined_AWG(nWires, A);
       }
       else if (d != 0 && d_total == 0 && nWires != 0) {
-        console.log("nwires: " + nWires);
         this.nwires_to_combined_AWG(nWires, A);
       }
       else if (d == 0 && d_total != 0 && nWires != 0) {
-        console.log("nwires: " + nWires);
         let A = A_total / nWires;
-        console.log ("A: " + (A*1000000).toFixed(2) + ", A_total: " + (A_total*1000000).toFixed(2));
         let d = Math.sqrt(4 * A / Math.PI);
         this.AWG.setValue(d_to_AWG(d));
         let str_d = float_to_string(d*1000, 3) + "mm";

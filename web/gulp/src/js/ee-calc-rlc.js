@@ -162,7 +162,6 @@ class EE_RLC extends EE_Calc {
 
     }
     catch (err) {
-      console.log(err);
       reportError(err)
     }
 

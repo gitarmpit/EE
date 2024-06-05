@@ -73,7 +73,6 @@ class EE_tl extends EE_Calc {
       }
 
       if (Zo == 0) {
-        console.log (this.Zo_default);
         this.Zo.setValue (Zo);
       }
   

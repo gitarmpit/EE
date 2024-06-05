@@ -457,24 +457,14 @@ class EE_555 extends EE_Calc {
         this.calc_R1_R2();
   
         if (E_array.length) {
-          console.log(E_array.length);
-          console.log ("old C:" + C_to_str (this.C));
-          console.log ("old R1:" + R_to_str (this.R1));
-          console.log ("old R2:" + R_to_str (this.R2));
   
           this.R1 = getEValue (this.R1);
           this.R2 = getEValue (this.R2);
 
           let r2c = this.tl / l2;
           this.C = r2c / this.R2;
-          console.log ("corrected old C:" + C_to_str (this.C));
 
           this.C = getEValue (this.C);
-  
-          console.log ("new C:" + C_to_str (this.C));
-          console.log ("new R1:" + R_to_str (this.R1));
-          console.log ("new R2:" + R_to_str (this.R2));
-  
         }
         else {
           // this.C = getEValue(this.C, E6);
@@ -553,7 +543,6 @@ class EE_555 extends EE_Calc {
   
     }
     catch (err) {
-      console.log(err);
       reportError(err);
     }
   }
