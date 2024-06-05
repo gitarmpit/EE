@@ -34,7 +34,13 @@ gulp.task('html', async function() {
     };
 
     const result = template(context);
-    fs.writeFileSync('dist/index.html', result);
+    fs.writeFileSync('src/html/index.html', result);
+});
+
+gulp.task('minify', () => {
+  return gulp.src('src/html/index.html')
+    .pipe(htmlmin({ collapseWhitespace: true }))
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('scripts', function() {
@@ -63,4 +69,4 @@ gulp.task('styles', function() {
         .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('default', gulp.parallel('html', 'scripts', 'styles'));
+gulp.task('default', gulp.parallel('html', 'minify', 'scripts', 'styles'));
