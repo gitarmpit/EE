@@ -34,11 +34,11 @@ gulp.task('html', async function() {
     };
 
     const result = template(context);
-    fs.writeFileSync('src/html/index.html', result);
+    fs.writeFileSync('dist/index.html', result);
 });
 
 gulp.task('minify', () => {
-  return gulp.src('src/html/index.html')
+  return gulp.src('dist/index.html')
     .pipe(htmlmin({ collapseWhitespace: true }))
     .pipe(gulp.dest('dist'));
 });
