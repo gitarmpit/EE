@@ -36,6 +36,7 @@ let vdiv = null;
 let Xl  = null;
 let Xc  = null;
 let RC  = null;
+let LC  = null;
 let tf  = null;
 let fw  = null;
 let RLC = null;
@@ -67,6 +68,9 @@ function init_calcs() {
 
   RC = new EE_RC_Cutoff_Freq();
   calc_array.push(RC);
+
+  LC = new EE_LC_LPF();
+  calc_array.push(LC);
 
   tf = new EE_tf();
   calc_array.push(tf);

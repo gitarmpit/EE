@@ -1,0 +1,9 @@
+to build, run:  gulp
+
+
+output: dist 
+bundle.js: full
+bundle_min.js:  min
+
+index.html references bundle.js, so rename bundle_min.js to bundle.js
+and drop to  
