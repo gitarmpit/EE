@@ -40,6 +40,7 @@ let LC  = null;
 let tf  = null;
 let fw  = null;
 let RLC = null;
+let ind  = null;
 let dbm = null;
 let ripple = null;
 let headphone = null;
@@ -113,6 +114,9 @@ function init_calcs() {
 
   wpar = new EE_Wpar();
   calc_array.push(wpar);
+
+  ind = new EE_IndCurrent();
+  calc_array.push(ind);
 
 }
 
