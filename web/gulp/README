@@ -1,4 +1,11 @@
-to build, run:  gulp
+Install gulp and dependencies:
+
+npm install gulp gulp-order gulp-clean-css gulp-rename gulp-wrap gulp-htmlmin gulp-uglify gulp-concat handlebars
+
+create output dir: dist
+
+
+To build, run:  gulp
 
 
 output: dist 
